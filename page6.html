@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>품질관리 시스템 - 부재 제작 오차</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <script defer src="assets/js/script.js"></script>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <h1 class="header-title">Prefab 품질관리 시스템</h1>
+            <p class="header-subtitle">부재 제작 오차 측정 및 비교</p>
+        </div>
+    </header>
+
+    <nav class="page-nav">
+        <div class="container">
+            <ul>
+                <li><a href="index.html">1. 종합 요약</a></li>
+                <li><a href="page2.html">2. 품질관리자 설문</a></li>
+                <li><a href="page3.html">3. 가속도 데이터</a></li>
+                <li><a href="page4.html">4. 기울기 데이터</a></li>
+                <li><a href="page5.html">5. 변형률 데이터</a></li>
+                <li><a href="page6.html" class="active">6. 부재 제작 오차</a></li>
+                <li><a href="dashboard.html">7. 종합 대시보드</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="container">
+        <div class="alert alert-info">
+            <strong>📐 제작 오차 측정 안내</strong>
+            <p style="margin-top: 0.5rem;">
+                Prefab 부재의 설계치와 실제 측정치를 비교하여 제작 오차를 파악합니다. 
+                허용 범위: <strong>±5mm</strong>
+            </p>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">측정 정보</h2>
+            </div>
+            <div class="card-body">
+                <form id="errorInfoForm">
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <label class="info-label" for="errorDate">측정 일시</label>
+                            <input type="datetime-local" id="errorDate" name="errorDate" class="info-value" required>
+                        </div>
+                        <div class="info-item">
+                            <label class="info-label" for="errorDevice">측정 장비</label>
+                            <input type="text" id="errorDevice" name="errorDevice" class="info-value" 
+                                   placeholder="예: 레이저 거리 측정기" required>
+                        </div>
+                        <div class="info-item">
+                            <label class="info-label" for="errorOperator">측정자</label>
+                            <input type="text" id="errorOperator" name="errorOperator" class="info-value" 
+                                   placeholder="측정자명" required>
+                        </div>
+                        <div class="info-item">
+                            <label class="info-label" for="errorWeather">측정 환경</label>
+                            <select id="errorWeather" name="errorWeather" class="info-value" required>
+                                <option value="">선택하세요</option>
+                                <option value="실내">실내</option>
+                                <option value="실외-맑음">실외 (맑음)</option>
+                                <option value="실외-흐림">실외 (흐림)</option>
+                                <option value="실외-우천">실외 (우천)</option>
+                            </select>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">부재 사진</h2>
+                <p class="card-description">측정 대상 부재의 전체 사진을 업로드하세요</p>
+            </div>
+            <div class="card-body">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 1.5rem;">
+                    <div>
+                        <h3 class="mb-2">부재 전면</h3>
+                        <div class="photo-upload" style="min-height: 300px;">
+                            <img id="errorPhoto1" style="display:none;">
+                            <input type="file" accept="image/*" onchange="previewImage(this, 'errorPhoto1')">
+                            <span class="placeholder">📷 사진 업로드</span>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="mb-2">부재 측면</h3>
+                        <div class="photo-upload" style="min-height: 300px;">
+                            <img id="errorPhoto2" style="display:none;">
+                            <input type="file" accept="image/*" onchange="previewImage(this, 'errorPhoto2')">
+                            <span class="placeholder">📷 사진 업로드</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">치수 측정 데이터</h2>
+                <p class="card-description">각 항목의 설계치와 측정치를 입력하세요 (단위: mm)</p>
+            </div>
+            <div class="card-body">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>측정 항목</th>
+                            <th>설계치 (mm)</th>
+                            <th>측정치 (mm)</th>
+                            <th>오차 (mm)</th>
+                            <th>상태</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>전체 길이</td>
+                            <td><input type="number" step="0.1" name="design1" class="error-input" value="3000" onchange="calculateError(1)"></td>
+                            <td><input type="number" step="0.1" name="measured1" class="error-input" onchange="calculateError(1)"></td>
+                            <td id="error1">-</td>
+                            <td id="errorStatus1">-</td>
+                        </tr>
+                        <tr>
+                            <td>전체 폭</td>
+                            <td><input type="number" step="0.1" name="design2" class="error-input" value="300" onchange="calculateError(2)"></td>
+                            <td><input type="number" step="0.1" name="measured2" class="error-input" onchange="calculateError(2)"></td>
+                            <td id="error2">-</td>
+                            <td id="errorStatus2">-</td>
+                        </tr>
+                        <tr>
+                            <td>전체 높이</td>
+                            <td><input type="number" step="0.1" name="design3" class="error-input" value="400" onchange="calculateError(3)"></td>
+                            <td><input type="number" step="0.1" name="measured3" class="error-input" onchange="calculateError(3)"></td>
+                            <td id="error3">-</td>
+                            <td id="errorStatus3">-</td>
+                        </tr>
+                        <tr>
+                            <td>상단 치수</td>
+                            <td><input type="number" step="0.1" name="design4" class="error-input" value="250" onchange="calculateError(4)"></td>
+                            <td><input type="number" step="0.1" name="measured4" class="error-input" onchange="calculateError(4)"></td>
+                            <td id="error4">-</td>
+                            <td id="errorStatus4">-</td>
+                        </tr>
+                        <tr>
+                            <td>하단 치수</td>
+                            <td><input type="number" step="0.1" name="design5" class="error-input" value="250" onchange="calculateError(5)"></td>
+                            <td><input type="number" step="0.1" name="measured5" class="error-input" onchange="calculateError(5)"></td>
+                            <td id="error5">-</td>
+                            <td id="errorStatus5">-</td>
+                        </tr>
+                        <tr>
+                            <td>대각선 길이 1</td>
+                            <td><input type="number" step="0.1" name="design6" class="error-input" value="3020" onchange="calculateError(6)"></td>
+                            <td><input type="number" step="0.1" name="measured6" class="error-input" onchange="calculateError(6)"></td>
+                            <td id="error6">-</td>
+                            <td id="errorStatus6">-</td>
+                        </tr>
+                        <tr>
+                            <td>대각선 길이 2</td>
+                            <td><input type="number" step="0.1" name="design7" class="error-input" value="3020" onchange="calculateError(7)"></td>
+                            <td><input type="number" step="0.1" name="measured7" class="error-input" onchange="calculateError(7)"></td>
+                            <td id="error7">-</td>
+                            <td id="errorStatus7">-</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">제작 오차 분포 그래프</h2>
+            </div>
+            <div class="card-body">
+                <div class="chart-container">
+                    <canvas id="errorChart"></canvas>
+                </div>
+                <div class="mt-3">
+                    <button class="btn btn-primary" onclick="updateErrorChart()">📈 그래프 업데이트</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">측정 결과 요약</h2>
+            </div>
+            <div class="card-body">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">최대 오차</div>
+                        <div class="stat-value" id="maxError">0.0 mm</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">평균 오차</div>
+                        <div class="stat-value" id="avgError">0.0 mm</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">초과 항목</div>
+                        <div class="stat-value" id="errorExceedCount">0 개</div>
+                    </div>
+                    <div class="stat-card" id="errorFinalStatus">
+                        <div class="stat-label">종합 평가</div>
+                        <div class="stat-value">대기중</div>
+                    </div>
+                </div>
+                <div id="errorResultAlert" class="mt-3"></div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">측정 상세 사진</h2>
+                <p class="card-description">주요 측정 부위의 상세 사진을 업로드하세요</p>
+            </div>
+            <div class="card-body">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;">
+                    <div>
+                        <h3 class="mb-2">측정 부위 1</h3>
+                        <div class="photo-upload">
+                            <img id="errorPhoto3" style="display:none;">
+                            <input type="file" accept="image/*" onchange="previewImage(this, 'errorPhoto3')">
+                            <span class="placeholder">📷 사진 업로드</span>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="mb-2">측정 부위 2</h3>
+                        <div class="photo-upload">
+                            <img id="errorPhoto4" style="display:none;">
+                            <input type="file" accept="image/*" onchange="previewImage(this, 'errorPhoto4')">
+                            <span class="placeholder">📷 사진 업로드</span>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="mb-2">측정 장비</h3>
+                        <div class="photo-upload">
+                            <img id="errorPhoto5" style="display:none;">
+                            <input type="file" accept="image/*" onchange="previewImage(this, 'errorPhoto5')">
+                            <span class="placeholder">📷 사진 업로드</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">비고 및 특이사항</h2>
+            </div>
+            <div class="card-body">
+                <textarea id="errorNotes" rows="5" 
+                          placeholder="측정 과정에서 발견된 특이사항이나 비고사항을 기록하세요..."
+                          style="width: 100%; resize: vertical; padding: 1rem; border: 1px solid var(--border-color); border-radius: var(--radius-sm);"></textarea>
+            </div>
+        </div>
+
+        <div class="nav-buttons">
+            <a href="page5.html" class="btn btn-secondary">← 이전: 변형률 데이터</a>
+            <button class="btn btn-success" onclick="saveErrorData()">💾 저장하기</button>
+            <a href="dashboard.html" class="btn btn-primary">다음: 종합 대시보드 →</a>
+        </div>
+    </main>
+
+    <script>
+        const ERROR_THRESHOLD = 5.0; // mm
+
+        document.addEventListener('DOMContentLoaded', function() {
+            loadErrorData();
+            
+            for (let i = 1; i <= 5; i++) {
+                loadSavedImage(`errorPhoto${i}`);
+            }
+
+            const now = new Date();
+            now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+            document.getElementById('errorDate').value = now.toISOString().slice(0, 16);
+
+            document.querySelectorAll('.error-input').forEach(input => {
+                input.addEventListener('change', autoSaveErrorData);
+            });
+            
+            document.getElementById('errorNotes').addEventListener('change', autoSaveErrorData);
+            
+            autoSaveForm('errorInfoForm', STORAGE_KEYS.FABRICATION_ERROR);
+        });
+
+        function calculateError(index) {
+            const designInput = document.querySelector(`input[name="design${index}"]`);
+            const measuredInput = document.querySelector(`input[name="measured${index}"]`);
+            
+            const design = parseFloat(designInput.value) || 0;
+            const measured = parseFloat(measuredInput.value) || 0;
+            const error = measured - design;
+            
+            document.getElementById(`error${index}`).textContent = error.toFixed(1) + ' mm';
+            
+            const statusCell = document.getElementById(`errorStatus${index}`);
+            if (Math.abs(error) > ERROR_THRESHOLD) {
+                statusCell.innerHTML = '<span class="badge badge-danger">초과</span>';
+            } else if (measured > 0) {
+                statusCell.innerHTML = '<span class="badge badge-success">정상</span>';
+            } else {
+                statusCell.textContent = '-';
+            }
+            
+            updateErrorStatistics();
+        }
+
+        function updateErrorStatistics() {
+            const errors = [];
+            for (let i = 1; i <= 7; i++) {
+                const errorText = document.getElementById(`error${i}`).textContent;
+                if (errorText !== '-') {
+                    errors.push(Math.abs(parseFloat(errorText)));
+                }
+            }
+            
+            if (errors.length === 0) return;
+            
+            const max = Math.max(...errors);
+            const avg = errors.reduce((a, b) => a + b, 0) / errors.length;
+            const exceedCount = errors.filter(e => e > ERROR_THRESHOLD).length;
+            
+            document.getElementById('maxError').textContent = max.toFixed(1) + ' mm';
+            document.getElementById('avgError').textContent = avg.toFixed(1) + ' mm';
+            document.getElementById('errorExceedCount').textContent = exceedCount + ' 개';
+            
+            const finalStatus = document.getElementById('errorFinalStatus');
+            const resultAlert = document.getElementById('errorResultAlert');
+            
+            if (exceedCount === 0) {
+                finalStatus.className = 'stat-card success';
+                finalStatus.querySelector('.stat-value').textContent = '적합';
+                resultAlert.innerHTML = `
+                    <div class="alert alert-success">
+                        <strong>✅ 제작 오차 적합</strong><br>
+                        모든 측정 항목의 오차가 허용 범위(±${ERROR_THRESHOLD}mm) 이내입니다.
+                    </div>
+                `;
+            } else {
+                finalStatus.className = 'stat-card danger';
+                finalStatus.querySelector('.stat-value').textContent = '부적합';
+                resultAlert.innerHTML = `
+                    <div class="alert alert-danger">
+                        <strong>❌ 제작 오차 부적합</strong><br>
+                        ${exceedCount}개 항목의 오차가 허용 범위를 초과했습니다. 재가공 또는 보강이 필요합니다.
+                    </div>
+                `;
+            }
+        }
+
+        function updateErrorChart() {
+            const labels = ['전체 길이', '전체 폭', '전체 높이', '상단', '하단', '대각선1', '대각선2'];
+            const values = [];
+            const colors = [];
+            
+            for (let i = 1; i <= 7; i++) {
+                const errorText = document.getElementById(`error${i}`).textContent;
+                if (errorText !== '-') {
+                    const value = Math.abs(parseFloat(errorText));
+                    values.push(value);
+                    colors.push(value > ERROR_THRESHOLD ? '#ef4444' : '#3b82f6');
+                } else {
+                    values.push(0);
+                    colors.push('#9ca3af');
+                }
+            }
+            
+            drawBarChart('errorChart', {
+                labels: labels,
+                values: values,
+                colors: colors,
+                title: '항목별 제작 오차',
+                yLabel: '오차 (mm)'
+            });
+        }
+
+        function saveErrorData() {
+            const data = {
+                info: {},
+                measurements: [],
+                notes: document.getElementById('errorNotes').value
+            };
+            
+            const infoForm = document.getElementById('errorInfoForm');
+            const infoData = new FormData(infoForm);
+            for (let [key, value] of infoData.entries()) {
+                data.info[key] = value;
+            }
+            
+            for (let i = 1; i <= 7; i++) {
+                const design = parseFloat(document.querySelector(`input[name="design${i}"]`).value) || 0;
+                const measured = parseFloat(document.querySelector(`input[name="measured${i}"]`).value) || 0;
+                const errorText = document.getElementById(`error${i}`).textContent;
+                const error = errorText !== '-' ? parseFloat(errorText) : 0;
+                
+                data.measurements.push({ design, measured, error });
+            }
+            
+            saveToStorage(STORAGE_KEYS.FABRICATION_ERROR, data);
+            alert('제작 오차 데이터가 저장되었습니다!');
+        }
+
+        function autoSaveErrorData() {
+            const data = {
+                info: {},
+                measurements: [],
+                notes: document.getElementById('errorNotes').value
+            };
+            
+            const infoForm = document.getElementById('errorInfoForm');
+            const infoData = new FormData(infoForm);
+            for (let [key, value] of infoData.entries()) {
+                data.info[key] = value;
+            }
+            
+            for (let i = 1; i <= 7; i++) {
+                const design = parseFloat(document.querySelector(`input[name="design${i}"]`).value) || 0;
+                const measured = parseFloat(document.querySelector(`input[name="measured${i}"]`).value) || 0;
+                const errorText = document.getElementById(`error${i}`).textContent;
+                const error = errorText !== '-' ? parseFloat(errorText) : 0;
+                
+                data.measurements.push({ design, measured, error });
+            }
+            
+            saveToStorage(STORAGE_KEYS.FABRICATION_ERROR, data);
+        }
+
+        function loadErrorData() {
+            const data = getFromStorage(STORAGE_KEYS.FABRICATION_ERROR);
+            if (!data) return;
+            
+            if (data.info) {
+                Object.keys(data.info).forEach(key => {
+                    const input = document.getElementById(key);
+                    if (input) input.value = data.info[key];
+                });
+            }
+            
+            if (data.measurements) {
+                data.measurements.forEach((m, i) => {
+                    const index = i + 1;
+                    const designInput = document.querySelector(`input[name="design${index}"]`);
+                    const measuredInput = document.querySelector(`input[name="measured${index}"]`);
+                    
+                    if (designInput) designInput.value = m.design;
+                    if (measuredInput) measuredInput.value = m.measured;
+                    
+                    calculateError(index);
+                });
+                
+                updateErrorChart();
+            }
+            
+            if (data.notes) {
+                document.getElementById('errorNotes').value = data.notes;
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>품질관리 시스템 - 종합 대시보드</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <script defer src="assets/js/script.js"></script>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <h1 class="header-title">Prefab 품질관리 시스템</h1>
+            <p class="header-subtitle">종합 대시보드</p>
+        </div>
+    </header>
+
+    <nav class="page-nav">
+        <div class="container">
+            <ul>
+                <li><a href="index.html">1. 종합 요약</a></li>
+                <li><a href="page2.html">2. 품질관리자 설문</a></li>
+                <li><a href="page3.html">3. 가속도 데이터</a></li>
+                <li><a href="page4.html">4. 기울기 데이터</a></li>
+                <li><a href="page5.html">5. 변형률 데이터</a></li>
+                <li><a href="page6.html">6. 부재 제작 오차</a></li>
+                <li><a href="dashboard.html" class="active">7. 종합 대시보드</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="container">
+        <div class="alert alert-info">
+            <strong>📋 종합 대시보드</strong>
+            <p style="margin-top: 0.5rem;">
+                모든 품질관리 항목의 결과를 한눈에 확인할 수 있습니다.
+                각 항목을 클릭하여 상세 정보를 확인하세요.
+            </p>
+        </div>
+
+        <!-- 프로젝트 정보 요약 -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">프로젝트 정보</h2>
+            </div>
+            <div class="card-body">
+                <div class="info-grid" id="projectSummary">
+                    <div class="info-item">
+                        <div class="info-label">공사명</div>
+                        <div class="info-value" id="dashProjectName">-</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">점검일</div>
+                        <div class="info-value" id="dashInspectionDate">-</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Prefab 종류</div>
+                        <div class="info-value" id="dashPrefabType">-</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">점검자</div>
+                        <div class="info-value" id="dashInspector">-</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 종합 평가 결과 -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">종합 품질 평가</h2>
+            </div>
+            <div class="card-body">
+                <div class="stats-grid">
+                    <div class="stat-card" id="surveyCard">
+                        <div class="stat-label">품질관리자 설문</div>
+                        <div class="stat-value">대기중</div>
+                        <button class="btn btn-primary mt-2" onclick="location.href='page2.html'" style="font-size: 0.875rem; padding: 0.5rem 1rem;">상세보기</button>
+                    </div>
+                    <div class="stat-card" id="accelCard">
+                        <div class="stat-label">가속도 계측</div>
+                        <div class="stat-value">대기중</div>
+                        <button class="btn btn-primary mt-2" onclick="location.href='page3.html'" style="font-size: 0.875rem; padding: 0.5rem 1rem;">상세보기</button>
+                    </div>
+                    <div class="stat-card" id="tiltCard">
+                        <div class="stat-label">기울기 계측</div>
+                        <div class="stat-value">대기중</div>
+                        <button class="btn btn-primary mt-2" onclick="location.href='page4.html'" style="font-size: 0.875rem; padding: 0.5rem 1rem;">상세보기</button>
+                    </div>
+                    <div class="stat-card" id="strainCard">
+                        <div class="stat-label">변형률 계측</div>
+                        <div class="stat-value">대기중</div>
+                        <button class="btn btn-primary mt-2" onclick="location.href='page5.html'" style="font-size: 0.875rem; padding: 0.5rem 1rem;">상세보기</button>
+                    </div>
+                    <div class="stat-card" id="errorCard">
+                        <div class="stat-label">제작 오차</div>
+                        <div class="stat-value">대기중</div>
+                        <button class="btn btn-primary mt-2" onclick="location.href='page6.html'" style="font-size: 0.875rem; padding: 0.5rem 1rem;">상세보기</button>
+                    </div>
+                    <div class="stat-card" id="overallCard">
+                        <div class="stat-label">최종 판정</div>
+                        <div class="stat-value">평가중</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 상세 평가 결과 테이블 -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">상세 평가 결과</h2>
+            </div>
+            <div class="card-body">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>평가 항목</th>
+                            <th>측정 결과</th>
+                            <th>허용 기준</th>
+                            <th>판정</th>
+                            <th>비고</th>
+                        </tr>
+                    </thead>
+                    <tbody id="detailResultsTable">
+                        <tr>
+                            <td>품질보증서 수령</td>
+                            <td id="surveyResult1">-</td>
+                            <td>수령 필수</td>
+                            <td id="surveyStatus1">-</td>
+                            <td id="surveyNote1">-</td>
+                        </tr>
+                        <tr>
+                            <td>시험성적서 첨부</td>
+                            <td id="surveyResult2">-</td>
+                            <td>첨부 필수</td>
+                            <td id="surveyStatus2">-</td>
+                            <td id="surveyNote2">-</td>
+                        </tr>
+                        <tr>
+                            <td>가속도 최대값</td>
+                            <td id="accelMaxResult">-</td>
+                            <td>±0.5g</td>
+                            <td id="accelStatus">-</td>
+                            <td id="accelNote">-</td>
+                        </tr>
+                        <tr>
+                            <td>기울기 최대값</td>
+                            <td id="tiltMaxResult">-</td>
+                            <td>±2°</td>
+                            <td id="tiltStatus">-</td>
+                            <td id="tiltNote">-</td>
+                        </tr>
+                        <tr>
+                            <td>변형률 최대값</td>
+                            <td id="strainMaxResult">-</td>
+                            <td>±100με</td>
+                            <td id="strainStatus">-</td>
+                            <td id="strainNote">-</td>
+                        </tr>
+                        <tr>
+                            <td>제작 오차 최대값</td>
+                            <td id="errorMaxResult">-</td>
+                            <td>±5mm</td>
+                            <td id="errorStatus">-</td>
+                            <td id="errorNote">-</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 진행률 표시 -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">품질관리 진행률</h2>
+            </div>
+            <div class="card-body">
+                <div style="margin-bottom: 1rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                        <span style="font-weight: 600;">전체 진행률</span>
+                        <span id="overallProgressText" style="font-weight: 700; font-size: 1.25rem;">0%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="overallProgress" style="width: 0%;">0%</div>
+                    </div>
+                </div>
+                <div style="font-size: 0.875rem; color: var(--text-secondary);">
+                    <p>완료된 항목: <span id="completedCount" style="font-weight: 600; color: var(--success-color);">0</span> / 5</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 주요 이슈 및 권고사항 -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">주요 이슈 및 권고사항</h2>
+            </div>
+            <div class="card-body">
+                <div id="issuesContainer">
+                    <p class="text-center" style="color: var(--text-secondary);">
+                        데이터를 수집하면 주요 이슈가 여기에 표시됩니다.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 최종 판정 -->
+        <div class="card" id="finalJudgmentCard">
+            <div class="card-header">
+                <h2 class="card-title">최종 품질 판정</h2>
+            </div>
+            <div class="card-body">
+                <div id="finalJudgment" style="text-align: center; padding: 2rem;">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">⏳</div>
+                    <h3 style="font-size: 1.5rem; margin-bottom: 1rem;">평가 대기중</h3>
+                    <p style="color: var(--text-secondary);">
+                        모든 품질관리 항목을 완료하면 최종 판정이 표시됩니다.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 보고서 출력 -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">보고서 관리</h2>
+            </div>
+            <div class="card-body">
+                <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                    <button class="btn btn-primary" onclick="window.print()">🖨️ 보고서 인쇄</button>
+                    <button class="btn btn-success" onclick="exportData()">📥 데이터 내보내기</button>
+                    <button class="btn btn-warning" onclick="location.href='index.html'">🏠 처음으로</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="nav-buttons">
+            <a href="page6.html" class="btn btn-secondary">← 이전: 부재 제작 오차</a>
+            <a href="index.html" class="btn btn-primary">🏠 메인으로 돌아가기</a>
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            loadDashboardData();
+        });
+
+        function loadDashboardData() {
+            // 프로젝트 정보 로드
+            const projectInfo = getFromStorage(STORAGE_KEYS.PROJECT_INFO);
+            if (projectInfo) {
+                document.getElementById('dashProjectName').textContent = projectInfo.projectName || '-';
+                document.getElementById('dashInspectionDate').textContent = projectInfo.inspectionDate || '-';
+                document.getElementById('dashPrefabType').textContent = projectInfo.prefabType || '-';
+                document.getElementById('dashInspector').textContent = projectInfo.inspector || '-';
+            }
+
+            let completedCount = 0;
+            const issues = [];
+
+            // 품질관리자 설문 평가
+            const surveyData = getFromStorage(STORAGE_KEYS.SURVEY_DATA);
+            if (surveyData) {
+                completedCount++;
+                const surveyCard = document.getElementById('surveyCard');
+                
+                // 설문 결과 분석
+                let failCount = 0;
+                if (surveyData.q1 === '미수령') failCount++;
+                if (surveyData.q2 === '미첨부') failCount++;
+                if (surveyData.q5 === '주요균열') failCount++;
+                
+                if (failCount === 0) {
+                    surveyCard.className = 'stat-card success';
+                    surveyCard.querySelector('.stat-value').textContent = '적합';
+                    document.getElementById('surveyResult1').textContent = surveyData.q1 || '-';
+                    document.getElementById('surveyResult2').textContent = surveyData.q2 || '-';
+                    document.getElementById('surveyStatus1').innerHTML = '<span class="badge badge-success">적합</span>';
+                    document.getElementById('surveyStatus2').innerHTML = '<span class="badge badge-success">적합</span>';
+                } else {
+                    surveyCard.className = 'stat-card danger';
+                    surveyCard.querySelector('.stat-value').textContent = '부적합';
+                    issues.push('품질관리자 설문에서 부적합 항목이 발견되었습니다.');
+                    document.getElementById('surveyStatus1').innerHTML = '<span class="badge badge-danger">부적합</span>';
+                    document.getElementById('surveyStatus2').innerHTML = '<span class="badge badge-danger">부적합</span>';
+                }
+            }
+
+            // 가속도 평가
+            const accelData = getFromStorage(STORAGE_KEYS.ACCELERATION_DATA);
+            if (accelData && accelData.measurements) {
+                completedCount++;
+                const accelCard = document.getElementById('accelCard');
+                const maxAccel = Math.max(...accelData.measurements.map(m => m.result || 0));
+                
+                document.getElementById('accelMaxResult').textContent = maxAccel.toFixed(3) + ' g';
+                
+                if (maxAccel <= 0.5) {
+                    accelCard.className = 'stat-card success';
+                    accelCard.querySelector('.stat-value').textContent = '적합';
+                    document.getElementById('accelStatus').innerHTML = '<span class="badge badge-success">적합</span>';
+                    document.getElementById('accelNote').textContent = '정상 범위';
+                } else {
+                    accelCard.className = 'stat-card danger';
+                    accelCard.querySelector('.stat-value').textContent = '부적합';
+                    document.getElementById('accelStatus').innerHTML = '<span class="badge badge-danger">초과</span>';
+                    document.getElementById('accelNote').textContent = '허용치 초과';
+                    issues.push(`가속도 최대값(${maxAccel.toFixed(3)}g)이 허용 범위를 초과했습니다.`);
+                }
+            }
+
+            // 기울기 평가
+            const tiltData = getFromStorage(STORAGE_KEYS.TILT_DATA);
+            if (tiltData && tiltData.measurements) {
+                completedCount++;
+                const tiltCard = document.getElementById('tiltCard');
+                const maxTilt = Math.max(...tiltData.measurements.map(m => m.result || 0));
+                
+                document.getElementById('tiltMaxResult').textContent = maxTilt.toFixed(2) + '°';
+                
+                if (maxTilt <= 2.0) {
+                    tiltCard.className = 'stat-card success';
+                    tiltCard.querySelector('.stat-value').textContent = '적합';
+                    document.getElementById('tiltStatus').innerHTML = '<span class="badge badge-success">적합</span>';
+                    document.getElementById('tiltNote').textContent = '정상 범위';
+                } else {
+                    tiltCard.className = 'stat-card danger';
+                    tiltCard.querySelector('.stat-value').textContent = '부적합';
+                    document.getElementById('tiltStatus').innerHTML = '<span class="badge badge-danger">초과</span>';
+                    document.getElementById('tiltNote').textContent = '허용치 초과';
+                    issues.push(`기울기 최대값(${maxTilt.toFixed(2)}°)이 허용 범위를 초과했습니다.`);
+                }
+            }
+
+            // 변형률 평가
+            const strainData = getFromStorage(STORAGE_KEYS.STRAIN_DATA);
+            if (strainData && strainData.measurements) {
+                completedCount++;
+                const strainCard = document.getElementById('strainCard');
+                const maxStrain = Math.max(...strainData.measurements.map(m => Math.abs(m.change || 0)));
+                
+                document.getElementById('strainMaxResult').textContent = maxStrain.toFixed(0) + ' με';
+                
+                if (maxStrain <= 100) {
+                    strainCard.className = 'stat-card success';
+                    strainCard.querySelector('.stat-value').textContent = '적합';
+                    document.getElementById('strainStatus').innerHTML = '<span class="badge badge-success">적합</span>';
+                    document.getElementById('strainNote').textContent = '정상 범위';
+                } else {
+                    strainCard.className = 'stat-card danger';
+                    strainCard.querySelector('.stat-value').textContent = '부적합';
+                    document.getElementById('strainStatus').innerHTML = '<span class="badge badge-danger">초과</span>';
+                    document.getElementById('strainNote').textContent = '허용치 초과';
+                    issues.push(`변형률 최대값(${maxStrain.toFixed(0)}με)이 허용 범위를 초과했습니다.`);
+                }
+            }
+
+            // 제작 오차 평가
+            const errorData = getFromStorage(STORAGE_KEYS.FABRICATION_ERROR);
+            if (errorData && errorData.measurements) {
+                completedCount++;
+                const errorCard = document.getElementById('errorCard');
+                const maxError = Math.max(...errorData.measurements.map(m => Math.abs(m.error || 0)));
+                
+                document.getElementById('errorMaxResult').textContent = maxError.toFixed(1) + ' mm';
+                
+                if (maxError <= 5.0) {
+                    errorCard.className = 'stat-card success';
+                    errorCard.querySelector('.stat-value').textContent = '적합';
+                    document.getElementById('errorStatus').innerHTML = '<span class="badge badge-success">적합</span>';
+                    document.getElementById('errorNote').textContent = '정상 범위';
+                } else {
+                    errorCard.className = 'stat-card danger';
+                    errorCard.querySelector('.stat-value').textContent = '부적합';
+                    document.getElementById('errorStatus').innerHTML = '<span class="badge badge-danger">초과</span>';
+                    document.getElementById('errorNote').textContent = '허용치 초과';
+                    issues.push(`제작 오차 최대값(${maxError.toFixed(1)}mm)이 허용 범위를 초과했습니다.`);
+                }
+            }
+
+            // 진행률 업데이트
+            const progress = (completedCount / 5) * 100;
+            document.getElementById('overallProgress').style.width = progress + '%';
+            document.getElementById('overallProgress').textContent = Math.round(progress) + '%';
+            document.getElementById('overallProgressText').textContent = Math.round(progress) + '%';
+            document.getElementById('completedCount').textContent = completedCount;
+
+            if (progress === 100) {
+                document.getElementById('overallProgress').className = 'progress-fill success';
+            } else if (progress >= 50) {
+                document.getElementById('overallProgress').className = 'progress-fill warning';
+            }
+
+            // 이슈 표시
+            const issuesContainer = document.getElementById('issuesContainer');
+            if (issues.length > 0) {
+                let issuesHTML = '<div class="alert alert-warning"><strong>⚠️ 발견된 이슈:</strong><ul style="margin-top: 0.5rem; padding-left: 1.5rem;">';
+                issues.forEach(issue => {
+                    issuesHTML += `<li>${issue}</li>`;
+                });
+                issuesHTML += '</ul></div>';
+                issuesContainer.innerHTML = issuesHTML;
+            } else if (completedCount === 5) {
+                issuesContainer.innerHTML = '<div class="alert alert-success"><strong>✅ 이슈 없음</strong><br>모든 품질관리 항목이 기준을 만족합니다.</div>';
+            }
+
+            // 최종 판정
+            if (completedCount === 5) {
+                const finalJudgment = document.getElementById('finalJudgment');
+                const overallCard = document.getElementById('overallCard');
+                
+                if (issues.length === 0) {
+                    overallCard.className = 'stat-card success';
+                    overallCard.querySelector('.stat-value').textContent = '합격';
+                    finalJudgment.innerHTML = `
+                        <div style="font-size: 5rem; margin-bottom: 1rem; color: var(--success-color);">✅</div>
+                        <h3 style="font-size: 2rem; margin-bottom: 1rem; color: var(--success-color);">품질 적합</h3>
+                        <p style="font-size: 1.125rem; color: var(--text-primary);">
+                            모든 품질관리 항목이 기준을 만족합니다.<br>
+                            해당 Prefab 부재는 사용 가능합니다.
+                        </p>
+                    `;
+                    document.getElementById('finalJudgmentCard').className = 'card';
+                    document.getElementById('finalJudgmentCard').style.borderLeft = '8px solid var(--success-color)';
+                } else {
+                    overallCard.className = 'stat-card danger';
+                    overallCard.querySelector('.stat-value').textContent = '부적합';
+                    finalJudgment.innerHTML = `
+                        <div style="font-size: 5rem; margin-bottom: 1rem; color: var(--danger-color);">❌</div>
+                        <h3 style="font-size: 2rem; margin-bottom: 1rem; color: var(--danger-color);">품질 부적합</h3>
+                        <p style="font-size: 1.125rem; color: var(--text-primary);">
+                            ${issues.length}개의 품질 이슈가 발견되었습니다.<br>
+                            조치 후 재검사가 필요합니다.
+                        </p>
+                    `;
+                    document.getElementById('finalJudgmentCard').className = 'card';
+                    document.getElementById('finalJudgmentCard').style.borderLeft = '8px solid var(--danger-color)';
+                }
+            }
+        }
+    </script>
+</body>
+</html>

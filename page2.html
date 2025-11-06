@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>품질관리 시스템 - 품질관리자 설문</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <script defer src="assets/js/script.js"></script>
+</head>
+<body>
+    <!-- 헤더 -->
+    <header class="header">
+        <div class="container">
+            <h1 class="header-title">Prefab 품질관리 시스템</h1>
+            <p class="header-subtitle">품질관리자 설문조사</p>
+        </div>
+    </header>
+
+    <!-- 페이지 네비게이션 -->
+    <nav class="page-nav">
+        <div class="container">
+            <ul>
+                <li><a href="index.html">1. 종합 요약</a></li>
+                <li><a href="page2.html" class="active">2. 품질관리자 설문</a></li>
+                <li><a href="page3.html">3. 가속도 데이터</a></li>
+                <li><a href="page4.html">4. 기울기 데이터</a></li>
+                <li><a href="page5.html">5. 변형률 데이터</a></li>
+                <li><a href="page6.html">6. 부재 제작 오차</a></li>
+                <li><a href="dashboard.html">7. 종합 대시보드</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- 메인 컨텐츠 -->
+    <main class="container">
+        <!-- 안내 사항 -->
+        <div class="alert alert-info">
+            <strong>📋 설문 안내</strong>
+            <p style="margin-top: 0.5rem;">
+                Prefab 부재의 품질을 확인하기 위한 설문입니다. 각 항목에 대해 정확하게 답변해 주세요.
+                모든 항목은 자동으로 저장됩니다.
+            </p>
+        </div>
+
+        <!-- 설문 폼 -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">품질관리 설문</h2>
+                <p class="card-description">Prefab 부재의 서류 및 외관 품질을 확인합니다</p>
+            </div>
+            <div class="card-body">
+                <form id="surveyForm">
+                    <!-- 질문 1 -->
+                    <fieldset>
+                        <legend>1. 품질보증서를 수령하였는가?</legend>
+                        <label>
+                            <input type="radio" name="q1" value="수령" required>
+                            수령
+                        </label>
+                        <label>
+                            <input type="radio" name="q1" value="미수령">
+                            미수령
+                        </label>
+                    </fieldset>
+
+                    <!-- 질문 2 -->
+                    <fieldset>
+                        <legend>2. 시험성적서가 첨부되어 있는가?</legend>
+                        <label>
+                            <input type="radio" name="q2" value="첨부" required>
+                            첨부
+                        </label>
+                        <label>
+                            <input type="radio" name="q2" value="미첨부">
+                            미첨부
+                        </label>
+                    </fieldset>
+
+                    <!-- 질문 3 -->
+                    <fieldset>
+                        <legend>3. 콘크리트 강도는 설계 기준을 만족하는가?</legend>
+                        <label>
+                            <input type="radio" name="q3" value="만족" required>
+                            만족
+                        </label>
+                        <label>
+                            <input type="radio" name="q3" value="불만족">
+                            불만족
+                        </label>
+                        <label>
+                            <input type="radio" name="q3" value="미확인">
+                            미확인
+                        </label>
+                    </fieldset>
+
+                    <!-- 질문 4 -->
+                    <fieldset>
+                        <legend>4. 철근 배근은 설계도면과 일치하는가?</legend>
+                        <label>
+                            <input type="radio" name="q4" value="일치" required>
+                            일치
+                        </label>
+                        <label>
+                            <input type="radio" name="q4" value="불일치">
+                            불일치
+                        </label>
+                        <label>
+                            <input type="radio" name="q4" value="미확인">
+                            미확인
+                        </label>
+                    </fieldset>
+
+                    <!-- 질문 5 -->
+                    <fieldset>
+                        <legend>5. 부재 표면에 균열이 발견되었는가?</legend>
+                        <label>
+                            <input type="radio" name="q5" value="없음" required>
+                            없음
+                        </label>
+                        <label>
+                            <input type="radio" name="q5" value="미세균열">
+                            미세균열 (0.3mm 이하)
+                        </label>
+                        <label>
+                            <input type="radio" name="q5" value="주요균열">
+                            주요균열 (0.3mm 초과)
+                        </label>
+                    </fieldset>
+
+                    <!-- 질문 6 -->
+                    <fieldset>
+                        <legend>6. 부재 표면의 마감 상태는 양호한가?</legend>
+                        <label>
+                            <input type="radio" name="q6" value="양호" required>
+                            양호
+                        </label>
+                        <label>
+                            <input type="radio" name="q6" value="보통">
+                            보통
+                        </label>
+                        <label>
+                            <input type="radio" name="q6" value="불량">
+                            불량
+                        </label>
+                    </fieldset>
+
+                    <!-- 질문 7 -->
+                    <fieldset>
+                        <legend>7. 양생 상태는 적절한가?</legend>
+                        <label>
+                            <input type="radio" name="q7" value="적절" required>
+                            적절
+                        </label>
+                        <label>
+                            <input type="radio" name="q7" value="부적절">
+                            부적절
+                        </label>
+                        <label>
+                            <input type="radio" name="q7" value="미확인">
+                            미확인
+                        </label>
+                    </fieldset>
+
+                    <!-- 질문 8 -->
+                    <fieldset>
+                        <legend>8. 매입 부품(인서트, 앵커 등)은 정확히 설치되었는가?</legend>
+                        <label>
+                            <input type="radio" name="q8" value="정확" required>
+                            정확
+                        </label>
+                        <label>
+                            <input type="radio" name="q8" value="부정확">
+                            부정확
+                        </label>
+                        <label>
+                            <input type="radio" name="q8" value="해당없음">
+                            해당없음
+                        </label>
+                    </fieldset>
+
+                    <!-- 질문 9 -->
+                    <fieldset>
+                        <legend>9. 부재 식별 표시(마킹)가 명확한가?</legend>
+                        <label>
+                            <input type="radio" name="q9" value="명확" required>
+                            명확
+                        </label>
+                        <label>
+                            <input type="radio" name="q9" value="불명확">
+                            불명확
+                        </label>
+                        <label>
+                            <input type="radio" name="q9" value="없음">
+                            없음
+                        </label>
+                    </fieldset>
+
+                    <!-- 질문 10 -->
+                    <fieldset>
+                        <legend>10. 운반 및 보관 중 손상이 발견되었는가?</legend>
+                        <label>
+                            <input type="radio" name="q10" value="없음" required>
+                            없음
+                        </label>
+                        <label>
+                            <input type="radio" name="q10" value="경미한손상">
+                            경미한 손상
+                        </label>
+                        <label>
+                            <input type="radio" name="q10" value="심각한손상">
+                            심각한 손상
+                        </label>
+                    </fieldset>
+
+                    <!-- 추가 의견 -->
+                    <fieldset>
+                        <legend>추가 의견 및 특이사항</legend>
+                        <textarea name="comments" rows="5" 
+                                  placeholder="발견된 문제점이나 특이사항을 기록하세요..."
+                                  style="width: 100%; resize: vertical;"></textarea>
+                    </fieldset>
+                </form>
+            </div>
+        </div>
+
+        <!-- 사진 첨부 -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">현장 사진</h2>
+                <p class="card-description">부재 전체 및 특이사항이 있는 부분의 사진을 첨부하세요</p>
+            </div>
+            <div class="card-body">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;">
+                    <!-- 사진 1 -->
+                    <div>
+                        <h3 class="mb-2">부재 전체 사진</h3>
+                        <div class="photo-upload">
+                            <img id="photo1Preview" style="display:none;">
+                            <input type="file" accept="image/*" onchange="previewImage(this, 'photo1Preview')">
+                            <span class="placeholder">📷 사진 업로드</span>
+                        </div>
+                    </div>
+
+                    <!-- 사진 2 -->
+                    <div>
+                        <h3 class="mb-2">품질보증서 사진</h3>
+                        <div class="photo-upload">
+                            <img id="photo2Preview" style="display:none;">
+                            <input type="file" accept="image/*" onchange="previewImage(this, 'photo2Preview')">
+                            <span class="placeholder">📷 사진 업로드</span>
+                        </div>
+                    </div>
+
+                    <!-- 사진 3 -->
+                    <div>
+                        <h3 class="mb-2">특이사항 사진 (선택)</h3>
+                        <div class="photo-upload">
+                            <img id="photo3Preview" style="display:none;">
+                            <input type="file" accept="image/*" onchange="previewImage(this, 'photo3Preview')">
+                            <span class="placeholder">📷 사진 업로드</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 설문 결과 요약 -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">설문 결과 요약</h2>
+            </div>
+            <div class="card-body">
+                <div id="surveyResult">
+                    <p class="text-center" style="color: var(--text-secondary);">
+                        설문을 완료하면 결과가 여기에 표시됩니다.
+                    </p>
+                </div>
+                <div class="progress-bar mt-3">
+                    <div class="progress-fill" id="surveyProgress" style="width: 0%;">0%</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 네비게이션 버튼 -->
+        <div class="nav-buttons">
+            <a href="index.html" class="btn btn-secondary">← 이전: 종합 요약</a>
+            <button class="btn btn-success" onclick="saveSurvey()">💾 저장하기</button>
+            <a href="page3.html" class="btn btn-primary">다음: 가속도 데이터 →</a>
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 폼 데이터 로드
+            loadFormData('surveyForm', STORAGE_KEYS.SURVEY_DATA);
+            
+            // 자동 저장 설정
+            autoSaveForm('surveyForm', STORAGE_KEYS.SURVEY_DATA);
+            
+            // 저장된 이미지 로드
+            loadSavedImage('photo1Preview');
+            loadSavedImage('photo2Preview');
+            loadSavedImage('photo3Preview');
+            
+            // 폼 변경 시 진행률 업데이트
+            document.getElementById('surveyForm').addEventListener('change', updateSurveyProgress);
+            
+            // 초기 진행률 계산
+            updateSurveyProgress();
+        });
+
+        // 설문 진행률 업데이트
+        function updateSurveyProgress() {
+            const form = document.getElementById('surveyForm');
+            const totalQuestions = 10; // 전체 질문 수
+            let answeredQuestions = 0;
+
+            // 각 질문별로 답변 여부 확인
+            for (let i = 1; i <= totalQuestions; i++) {
+                const question = form.querySelector(`input[name="q${i}"]:checked`);
+                if (question) {
+                    answeredQuestions++;
+                }
+            }
+
+            // 진행률 계산
+            const progress = Math.round((answeredQuestions / totalQuestions) * 100);
+            const progressBar = document.getElementById('surveyProgress');
+            progressBar.style.width = progress + '%';
+            progressBar.textContent = progress + '%';
+
+            // 진행률에 따른 색상 변경
+            progressBar.className = 'progress-fill';
+            if (progress === 100) {
+                progressBar.classList.add('success');
+                showSurveyResult();
+            } else if (progress >= 50) {
+                progressBar.classList.add('warning');
+            }
+        }
+
+        // 설문 결과 표시
+        function showSurveyResult() {
+            const form = document.getElementById('surveyForm');
+            const formData = new FormData(form);
+            
+            let passCount = 0;
+            let failCount = 0;
+            let warningCount = 0;
+
+            // 각 질문의 답변 평가
+            const evaluations = {
+                q1: { pass: ['수령'], fail: ['미수령'] },
+                q2: { pass: ['첨부'], fail: ['미첨부'] },
+                q3: { pass: ['만족'], fail: ['불만족'], warning: ['미확인'] },
+                q4: { pass: ['일치'], fail: ['불일치'], warning: ['미확인'] },
+                q5: { pass: ['없음'], warning: ['미세균열'], fail: ['주요균열'] },
+                q6: { pass: ['양호'], warning: ['보통'], fail: ['불량'] },
+                q7: { pass: ['적절'], fail: ['부적절'], warning: ['미확인'] },
+                q8: { pass: ['정확', '해당없음'], fail: ['부정확'] },
+                q9: { pass: ['명확'], warning: ['불명확'], fail: ['없음'] },
+                q10: { pass: ['없음'], warning: ['경미한손상'], fail: ['심각한손상'] }
+            };
+
+            for (let i = 1; i <= 10; i++) {
+                const answer = formData.get(`q${i}`);
+                const eval = evaluations[`q${i}`];
+                
+                if (eval.pass && eval.pass.includes(answer)) {
+                    passCount++;
+                } else if (eval.fail && eval.fail.includes(answer)) {
+                    failCount++;
+                } else if (eval.warning && eval.warning.includes(answer)) {
+                    warningCount++;
+                }
+            }
+
+            // 결과 HTML 생성
+            let resultHTML = `
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1rem;">
+                    <div class="stat-card success">
+                        <div class="stat-label">적합</div>
+                        <div class="stat-value">${passCount}</div>
+                    </div>
+                    <div class="stat-card warning">
+                        <div class="stat-label">주의</div>
+                        <div class="stat-value">${warningCount}</div>
+                    </div>
+                    <div class="stat-card danger">
+                        <div class="stat-label">부적합</div>
+                        <div class="stat-value">${failCount}</div>
+                    </div>
+                </div>
+            `;
+
+            // 종합 평가
+            if (failCount === 0 && warningCount === 0) {
+                resultHTML += `<div class="alert alert-success">
+                    <strong>✅ 품질 적합</strong><br>
+                    모든 항목이 기준을 만족합니다.
+                </div>`;
+            } else if (failCount === 0) {
+                resultHTML += `<div class="alert alert-warning">
+                    <strong>⚠️ 주의 필요</strong><br>
+                    ${warningCount}개 항목에서 주의가 필요합니다. 확인 후 조치하세요.
+                </div>`;
+            } else {
+                resultHTML += `<div class="alert alert-danger">
+                    <strong>❌ 품질 부적합</strong><br>
+                    ${failCount}개 항목이 기준을 만족하지 않습니다. 즉시 조치가 필요합니다.
+                </div>`;
+            }
+
+            document.getElementById('surveyResult').innerHTML = resultHTML;
+        }
+
+        // 설문 저장
+        function saveSurvey() {
+            const form = document.getElementById('surveyForm');
+            
+            // 필수 질문 확인
+            let allAnswered = true;
+            for (let i = 1; i <= 10; i++) {
+                const question = form.querySelector(`input[name="q${i}"]:checked`);
+                if (!question) {
+                    allAnswered = false;
+                    break;
+                }
+            }
+
+            if (!allAnswered) {
+                alert('모든 질문에 답변해 주세요.');
+                return;
+            }
+
+            // 폼 데이터 저장
+            const formData = new FormData(form);
+            const data = {};
+            for (let [key, value] of formData.entries()) {
+                data[key] = value;
+            }
+            
+            saveToStorage(STORAGE_KEYS.SURVEY_DATA, data);
+            
+            alert('설문 데이터가 저장되었습니다!');
+            updateSurveyProgress();
+        }
+    </script>
+</body>
+</html>

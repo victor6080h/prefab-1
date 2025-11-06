@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>품질관리 시스템 - 변형률 데이터</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <script defer src="assets/js/script.js"></script>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <h1 class="header-title">Prefab 품질관리 시스템</h1>
+            <p class="header-subtitle">변형률 데이터 측정 및 분석</p>
+        </div>
+    </header>
+
+    <nav class="page-nav">
+        <div class="container">
+            <ul>
+                <li><a href="index.html">1. 종합 요약</a></li>
+                <li><a href="page2.html">2. 품질관리자 설문</a></li>
+                <li><a href="page3.html">3. 가속도 데이터</a></li>
+                <li><a href="page4.html">4. 기울기 데이터</a></li>
+                <li><a href="page5.html" class="active">5. 변형률 데이터</a></li>
+                <li><a href="page6.html">6. 부재 제작 오차</a></li>
+                <li><a href="dashboard.html">7. 종합 대시보드</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="container">
+        <div class="alert alert-info">
+            <strong>📏 변형률 계측 안내</strong>
+            <p style="margin-top: 0.5rem;">
+                Prefab 부재의 응력 상태를 확인하기 위한 변형률 측정입니다. 
+                허용 범위: <strong>±100με</strong> (마이크로 스트레인)
+            </p>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">계측 정보</h2>
+            </div>
+            <div class="card-body">
+                <form id="strainInfoForm">
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <label class="info-label" for="strainDate">측정 일시</label>
+                            <input type="datetime-local" id="strainDate" name="strainDate" class="info-value" required>
+                        </div>
+                        <div class="info-item">
+                            <label class="info-label" for="strainLoadCondition">하중 조건</label>
+                            <select id="strainLoadCondition" name="strainLoadCondition" class="info-value" required>
+                                <option value="">선택하세요</option>
+                                <option value="무하중">무하중</option>
+                                <option value="자중">자중</option>
+                                <option value="설계하중">설계하중</option>
+                                <option value="시험하중">시험하중</option>
+                            </select>
+                        </div>
+                        <div class="info-item">
+                            <label class="info-label" for="strainDevice">측정 장비</label>
+                            <input type="text" id="strainDevice" name="strainDevice" class="info-value" 
+                                   placeholder="예: 스트레인 게이지" required>
+                        </div>
+                        <div class="info-item">
+                            <label class="info-label" for="strainOperator">측정자</label>
+                            <input type="text" id="strainOperator" name="strainOperator" class="info-value" 
+                                   placeholder="측정자명" required>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">변형률 측정 데이터</h2>
+                <p class="card-description">각 센서 위치의 변형률을 입력하세요 (단위: με)</p>
+            </div>
+            <div class="card-body">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>센서 위치</th>
+                            <th>초기값 (με)</th>
+                            <th>측정값 (με)</th>
+                            <th>변화량 (με)</th>
+                            <th>상태</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>상부 중앙</td>
+                            <td><input type="number" step="1" name="strainInit1" class="strain-input" onchange="calculateStrainChange(1)"></td>
+                            <td><input type="number" step="1" name="strainMeas1" class="strain-input" onchange="calculateStrainChange(1)"></td>
+                            <td id="strainChange1">-</td>
+                            <td id="strainStatus1">-</td>
+                        </tr>
+                        <tr>
+                            <td>상부 좌측</td>
+                            <td><input type="number" step="1" name="strainInit2" class="strain-input" onchange="calculateStrainChange(2)"></td>
+                            <td><input type="number" step="1" name="strainMeas2" class="strain-input" onchange="calculateStrainChange(2)"></td>
+                            <td id="strainChange2">-</td>
+                            <td id="strainStatus2">-</td>
+                        </tr>
+                        <tr>
+                            <td>상부 우측</td>
+                            <td><input type="number" step="1" name="strainInit3" class="strain-input" onchange="calculateStrainChange(3)"></td>
+                            <td><input type="number" step="1" name="strainMeas3" class="strain-input" onchange="calculateStrainChange(3)"></td>
+                            <td id="strainChange3">-</td>
+                            <td id="strainStatus3">-</td>
+                        </tr>
+                        <tr>
+                            <td>하부 중앙</td>
+                            <td><input type="number" step="1" name="strainInit4" class="strain-input" onchange="calculateStrainChange(4)"></td>
+                            <td><input type="number" step="1" name="strainMeas4" class="strain-input" onchange="calculateStrainChange(4)"></td>
+                            <td id="strainChange4">-</td>
+                            <td id="strainStatus4">-</td>
+                        </tr>
+                        <tr>
+                            <td>하부 좌측</td>
+                            <td><input type="number" step="1" name="strainInit5" class="strain-input" onchange="calculateStrainChange(5)"></td>
+                            <td><input type="number" step="1" name="strainMeas5" class="strain-input" onchange="calculateStrainChange(5)"></td>
+                            <td id="strainChange5">-</td>
+                            <td id="strainStatus5">-</td>
+                        </tr>
+                        <tr>
+                            <td>하부 우측</td>
+                            <td><input type="number" step="1" name="strainInit6" class="strain-input" onchange="calculateStrainChange(6)"></td>
+                            <td><input type="number" step="1" name="strainMeas6" class="strain-input" onchange="calculateStrainChange(6)"></td>
+                            <td id="strainChange6">-</td>
+                            <td id="strainStatus6">-</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">변형률 분포 그래프</h2>
+            </div>
+            <div class="card-body">
+                <div class="chart-container">
+                    <canvas id="strainChart"></canvas>
+                </div>
+                <div class="mt-3">
+                    <button class="btn btn-primary" onclick="updateStrainChart()">📈 그래프 업데이트</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">측정 결과 요약</h2>
+            </div>
+            <div class="card-body">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">최대 변형률</div>
+                        <div class="stat-value" id="maxStrain">0 με</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">평균 변형률</div>
+                        <div class="stat-value" id="avgStrain">0 με</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">초과 센서</div>
+                        <div class="stat-value" id="strainExceedCount">0 개</div>
+                    </div>
+                    <div class="stat-card" id="strainFinalStatus">
+                        <div class="stat-label">종합 평가</div>
+                        <div class="stat-value">대기중</div>
+                    </div>
+                </div>
+                <div id="strainResultAlert" class="mt-3"></div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">측정 사진</h2>
+            </div>
+            <div class="card-body">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;">
+                    <div>
+                        <h3 class="mb-2">센서 부착 위치</h3>
+                        <div class="photo-upload">
+                            <img id="strainPhoto1" style="display:none;">
+                            <input type="file" accept="image/*" onchange="previewImage(this, 'strainPhoto1')">
+                            <span class="placeholder">📷 사진 업로드</span>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="mb-2">측정 장비</h3>
+                        <div class="photo-upload">
+                            <img id="strainPhoto2" style="display:none;">
+                            <input type="file" accept="image/*" onchange="previewImage(this, 'strainPhoto2')">
+                            <span class="placeholder">📷 사진 업로드</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="nav-buttons">
+            <a href="page4.html" class="btn btn-secondary">← 이전: 기울기 데이터</a>
+            <button class="btn btn-success" onclick="saveStrainData()">💾 저장하기</button>
+            <a href="page6.html" class="btn btn-primary">다음: 부재 제작 오차 →</a>
+        </div>
+    </main>
+
+    <script>
+        const STRAIN_THRESHOLD = 100; // με
+
+        document.addEventListener('DOMContentLoaded', function() {
+            loadStrainData();
+            loadSavedImage('strainPhoto1');
+            loadSavedImage('strainPhoto2');
+
+            const now = new Date();
+            now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+            document.getElementById('strainDate').value = now.toISOString().slice(0, 16);
+
+            document.querySelectorAll('.strain-input').forEach(input => {
+                input.addEventListener('change', autoSaveStrainData);
+            });
+            
+            autoSaveForm('strainInfoForm', STORAGE_KEYS.STRAIN_DATA);
+        });
+
+        function calculateStrainChange(index) {
+            const initInput = document.querySelector(`input[name="strainInit${index}"]`);
+            const measInput = document.querySelector(`input[name="strainMeas${index}"]`);
+            
+            const init = parseFloat(initInput.value) || 0;
+            const meas = parseFloat(measInput.value) || 0;
+            const change = meas - init;
+            
+            document.getElementById(`strainChange${index}`).textContent = change.toFixed(0) + ' με';
+            
+            const statusCell = document.getElementById(`strainStatus${index}`);
+            if (Math.abs(change) > STRAIN_THRESHOLD) {
+                statusCell.innerHTML = '<span class="badge badge-danger">초과</span>';
+            } else if (change !== 0) {
+                statusCell.innerHTML = '<span class="badge badge-success">정상</span>';
+            } else {
+                statusCell.textContent = '-';
+            }
+            
+            updateStrainStatistics();
+        }
+
+        function updateStrainStatistics() {
+            const changes = [];
+            for (let i = 1; i <= 6; i++) {
+                const changeText = document.getElementById(`strainChange${i}`).textContent;
+                if (changeText !== '-') {
+                    changes.push(Math.abs(parseFloat(changeText)));
+                }
+            }
+            
+            if (changes.length === 0) return;
+            
+            const max = Math.max(...changes);
+            const avg = changes.reduce((a, b) => a + b, 0) / changes.length;
+            const exceedCount = changes.filter(c => c > STRAIN_THRESHOLD).length;
+            
+            document.getElementById('maxStrain').textContent = max.toFixed(0) + ' με';
+            document.getElementById('avgStrain').textContent = avg.toFixed(0) + ' με';
+            document.getElementById('strainExceedCount').textContent = exceedCount + ' 개';
+            
+            const finalStatus = document.getElementById('strainFinalStatus');
+            const resultAlert = document.getElementById('strainResultAlert');
+            
+            if (exceedCount === 0) {
+                finalStatus.className = 'stat-card success';
+                finalStatus.querySelector('.stat-value').textContent = '적합';
+                resultAlert.innerHTML = `
+                    <div class="alert alert-success">
+                        <strong>✅ 측정 결과 적합</strong><br>
+                        모든 센서의 변형률이 허용 범위(±${STRAIN_THRESHOLD}με) 이내입니다.
+                    </div>
+                `;
+            } else {
+                finalStatus.className = 'stat-card danger';
+                finalStatus.querySelector('.stat-value').textContent = '부적합';
+                resultAlert.innerHTML = `
+                    <div class="alert alert-danger">
+                        <strong>❌ 측정 결과 부적합</strong><br>
+                        ${exceedCount}개 센서의 변형률이 허용 범위를 초과했습니다.
+                    </div>
+                `;
+            }
+        }
+
+        function updateStrainChart() {
+            const labels = ['상부 중앙', '상부 좌측', '상부 우측', '하부 중앙', '하부 좌측', '하부 우측'];
+            const values = [];
+            const colors = [];
+            
+            for (let i = 1; i <= 6; i++) {
+                const changeText = document.getElementById(`strainChange${i}`).textContent;
+                if (changeText !== '-') {
+                    const value = Math.abs(parseFloat(changeText));
+                    values.push(value);
+                    colors.push(value > STRAIN_THRESHOLD ? '#ef4444' : '#3b82f6');
+                } else {
+                    values.push(0);
+                    colors.push('#9ca3af');
+                }
+            }
+            
+            drawBarChart('strainChart', {
+                labels: labels,
+                values: values,
+                colors: colors,
+                title: '센서별 변형률 측정 결과',
+                yLabel: '변형률 (με)'
+            });
+        }
+
+        function saveStrainData() {
+            const data = {
+                info: {},
+                measurements: []
+            };
+            
+            const infoForm = document.getElementById('strainInfoForm');
+            const infoData = new FormData(infoForm);
+            for (let [key, value] of infoData.entries()) {
+                data.info[key] = value;
+            }
+            
+            for (let i = 1; i <= 6; i++) {
+                const init = parseFloat(document.querySelector(`input[name="strainInit${i}"]`).value) || 0;
+                const meas = parseFloat(document.querySelector(`input[name="strainMeas${i}"]`).value) || 0;
+                const changeText = document.getElementById(`strainChange${i}`).textContent;
+                const change = changeText !== '-' ? parseFloat(changeText) : 0;
+                
+                data.measurements.push({ init, meas, change });
+            }
+            
+            saveToStorage(STORAGE_KEYS.STRAIN_DATA, data);
+            alert('변형률 데이터가 저장되었습니다!');
+        }
+
+        function autoSaveStrainData() {
+            const data = {
+                info: {},
+                measurements: []
+            };
+            
+            const infoForm = document.getElementById('strainInfoForm');
+            const infoData = new FormData(infoForm);
+            for (let [key, value] of infoData.entries()) {
+                data.info[key] = value;
+            }
+            
+            for (let i = 1; i <= 6; i++) {
+                const init = parseFloat(document.querySelector(`input[name="strainInit${i}"]`).value) || 0;
+                const meas = parseFloat(document.querySelector(`input[name="strainMeas${i}"]`).value) || 0;
+                const changeText = document.getElementById(`strainChange${i}`).textContent;
+                const change = changeText !== '-' ? parseFloat(changeText) : 0;
+                
+                data.measurements.push({ init, meas, change });
+            }
+            
+            saveToStorage(STORAGE_KEYS.STRAIN_DATA, data);
+        }
+
+        function loadStrainData() {
+            const data = getFromStorage(STORAGE_KEYS.STRAIN_DATA);
+            if (!data) return;
+            
+            if (data.info) {
+                Object.keys(data.info).forEach(key => {
+                    const input = document.getElementById(key);
+                    if (input) input.value = data.info[key];
+                });
+            }
+            
+            if (data.measurements) {
+                data.measurements.forEach((m, i) => {
+                    const index = i + 1;
+                    const initInput = document.querySelector(`input[name="strainInit${index}"]`);
+                    const measInput = document.querySelector(`input[name="strainMeas${index}"]`);
+                    
+                    if (initInput) initInput.value = m.init;
+                    if (measInput) measInput.value = m.meas;
+                    
+                    calculateStrainChange(index);
+                });
+                
+                updateStrainChart();
+            }
+        }
+    </script>
+</body>
+</html>

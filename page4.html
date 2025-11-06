@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>품질관리 시스템 - 기울기 데이터</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <script defer src="assets/js/script.js"></script>
+</head>
+<body>
+    <!-- 헤더 -->
+    <header class="header">
+        <div class="container">
+            <h1 class="header-title">Prefab 품질관리 시스템</h1>
+            <p class="header-subtitle">기울기 데이터 측정 및 분석</p>
+        </div>
+    </header>
+
+    <!-- 페이지 네비게이션 -->
+    <nav class="page-nav">
+        <div class="container">
+            <ul>
+                <li><a href="index.html">1. 종합 요약</a></li>
+                <li><a href="page2.html">2. 품질관리자 설문</a></li>
+                <li><a href="page3.html">3. 가속도 데이터</a></li>
+                <li><a href="page4.html" class="active">4. 기울기 데이터</a></li>
+                <li><a href="page5.html">5. 변형률 데이터</a></li>
+                <li><a href="page6.html">6. 부재 제작 오차</a></li>
+                <li><a href="dashboard.html">7. 종합 대시보드</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- 메인 컨텐츠 -->
+    <main class="container">
+        <!-- 안내 사항 -->
+        <div class="alert alert-info">
+            <strong>📐 기울기 계측 안내</strong>
+            <p style="margin-top: 0.5rem;">
+                Prefab 부재의 설치 시 수평/수직 기울기를 측정합니다. 
+                허용 범위: <strong>±2°</strong> (도)
+            </p>
+        </div>
+
+        <!-- 계측 정보 입력 -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">계측 정보</h2>
+            </div>
+            <div class="card-body">
+                <form id="tiltInfoForm">
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <label class="info-label" for="tiltDate">측정 일시</label>
+                            <input type="datetime-local" id="tiltDate" name="tiltDate" class="info-value" required>
+                        </div>
+                        <div class="info-item">
+                            <label class="info-label" for="tiltPhase">측정 단계</label>
+                            <select id="tiltPhase" name="tiltPhase" class="info-value" required>
+                                <option value="">선택하세요</option>
+                                <option value="설치전">설치 전</option>
+                                <option value="가설치">가설치</option>
+                                <option value="본설치">본설치</option>
+                                <option value="최종점검">최종 점검</option>
+                            </select>
+                        </div>
+                        <div class="info-item">
+                            <label class="info-label" for="tiltDevice">측정 장비</label>
+                            <input type="text" id="tiltDevice" name="tiltDevice" class="info-value" 
+                                   placeholder="예: 디지털 경사계" required>
+                        </div>
+                        <div class="info-item">
+                            <label class="info-label" for="tiltOperator">측정자</label>
+                            <input type="text" id="tiltOperator" name="tiltOperator" class="info-value" 
+                                   placeholder="측정자명" required>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- 기울기 데이터 입력 -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">기울기 측정 데이터</h2>
+                <p class="card-description">각 측정 지점의 기울기를 입력하세요 (단위: 도°)</p>
+            </div>
+            <div class="card-body">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>측정 지점</th>
+                            <th>X축 기울기 (°)</th>
+                            <th>Y축 기울기 (°)</th>
+                            <th>합성 기울기 (°)</th>
+                            <th>상태</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tiltDataTable">
+                        <tr>
+                            <td>상단 좌측</td>
+                            <td><input type="number" step="0.1" name="tiltX1" class="tilt-input" onchange="calculateTiltResultant(1)"></td>
+                            <td><input type="number" step="0.1" name="tiltY1" class="tilt-input" onchange="calculateTiltResultant(1)"></td>
+                            <td id="tiltResult1">-</td>
+                            <td id="tiltStatus1">-</td>
+                        </tr>
+                        <tr>
+                            <td>상단 우측</td>
+                            <td><input type="number" step="0.1" name="tiltX2" class="tilt-input" onchange="calculateTiltResultant(2)"></td>
+                            <td><input type="number" step="0.1" name="tiltY2" class="tilt-input" onchange="calculateTiltResultant(2)"></td>
+                            <td id="tiltResult2">-</td>
+                            <td id="tiltStatus2">-</td>
+                        </tr>
+                        <tr>
+                            <td>중앙</td>
+                            <td><input type="number" step="0.1" name="tiltX3" class="tilt-input" onchange="calculateTiltResultant(3)"></td>
+                            <td><input type="number" step="0.1" name="tiltY3" class="tilt-input" onchange="calculateTiltResultant(3)"></td>
+                            <td id="tiltResult3">-</td>
+                            <td id="tiltStatus3">-</td>
+                        </tr>
+                        <tr>
+                            <td>하단 좌측</td>
+                            <td><input type="number" step="0.1" name="tiltX4" class="tilt-input" onchange="calculateTiltResultant(4)"></td>
+                            <td><input type="number" step="0.1" name="tiltY4" class="tilt-input" onchange="calculateTiltResultant(4)"></td>
+                            <td id="tiltResult4">-</td>
+                            <td id="tiltStatus4">-</td>
+                        </tr>
+                        <tr>
+                            <td>하단 우측</td>
+                            <td><input type="number" step="0.1" name="tiltX5" class="tilt-input" onchange="calculateTiltResultant(5)"></td>
+                            <td><input type="number" step="0.1" name="tiltY5" class="tilt-input" onchange="calculateTiltResultant(5)"></td>
+                            <td id="tiltResult5">-</td>
+                            <td id="tiltStatus5">-</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 기울기 그래프 -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">기울기 분포 그래프</h2>
+                <p class="card-description">각 지점의 합성 기울기를 시각화합니다</p>
+            </div>
+            <div class="card-body">
+                <div class="chart-container">
+                    <canvas id="tiltChart"></canvas>
+                </div>
+                <div class="mt-3">
+                    <button class="btn btn-primary" onclick="updateTiltChart()">📈 그래프 업데이트</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 측정 결과 요약 -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">측정 결과 요약</h2>
+            </div>
+            <div class="card-body">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">최대 기울기</div>
+                        <div class="stat-value" id="maxTilt">0.0°</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">평균 기울기</div>
+                        <div class="stat-value" id="avgTilt">0.0°</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">초과 지점</div>
+                        <div class="stat-value" id="tiltExceedCount">0 개</div>
+                    </div>
+                    <div class="stat-card" id="tiltFinalStatus">
+                        <div class="stat-label">종합 평가</div>
+                        <div class="stat-value">대기중</div>
+                    </div>
+                </div>
+
+                <div id="tiltResultAlert" class="mt-3"></div>
+            </div>
+        </div>
+
+        <!-- 기울기 조정 이력 -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">기울기 조정 이력</h2>
+                <p class="card-description">기울기 조정 작업 내용을 기록하세요</p>
+            </div>
+            <div class="card-body">
+                <textarea id="tiltAdjustmentHistory" rows="5" 
+                          placeholder="조정 작업 내용을 입력하세요...&#10;예: 2024-11-06 14:30 - 상단 우측 2° 조정 완료"
+                          style="width: 100%; resize: vertical; padding: 1rem; border: 1px solid var(--border-color); border-radius: var(--radius-sm);"></textarea>
+            </div>
+        </div>
+
+        <!-- 측정 사진 -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">측정 현장 사진</h2>
+            </div>
+            <div class="card-body">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;">
+                    <div>
+                        <h3 class="mb-2">설치 전 상태</h3>
+                        <div class="photo-upload">
+                            <img id="tiltPhoto1" style="display:none;">
+                            <input type="file" accept="image/*" onchange="previewImage(this, 'tiltPhoto1')">
+                            <span class="placeholder">📷 사진 업로드</span>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="mb-2">설치 완료 상태</h3>
+                        <div class="photo-upload">
+                            <img id="tiltPhoto2" style="display:none;">
+                            <input type="file" accept="image/*" onchange="previewImage(this, 'tiltPhoto2')">
+                            <span class="placeholder">📷 사진 업로드</span>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="mb-2">측정 장비</h3>
+                        <div class="photo-upload">
+                            <img id="tiltPhoto3" style="display:none;">
+                            <input type="file" accept="image/*" onchange="previewImage(this, 'tiltPhoto3')">
+                            <span class="placeholder">📷 사진 업로드</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 네비게이션 버튼 -->
+        <div class="nav-buttons">
+            <a href="page3.html" class="btn btn-secondary">← 이전: 가속도 데이터</a>
+            <button class="btn btn-success" onclick="saveTiltData()">💾 저장하기</button>
+            <a href="page5.html" class="btn btn-primary">다음: 변형률 데이터 →</a>
+        </div>
+    </main>
+
+    <script>
+        // 기울기 임계값 (도)
+        const TILT_THRESHOLD = 2.0;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // 저장된 데이터 로드
+            loadTiltData();
+            
+            // 저장된 이미지 로드
+            loadSavedImage('tiltPhoto1');
+            loadSavedImage('tiltPhoto2');
+            loadSavedImage('tiltPhoto3');
+
+            // 현재 날짜/시간 설정
+            const now = new Date();
+            now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+            document.getElementById('tiltDate').value = now.toISOString().slice(0, 16);
+
+            // 입력 필드 변경 시 자동 저장
+            document.querySelectorAll('.tilt-input').forEach(input => {
+                input.addEventListener('change', autoSaveTiltData);
+            });
+            
+            document.getElementById('tiltAdjustmentHistory').addEventListener('change', autoSaveTiltData);
+            
+            autoSaveForm('tiltInfoForm', STORAGE_KEYS.TILT_DATA);
+        });
+
+        // 합성 기울기 계산
+        function calculateTiltResultant(index) {
+            const xInput = document.querySelector(`input[name="tiltX${index}"]`);
+            const yInput = document.querySelector(`input[name="tiltY${index}"]`);
+            
+            const x = parseFloat(xInput.value) || 0;
+            const y = parseFloat(yInput.value) || 0;
+            
+            const resultant = Math.sqrt(x*x + y*y);
+            
+            document.getElementById(`tiltResult${index}`).textContent = resultant.toFixed(2) + '°';
+            
+            // 상태 표시
+            const statusCell = document.getElementById(`tiltStatus${index}`);
+            if (resultant > TILT_THRESHOLD) {
+                statusCell.innerHTML = '<span class="badge badge-danger">초과</span>';
+            } else if (resultant > 0) {
+                statusCell.innerHTML = '<span class="badge badge-success">정상</span>';
+            } else {
+                statusCell.textContent = '-';
+            }
+            
+            // 통계 업데이트
+            updateTiltStatistics();
+        }
+
+        // 통계 업데이트
+        function updateTiltStatistics() {
+            const results = [];
+            for (let i = 1; i <= 5; i++) {
+                const resultText = document.getElementById(`tiltResult${i}`).textContent;
+                if (resultText !== '-') {
+                    results.push(parseFloat(resultText));
+                }
+            }
+            
+            if (results.length === 0) return;
+            
+            const max = Math.max(...results);
+            const avg = results.reduce((a, b) => a + b, 0) / results.length;
+            const exceedCount = results.filter(r => r > TILT_THRESHOLD).length;
+            
+            document.getElementById('maxTilt').textContent = max.toFixed(2) + '°';
+            document.getElementById('avgTilt').textContent = avg.toFixed(2) + '°';
+            document.getElementById('tiltExceedCount').textContent = exceedCount + ' 개';
+            
+            // 종합 평가
+            const finalStatus = document.getElementById('tiltFinalStatus');
+            const resultAlert = document.getElementById('tiltResultAlert');
+            
+            if (exceedCount === 0) {
+                finalStatus.className = 'stat-card success';
+                finalStatus.querySelector('.stat-value').textContent = '적합';
+                resultAlert.innerHTML = `
+                    <div class="alert alert-success">
+                        <strong>✅ 측정 결과 적합</strong><br>
+                        모든 측정 지점의 기울기가 허용 범위(±${TILT_THRESHOLD}°) 이내입니다.
+                    </div>
+                `;
+            } else {
+                finalStatus.className = 'stat-card danger';
+                finalStatus.querySelector('.stat-value').textContent = '부적합';
+                resultAlert.innerHTML = `
+                    <div class="alert alert-danger">
+                        <strong>❌ 측정 결과 부적합</strong><br>
+                        ${exceedCount}개 지점의 기울기가 허용 범위를 초과했습니다. 조정이 필요합니다.
+                    </div>
+                `;
+            }
+        }
+
+        // 그래프 업데이트
+        function updateTiltChart() {
+            const labels = ['상단 좌측', '상단 우측', '중앙', '하단 좌측', '하단 우측'];
+            const values = [];
+            const colors = [];
+            
+            for (let i = 1; i <= 5; i++) {
+                const resultText = document.getElementById(`tiltResult${i}`).textContent;
+                if (resultText !== '-') {
+                    const value = parseFloat(resultText);
+                    values.push(value);
+                    // 색상 지정 (초과 시 빨강, 정상 시 파랑)
+                    colors.push(value > TILT_THRESHOLD ? '#ef4444' : '#3b82f6');
+                } else {
+                    values.push(0);
+                    colors.push('#9ca3af');
+                }
+            }
+            
+            const chartData = {
+                labels: labels,
+                values: values,
+                colors: colors,
+                title: '지점별 기울기 측정 결과',
+                yLabel: '기울기 (°)'
+            };
+            
+            drawBarChart('tiltChart', chartData);
+        }
+
+        // 데이터 저장
+        function saveTiltData() {
+            const data = {
+                info: {},
+                measurements: [],
+                adjustmentHistory: document.getElementById('tiltAdjustmentHistory').value
+            };
+            
+            // 계측 정보
+            const infoForm = document.getElementById('tiltInfoForm');
+            const infoData = new FormData(infoForm);
+            for (let [key, value] of infoData.entries()) {
+                data.info[key] = value;
+            }
+            
+            // 측정 데이터
+            for (let i = 1; i <= 5; i++) {
+                const x = parseFloat(document.querySelector(`input[name="tiltX${i}"]`).value) || 0;
+                const y = parseFloat(document.querySelector(`input[name="tiltY${i}"]`).value) || 0;
+                const resultText = document.getElementById(`tiltResult${i}`).textContent;
+                const result = resultText !== '-' ? parseFloat(resultText) : 0;
+                
+                data.measurements.push({ x, y, result });
+            }
+            
+            saveToStorage(STORAGE_KEYS.TILT_DATA, data);
+            alert('기울기 데이터가 저장되었습니다!');
+        }
+
+        // 자동 저장
+        function autoSaveTiltData() {
+            const data = {
+                info: {},
+                measurements: [],
+                adjustmentHistory: document.getElementById('tiltAdjustmentHistory').value
+            };
+            
+            const infoForm = document.getElementById('tiltInfoForm');
+            const infoData = new FormData(infoForm);
+            for (let [key, value] of infoData.entries()) {
+                data.info[key] = value;
+            }
+            
+            for (let i = 1; i <= 5; i++) {
+                const x = parseFloat(document.querySelector(`input[name="tiltX${i}"]`).value) || 0;
+                const y = parseFloat(document.querySelector(`input[name="tiltY${i}"]`).value) || 0;
+                const resultText = document.getElementById(`tiltResult${i}`).textContent;
+                const result = resultText !== '-' ? parseFloat(resultText) : 0;
+                
+                data.measurements.push({ x, y, result });
+            }
+            
+            saveToStorage(STORAGE_KEYS.TILT_DATA, data);
+        }
+
+        // 데이터 로드
+        function loadTiltData() {
+            const data = getFromStorage(STORAGE_KEYS.TILT_DATA);
+            if (!data) return;
+            
+            // 계측 정보 로드
+            if (data.info) {
+                Object.keys(data.info).forEach(key => {
+                    const input = document.getElementById(key);
+                    if (input) input.value = data.info[key];
+                });
+            }
+            
+            // 측정 데이터 로드
+            if (data.measurements) {
+                data.measurements.forEach((m, i) => {
+                    const index = i + 1;
+                    const xInput = document.querySelector(`input[name="tiltX${index}"]`);
+                    const yInput = document.querySelector(`input[name="tiltY${index}"]`);
+                    
+                    if (xInput) xInput.value = m.x;
+                    if (yInput) yInput.value = m.y;
+                    
+                    calculateTiltResultant(index);
+                });
+                
+                updateTiltChart();
+            }
+            
+            // 조정 이력 로드
+            if (data.adjustmentHistory) {
+                document.getElementById('tiltAdjustmentHistory').value = data.adjustmentHistory;
+            }
+        }
+    </script>
+</body>
+</html>
