@@ -33,9 +33,25 @@
         <div class="alert alert-info">
             <strong>📐 제작 오차 측정 안내</strong>
             <p style="margin-top: 0.5rem;">
-                Prefab 부재의 설계치와 실제 측정치를 비교하여 제작 오차를 파악합니다. 
-                허용 범위: <strong>±5mm</strong>
+                Prefab 부재의 설계치와 실제 측정치를 비교하여 제작 오차를 파악합니다.
             </p>
+            <div style="margin-top: 1rem; padding: 0.75rem; background-color: #f0f9ff; border-radius: 0.375rem;">
+                <strong style="color: #1e40af;">KCS 24 11 25 : 2025 전단면 프리캐스트 바닥판공 (국토교통부)</strong>
+                <table style="width: 100%; margin-top: 0.5rem; font-size: 0.875rem;">
+                    <tr style="background-color: transparent;">
+                        <td style="padding: 0.25rem; border: none;"><strong>패널 길이:</strong></td>
+                        <td style="padding: 0.25rem; border: none;">설계치수의 ±1% 또는 ±30mm 중 작은 값</td>
+                    </tr>
+                    <tr style="background-color: transparent;">
+                        <td style="padding: 0.25rem; border: none;"><strong>패널 폭:</strong></td>
+                        <td style="padding: 0.25rem; border: none;">설계치수의 ±1% 또는 ±30mm 중 작은 값</td>
+                    </tr>
+                    <tr style="background-color: transparent;">
+                        <td style="padding: 0.25rem; border: none;"><strong>패널 두께:</strong></td>
+                        <td style="padding: 0.25rem; border: none;">+10mm ~ -5mm</td>
+                    </tr>
+                </table>
+            </div>
         </div>
 
         <div class="card">
@@ -112,6 +128,7 @@
                         <tr>
                             <th>측정 항목</th>
                             <th>설계치 (mm)</th>
+                            <th>허용오차</th>
                             <th>측정치 (mm)</th>
                             <th>오차 (mm)</th>
                             <th>상태</th>
@@ -121,6 +138,7 @@
                         <tr>
                             <td>패널 가로</td>
                             <td><input type="number" step="0.1" name="design1" class="error-input" value="3000" onchange="calculateError(1)"></td>
+                            <td id="tolerance1" style="font-size: 0.875rem; color: #6b7280;">±30mm</td>
                             <td><input type="number" step="0.1" name="measured1" class="error-input" onchange="calculateError(1)"></td>
                             <td id="error1">-</td>
                             <td id="errorStatus1">-</td>
@@ -128,6 +146,7 @@
                         <tr>
                             <td>패널 세로</td>
                             <td><input type="number" step="0.1" name="design2" class="error-input" value="1200" onchange="calculateError(2)"></td>
+                            <td id="tolerance2" style="font-size: 0.875rem; color: #6b7280;">±12mm</td>
                             <td><input type="number" step="0.1" name="measured2" class="error-input" onchange="calculateError(2)"></td>
                             <td id="error2">-</td>
                             <td id="errorStatus2">-</td>
@@ -135,6 +154,7 @@
                         <tr>
                             <td>패널 높이</td>
                             <td><input type="number" step="0.1" name="design3" class="error-input" value="200" onchange="calculateError(3)"></td>
+                            <td style="font-size: 0.875rem; color: #6b7280;">+10 ~ -5mm</td>
                             <td><input type="number" step="0.1" name="measured3" class="error-input" onchange="calculateError(3)"></td>
                             <td id="error3">-</td>
                             <td id="errorStatus3">-</td>
@@ -206,7 +226,28 @@
     </main>
 
     <script>
-        const ERROR_THRESHOLD = 5.0; // mm
+        // KCS 기준 허용오차 계산 함수
+        function getAllowableTolerance(index, design) {
+            if (index === 1) {
+                // 패널 가로: ±1% 또는 ±30mm 중 작은 값
+                const onePct = design * 0.01;
+                const tolerance = Math.min(onePct, 30);
+                // 허용오차 표시 업데이트
+                document.getElementById('tolerance1').textContent = `±${tolerance.toFixed(1)}mm`;
+                return tolerance;
+            } else if (index === 2) {
+                // 패널 세로: ±1% 또는 ±30mm 중 작은 값
+                const onePct = design * 0.01;
+                const tolerance = Math.min(onePct, 30);
+                // 허용오차 표시 업데이트
+                document.getElementById('tolerance2').textContent = `±${tolerance.toFixed(1)}mm`;
+                return tolerance;
+            } else if (index === 3) {
+                // 패널 높이: +10mm ~ -5mm (비대칭)
+                return { upper: 10, lower: 5 };
+            }
+            return 5; // 기본값
+        }
 
         document.addEventListener('DOMContentLoaded', function() {
             loadErrorData();
@@ -225,6 +266,10 @@
             document.getElementById('errorNotes').addEventListener('change', autoSaveErrorData);
             
             autoSaveForm('errorInfoForm', STORAGE_KEYS.FABRICATION_ERROR);
+            
+            // 초기 허용오차 계산
+            calculateError(1);
+            calculateError(2);
         });
 
         function calculateError(index) {
@@ -237,8 +282,25 @@
             
             document.getElementById(`error${index}`).textContent = error.toFixed(1) + ' mm';
             
+            // KCS 기준에 따른 허용오차 가져오기
+            const tolerance = getAllowableTolerance(index, design);
+            
             const statusCell = document.getElementById(`errorStatus${index}`);
-            if (Math.abs(error) > ERROR_THRESHOLD) {
+            let isExceeded = false;
+            
+            if (index === 3) {
+                // 패널 높이는 비대칭 허용오차
+                if (error > tolerance.upper || error < -tolerance.lower) {
+                    isExceeded = true;
+                }
+            } else {
+                // 패널 가로/세로는 대칭 허용오차
+                if (Math.abs(error) > tolerance) {
+                    isExceeded = true;
+                }
+            }
+            
+            if (isExceeded) {
                 statusCell.innerHTML = '<span class="badge badge-danger">초과</span>';
             } else if (measured > 0) {
                 statusCell.innerHTML = '<span class="badge badge-success">정상</span>';
@@ -251,10 +313,18 @@
 
         function updateErrorStatistics() {
             const errors = [];
+            let exceedCount = 0;
+            
             for (let i = 1; i <= 3; i++) {
                 const errorText = document.getElementById(`error${i}`).textContent;
                 if (errorText !== '-') {
                     errors.push(Math.abs(parseFloat(errorText)));
+                    
+                    // 각 항목의 초과 여부 확인
+                    const statusCell = document.getElementById(`errorStatus${i}`);
+                    if (statusCell.innerHTML.includes('초과')) {
+                        exceedCount++;
+                    }
                 }
             }
             
@@ -262,7 +332,6 @@
             
             const max = Math.max(...errors);
             const avg = errors.reduce((a, b) => a + b, 0) / errors.length;
-            const exceedCount = errors.filter(e => e > ERROR_THRESHOLD).length;
             
             document.getElementById('maxError').textContent = max.toFixed(1) + ' mm';
             document.getElementById('avgError').textContent = avg.toFixed(1) + ' mm';
@@ -276,8 +345,8 @@
                 finalStatus.querySelector('.stat-value').textContent = '적합';
                 resultAlert.innerHTML = `
                     <div class="alert alert-success">
-                        <strong>✅ 제작 오차 적합</strong><br>
-                        모든 측정 항목의 오차가 허용 범위(±${ERROR_THRESHOLD}mm) 이내입니다.
+                        <strong>✅ 제작 오차 적합 (KCS 24 11 25 : 2025)</strong><br>
+                        모든 측정 항목이 KCS 기준 허용 범위 이내입니다.
                     </div>
                 `;
             } else {
@@ -285,8 +354,8 @@
                 finalStatus.querySelector('.stat-value').textContent = '부적합';
                 resultAlert.innerHTML = `
                     <div class="alert alert-danger">
-                        <strong>❌ 제작 오차 부적합</strong><br>
-                        ${exceedCount}개 항목의 오차가 허용 범위를 초과했습니다. 재가공 또는 보강이 필요합니다.
+                        <strong>❌ 제작 오차 부적합 (KCS 24 11 25 : 2025)</strong><br>
+                        ${exceedCount}개 항목이 KCS 기준을 초과했습니다. 재가공 또는 보강이 필요합니다.
                     </div>
                 `;
             }
@@ -299,10 +368,13 @@
             
             for (let i = 1; i <= 3; i++) {
                 const errorText = document.getElementById(`error${i}`).textContent;
+                const statusCell = document.getElementById(`errorStatus${i}`);
+                
                 if (errorText !== '-') {
                     const value = Math.abs(parseFloat(errorText));
                     values.push(value);
-                    colors.push(value > ERROR_THRESHOLD ? '#ef4444' : '#3b82f6');
+                    // 상태 셀의 초과 여부로 색상 결정
+                    colors.push(statusCell.innerHTML.includes('초과') ? '#ef4444' : '#3b82f6');
                 } else {
                     values.push(0);
                     colors.push('#9ca3af');
