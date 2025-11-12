@@ -363,7 +363,8 @@ tbody tr:last-child td {
 
 canvas {
     max-width: 100%;
-    height: auto;
+    height: 100% !important;
+    width: 100% !important;
 }
 
 /* 네비게이션 */
@@ -605,7 +606,14 @@ canvas {
     }
     
     .chart-container {
-        height: 300px;
+        height: 350px;
+    }
+}
+
+/* 데스크톱 큰 화면 - 그래프 더 크게 */
+@media (min-width: 1024px) {
+    .chart-container {
+        min-height: 500px;
     }
 }
 
