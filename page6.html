@@ -136,7 +136,7 @@
                     </thead>
                     <tbody>
                         <tr>
-                            <td>패널 가로</td>
+                            <td>패널 길이</td>
                             <td><input type="number" step="0.1" name="design1" class="error-input" value="3000" onchange="calculateError(1)"></td>
                             <td id="tolerance1" style="font-size: 0.875rem; color: #6b7280;">±30mm</td>
                             <td><input type="number" step="0.1" name="measured1" class="error-input" onchange="calculateError(1)"></td>
@@ -144,7 +144,7 @@
                             <td id="errorStatus1">-</td>
                         </tr>
                         <tr>
-                            <td>패널 세로</td>
+                            <td>패널 폭</td>
                             <td><input type="number" step="0.1" name="design2" class="error-input" value="1200" onchange="calculateError(2)"></td>
                             <td id="tolerance2" style="font-size: 0.875rem; color: #6b7280;">±12mm</td>
                             <td><input type="number" step="0.1" name="measured2" class="error-input" onchange="calculateError(2)"></td>
@@ -152,7 +152,7 @@
                             <td id="errorStatus2">-</td>
                         </tr>
                         <tr>
-                            <td>패널 높이</td>
+                            <td>패널 두께</td>
                             <td><input type="number" step="0.1" name="design3" class="error-input" value="200" onchange="calculateError(3)"></td>
                             <td style="font-size: 0.875rem; color: #6b7280;">+10 ~ -5mm</td>
                             <td><input type="number" step="0.1" name="measured3" class="error-input" onchange="calculateError(3)"></td>
@@ -229,21 +229,21 @@
         // KCS 기준 허용오차 계산 함수
         function getAllowableTolerance(index, design) {
             if (index === 1) {
-                // 패널 가로: ±1% 또는 ±30mm 중 작은 값
+                // 패널 길이: ±1% 또는 ±30mm 중 작은 값
                 const onePct = design * 0.01;
                 const tolerance = Math.min(onePct, 30);
                 // 허용오차 표시 업데이트
                 document.getElementById('tolerance1').textContent = `±${tolerance.toFixed(1)}mm`;
                 return tolerance;
             } else if (index === 2) {
-                // 패널 세로: ±1% 또는 ±30mm 중 작은 값
+                // 패널 폭: ±1% 또는 ±30mm 중 작은 값
                 const onePct = design * 0.01;
                 const tolerance = Math.min(onePct, 30);
                 // 허용오차 표시 업데이트
                 document.getElementById('tolerance2').textContent = `±${tolerance.toFixed(1)}mm`;
                 return tolerance;
             } else if (index === 3) {
-                // 패널 높이: +10mm ~ -5mm (비대칭)
+                // 패널 두께: +10mm ~ -5mm (비대칭)
                 return { upper: 10, lower: 5 };
             }
             return 5; // 기본값
@@ -289,12 +289,12 @@
             let isExceeded = false;
             
             if (index === 3) {
-                // 패널 높이는 비대칭 허용오차
+                // 패널 두께는 비대칭 허용오차
                 if (error > tolerance.upper || error < -tolerance.lower) {
                     isExceeded = true;
                 }
             } else {
-                // 패널 가로/세로는 대칭 허용오차
+                // 패널 길이/세로는 대칭 허용오차
                 if (Math.abs(error) > tolerance) {
                     isExceeded = true;
                 }
@@ -362,7 +362,7 @@
         }
 
         function updateErrorChart() {
-            const labels = ['패널 가로', '패널 세로', '패널 높이'];
+            const labels = ['패널 길이', '패널 폭', '패널 두께'];
             const values = [];
             const colors = [];
             
