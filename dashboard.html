@@ -227,14 +227,23 @@
             </div>
             <div class="card-body">
                 <div class="alert alert-info mb-3">
-                    <strong>📄 인쇄 안내</strong>
+                    <strong>📄 전체 보고서 인쇄 안내</strong>
                     <p style="margin-top: 0.5rem;">
-                        보고서 인쇄 시 모든 데이터, 그래프, 이미지가 포함됩니다. 
+                        모든 페이지의 데이터를 통합하여 인쇄할 수 있습니다. 
                         인쇄 설정에서 <strong>"배경 그래픽 인쇄"</strong> 옵션을 활성화하면 색상이 출력됩니다.
                     </p>
+                    <ul style="margin-top: 0.5rem; padding-left: 1.5rem;">
+                        <li>1. 종합 요약</li>
+                        <li>2. 운송결과 리포트 (사진 포함)</li>
+                        <li>3. 가속도 데이터 (그래프 포함)</li>
+                        <li>4. 기울기 데이터 (그래프 포함)</li>
+                        <li>5. 변형률 데이터 (그래프 포함)</li>
+                        <li>6. 부재 제작 오차 (사진, 그래프 포함)</li>
+                        <li>7. 종합 대시보드 (종합 평가 포함)</li>
+                    </ul>
                 </div>
                 <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
-                    <button class="btn btn-primary" onclick="printDashboard()">🖨️ 전체 보고서 인쇄</button>
+                    <a href="print-report.html" class="btn btn-primary" style="text-decoration: none;">🖨️ 전체 보고서 인쇄 페이지로 이동</a>
                     <button class="btn btn-success" onclick="exportData()">📥 데이터 내보내기</button>
                     <button class="btn btn-warning" onclick="location.href='index.html'">🏠 처음으로</button>
                 </div>
