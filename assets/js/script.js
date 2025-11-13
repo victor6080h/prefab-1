@@ -23,6 +23,10 @@ const STORAGE_KEYS = {
  * @param {string} previewId - 미리보기 이미지 요소의 ID
  */
 function previewImage(input, previewId) {
+    console.log('=== previewImage 호출 ===');
+    console.log('input:', input);
+    console.log('previewId:', previewId);
+    
     if (!input || !input.files || !input.files[0]) {
         console.error('파일이 선택되지 않았습니다.');
         return;
@@ -34,10 +38,17 @@ function previewImage(input, previewId) {
         return;
     }
     
-    const container = input.parentElement;
-    const placeholder = container ? container.querySelector('.placeholder') : null;
+    // preview 요소에서 가장 가까운 .photo-upload 컨테이너 찾기
+    const container = preview.closest('.photo-upload');
+    if (!container) {
+        console.error('photo-upload 컨테이너를 찾을 수 없습니다:', previewId);
+        return;
+    }
+    
+    const placeholder = container.querySelector('.placeholder');
     
     const file = input.files[0];
+    console.log('선택된 파일:', file.name, '크기:', (file.size / 1024).toFixed(2), 'KB');
     
     // 파일 크기 체크 (5MB 제한)
     if (file.size > 5 * 1024 * 1024) {
@@ -57,6 +68,8 @@ function previewImage(input, previewId) {
     
     reader.onload = function(e) {
         try {
+            console.log('이미지 로드 완료, 크기:', (e.target.result.length / 1024).toFixed(2), 'KB');
+            
             preview.src = e.target.result;
             preview.style.display = 'block';
             
@@ -64,22 +77,21 @@ function previewImage(input, previewId) {
                 placeholder.style.display = 'none';
             }
             
-            if (container) {
-                container.classList.add('has-image');
-            }
+            container.classList.add('has-image');
             
             // 이미지를 LocalStorage에 저장
+            console.log('LocalStorage에 저장 시도:', previewId);
             saveImageToStorage(previewId, e.target.result);
             
-            console.log('이미지 업로드 성공:', previewId);
+            console.log('✅ 이미지 업로드 성공:', previewId);
         } catch (error) {
-            console.error('이미지 처리 오류:', error);
+            console.error('❌ 이미지 처리 오류:', error);
             alert('이미지 처리 중 오류가 발생했습니다.');
         }
     };
     
     reader.onerror = function(error) {
-        console.error('파일 읽기 오류:', error);
+        console.error('❌ 파일 읽기 오류:', error);
         alert('파일을 읽는 중 오류가 발생했습니다.');
     };
     
@@ -93,16 +105,32 @@ function previewImage(input, previewId) {
  */
 function saveImageToStorage(key, imageData) {
     try {
-        const photos = getFromStorage(STORAGE_KEYS.PHOTOS) || {};
-        photos[key] = imageData;
+        console.log('=== saveImageToStorage 호출 ===');
+        console.log('저장할 사진 ID:', key);
+        console.log('이미지 데이터 크기:', (imageData.length / 1024).toFixed(2), 'KB');
         
+        // 기존 저장된 사진 데이터 가져오기
+        const photos = getFromStorage(STORAGE_KEYS.PHOTOS) || {};
+        console.log('저장 전 사진 개수:', Object.keys(photos).length);
+        console.log('저장 전 사진 ID 목록:', Object.keys(photos));
+        
+        // 새 사진 추가
+        photos[key] = imageData;
+        console.log('저장 후 사진 개수:', Object.keys(photos).length);
+        console.log('저장 후 사진 ID 목록:', Object.keys(photos));
+        
+        // LocalStorage에 저장
         const saveResult = saveToStorage(STORAGE_KEYS.PHOTOS, photos);
         
         if (saveResult !== false) {
-            console.log('이미지 저장 성공:', key);
-            console.log('현재 저장된 사진 개수:', Object.keys(photos).length);
+            console.log('✅ 이미지 저장 성공:', key);
+            
+            // 저장 확인
+            const savedPhotos = getFromStorage(STORAGE_KEYS.PHOTOS);
+            console.log('저장 확인 - 사진 개수:', Object.keys(savedPhotos).length);
+            console.log('저장 확인 - 사진 ID 목록:', Object.keys(savedPhotos));
         } else {
-            console.error('이미지 저장 실패:', key);
+            console.error('❌ 이미지 저장 실패:', key);
         }
     } catch (e) {
         console.error('이미지 저장 실패:', e);
