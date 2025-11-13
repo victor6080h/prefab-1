@@ -33,9 +33,15 @@
         <div class="alert alert-info">
             <strong>📏 변형률 계측 안내</strong>
             <p style="margin-top: 0.5rem;">
-                Prefab 부재의 응력 상태를 확인하기 위한 변형률 측정입니다. 
-                허용 범위: <strong>±100με</strong> (마이크로 스트레인)
+                Prefab 부재의 응력 상태를 확인하기 위한 변형률 측정입니다. (마이크로 스트레인)
             </p>
+            <div style="margin-top: 0.75rem; padding: 0.5rem; background-color: white; border-radius: 0.25rem;">
+                <strong>평가 기준:</strong><br>
+                <span style="color: #10b981;">✓ 정상: 60με 미만</span> | 
+                <span style="color: #f59e0b;">⚠ 주의: 60με ~ 80με</span> | 
+                <span style="color: #f97316;">⚠️ 경고: 80με ~ 100με</span> | 
+                <span style="color: #ef4444;">❌ 위험: 100με 초과</span>
+            </div>
         </div>
 
         <div class="card">
@@ -182,7 +188,11 @@
     </main>
 
     <script>
-        const STRAIN_THRESHOLD = 100; // με
+        // 변형률 임계값 (με) - 3단계 평가
+        const STRAIN_NORMAL = 60;    // 정상
+        const STRAIN_CAUTION = 80;   // 주의
+        const STRAIN_WARNING = 100;  // 경고
+        // 100 초과는 위험
 
         document.addEventListener('DOMContentLoaded', function() {
             loadStrainData();
@@ -210,8 +220,13 @@
             document.getElementById(`strainChange${index}`).textContent = change.toFixed(0) + ' με';
             
             const statusCell = document.getElementById(`strainStatus${index}`);
-            if (Math.abs(change) > STRAIN_THRESHOLD) {
-                statusCell.innerHTML = '<span class="badge badge-danger">초과</span>';
+            const absChange = Math.abs(change);
+            if (absChange > STRAIN_WARNING) {
+                statusCell.innerHTML = '<span class="badge badge-danger">위험</span>';
+            } else if (absChange >= STRAIN_CAUTION) {
+                statusCell.innerHTML = '<span class="badge" style="background-color: #f97316; color: white;">경고</span>';
+            } else if (absChange >= STRAIN_NORMAL) {
+                statusCell.innerHTML = '<span class="badge badge-warning">주의</span>';
             } else if (change !== 0) {
                 statusCell.innerHTML = '<span class="badge badge-success">정상</span>';
             } else {
@@ -234,31 +249,56 @@
             
             const max = Math.max(...changes);
             const avg = changes.reduce((a, b) => a + b, 0) / changes.length;
-            const exceedCount = changes.filter(c => c > STRAIN_THRESHOLD).length;
+            
+            // 3단계 평가 카운트
+            const dangerCount = changes.filter(c => c > STRAIN_WARNING).length;
+            const warningCount = changes.filter(c => c >= STRAIN_CAUTION && c <= STRAIN_WARNING).length;
+            const cautionCount = changes.filter(c => c >= STRAIN_NORMAL && c < STRAIN_CAUTION).length;
+            const normalCount = changes.filter(c => c < STRAIN_NORMAL).length;
             
             document.getElementById('maxStrain').textContent = max.toFixed(0) + ' με';
             document.getElementById('avgStrain').textContent = avg.toFixed(0) + ' με';
-            document.getElementById('strainExceedCount').textContent = exceedCount + ' 개';
+            document.getElementById('strainExceedCount').textContent = dangerCount + ' 개';
             
             const finalStatus = document.getElementById('strainFinalStatus');
             const resultAlert = document.getElementById('strainResultAlert');
             
-            if (exceedCount === 0) {
-                finalStatus.className = 'stat-card success';
-                finalStatus.querySelector('.stat-value').textContent = '적합';
+            if (dangerCount > 0) {
+                finalStatus.className = 'stat-card danger';
+                finalStatus.querySelector('.stat-value').textContent = '위험';
                 resultAlert.innerHTML = `
-                    <div class="alert alert-success">
-                        <strong>✅ 측정 결과 적합</strong><br>
-                        모든 센서의 변형률이 허용 범위(±${STRAIN_THRESHOLD}με) 이내입니다.
+                    <div class="alert alert-danger">
+                        <strong>❌ 위험 수준</strong><br>
+                        ${dangerCount}개 센서가 위험 기준(100με)을 초과했습니다. 즉시 점검이 필요합니다.
+                    </div>
+                `;
+            } else if (warningCount > 0) {
+                finalStatus.className = 'stat-card';
+                finalStatus.style.backgroundColor = '#f97316';
+                finalStatus.style.color = 'white';
+                finalStatus.querySelector('.stat-value').textContent = '경고';
+                resultAlert.innerHTML = `
+                    <div class="alert" style="background-color: #fff7ed; border-color: #f97316; color: #9a3412;">
+                        <strong>⚠️ 경고 수준</strong><br>
+                        ${warningCount}개 센서가 경고 범위(80με~100με)입니다. 면밀한 모니터링이 필요합니다.
+                    </div>
+                `;
+            } else if (cautionCount > 0) {
+                finalStatus.className = 'stat-card warning';
+                finalStatus.querySelector('.stat-value').textContent = '주의';
+                resultAlert.innerHTML = `
+                    <div class="alert alert-warning">
+                        <strong>⚠ 주의 필요</strong><br>
+                        ${cautionCount}개 센서가 주의 범위(60με~80με)입니다. 지속적인 관찰이 필요합니다.
                     </div>
                 `;
             } else {
-                finalStatus.className = 'stat-card danger';
-                finalStatus.querySelector('.stat-value').textContent = '부적합';
+                finalStatus.className = 'stat-card success';
+                finalStatus.querySelector('.stat-value').textContent = '정상';
                 resultAlert.innerHTML = `
-                    <div class="alert alert-danger">
-                        <strong>❌ 측정 결과 부적합</strong><br>
-                        ${exceedCount}개 센서의 변형률이 허용 범위를 초과했습니다.
+                    <div class="alert alert-success">
+                        <strong>✅ 정상 범위</strong><br>
+                        모든 센서의 변형률이 정상 범위(60με 미만)입니다.
                     </div>
                 `;
             }
