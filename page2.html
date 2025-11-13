@@ -145,40 +145,38 @@
         <!-- 사진 첨부 -->
         <div class="card">
             <div class="card-header">
-                <h2 class="card-title">현장 사진</h2>
+                <h2 class="card-title">현장 사진 (2x2)</h2>
+                <p class="card-description">4장의 현장 사진을 업로드하세요</p>
             </div>
             <div class="card-body">
-                <!-- 첫 번째 그룹 (2장) -->
-                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; margin-bottom: 1.5rem;">
-                    <!-- 사진 1 -->
+                <!-- 2x2 그리드 레이아웃 -->
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); grid-template-rows: repeat(2, 1fr); gap: 1.5rem;">
+                    <!-- 사진 1 (좌상) -->
                     <div class="photo-upload">
                         <img id="photo1Preview" style="display:none;">
                         <input type="file" accept="image/*" onchange="previewImage(this, 'photo1Preview')">
-                        <span class="placeholder">📷 사진 업로드</span>
+                        <span class="placeholder">📷 사진 1</span>
                     </div>
 
-                    <!-- 사진 2 -->
+                    <!-- 사진 2 (우상) -->
                     <div class="photo-upload">
                         <img id="photo2Preview" style="display:none;">
                         <input type="file" accept="image/*" onchange="previewImage(this, 'photo2Preview')">
-                        <span class="placeholder">📷 사진 업로드</span>
+                        <span class="placeholder">📷 사진 2</span>
                     </div>
-                </div>
 
-                <!-- 두 번째 그룹 (2장) -->
-                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem;">
-                    <!-- 사진 3 -->
+                    <!-- 사진 3 (좌하) -->
                     <div class="photo-upload">
                         <img id="photo3Preview" style="display:none;">
                         <input type="file" accept="image/*" onchange="previewImage(this, 'photo3Preview')">
-                        <span class="placeholder">📷 사진 업로드</span>
+                        <span class="placeholder">📷 사진 3</span>
                     </div>
 
-                    <!-- 사진 4 -->
+                    <!-- 사진 4 (우하) -->
                     <div class="photo-upload">
                         <img id="photo4Preview" style="display:none;">
                         <input type="file" accept="image/*" onchange="previewImage(this, 'photo4Preview')">
-                        <span class="placeholder">📷 사진 업로드</span>
+                        <span class="placeholder">📷 사진 4</span>
                     </div>
                 </div>
             </div>
