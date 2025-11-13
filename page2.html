@@ -207,6 +207,7 @@
         <div class="nav-buttons">
             <a href="index.html" class="btn btn-secondary">← 이전: 종합 요약</a>
             <button class="btn btn-success" onclick="saveSurvey()">💾 저장하기</button>
+            <button class="btn btn-info" onclick="checkStoredPhotos()" style="background-color: #17a2b8;">🔍 사진 데이터 확인</button>
             <a href="page3.html" class="btn btn-primary">다음: 가속도 데이터 →</a>
         </div>
     </main>
@@ -359,6 +360,31 @@
             document.getElementById('surveyResult').innerHTML = resultHTML;
         }
 
+        // 저장된 사진 데이터 확인
+        function checkStoredPhotos() {
+            const photos = getFromStorage(STORAGE_KEYS.PHOTOS);
+            
+            if (!photos) {
+                alert('저장된 사진이 없습니다.');
+                console.log('저장된 사진 데이터: null');
+                return;
+            }
+            
+            const photoKeys = Object.keys(photos);
+            const photoCount = photoKeys.length;
+            
+            console.log('=== 저장된 사진 데이터 확인 ===');
+            console.log('사진 개수:', photoCount);
+            console.log('사진 ID 목록:', photoKeys);
+            
+            photoKeys.forEach(key => {
+                const dataSize = photos[key] ? photos[key].length : 0;
+                console.log(`${key}: ${(dataSize / 1024).toFixed(2)} KB`);
+            });
+            
+            alert(`저장된 사진: ${photoCount}개\n\n${photoKeys.join('\n')}\n\n자세한 정보는 콘솔을 확인하세요.`);
+        }
+        
         // 설문 저장
         function saveSurvey() {
             const form = document.getElementById('surveyForm');
