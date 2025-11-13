@@ -852,13 +852,24 @@
             console.log('섹션 6 로드: 부재 제작 오차');
             const container = document.getElementById('section6Content');
             
+            if (!container) {
+                console.error('section6Content 컨테이너를 찾을 수 없습니다!');
+                return;
+            }
+            
             const errorData = getFromStorage(STORAGE_KEYS.FABRICATION_ERROR) || {};
+            console.log('부재 제작 오차 데이터:', errorData);
             
             // 사진 데이터
             let photosHTML = '';
+            const photos = getFromStorage(STORAGE_KEYS.PHOTOS) || {};
+            console.log('저장된 사진 데이터:', photos);
+            
             for (let i = 1; i <= 3; i++) {
                 const photoKey = `errorPhoto${i}`;
-                const photoData = getFromStorage(STORAGE_KEYS.PHOTOS)?.[photoKey];
+                const photoData = photos[photoKey];
+                
+                console.log(`${photoKey}:`, photoData ? '있음' : '없음');
                 
                 if (photoData) {
                     photosHTML += `
@@ -940,10 +951,21 @@
                 </div>
             `;
             
+            console.log('섹션 6 HTML 설정 완료');
+            
             // 그래프 그리기
             setTimeout(() => {
+                console.log('제작 오차 그래프 그리기 시도');
                 if (errorData.measurements && errorData.measurements.length > 0) {
-                    drawErrorChart(errorData.measurements);
+                    console.log('측정 데이터 있음, 그래프 그리기 시작');
+                    try {
+                        drawErrorChart(errorData.measurements);
+                        console.log('제작 오차 그래프 그리기 완료');
+                    } catch (error) {
+                        console.error('제작 오차 그래프 그리기 오류:', error);
+                    }
+                } else {
+                    console.log('측정 데이터 없음, 그래프 스킵');
                 }
             }, 100);
         }
