@@ -148,7 +148,8 @@
                 <h2 class="card-title">현장 사진</h2>
             </div>
             <div class="card-body">
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;">
+                <!-- 첫 번째 그룹 (2장) -->
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; margin-bottom: 1.5rem;">
                     <!-- 사진 1 -->
                     <div class="photo-upload">
                         <img id="photo1Preview" style="display:none;">
@@ -162,7 +163,10 @@
                         <input type="file" accept="image/*" onchange="previewImage(this, 'photo2Preview')">
                         <span class="placeholder">📷 사진 업로드</span>
                     </div>
+                </div>
 
+                <!-- 두 번째 그룹 (2장) -->
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem;">
                     <!-- 사진 3 -->
                     <div class="photo-upload">
                         <img id="photo3Preview" style="display:none;">
