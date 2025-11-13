@@ -103,36 +103,36 @@
                     <tbody id="tiltDataTable">
                         <tr>
                             <td>상단 좌측</td>
-                            <td><input type="number" step="0.1" name="tiltX1" class="tilt-input" oninput="calculateTiltResultant(1)" onchange="calculateTiltResultant(1)"></td>
-                            <td><input type="number" step="0.1" name="tiltY1" class="tilt-input" oninput="calculateTiltResultant(1)" onchange="calculateTiltResultant(1)"></td>
+                            <td><input type="number" step="0.1" name="tiltX1" class="tilt-input" data-index="1"></td>
+                            <td><input type="number" step="0.1" name="tiltY1" class="tilt-input" data-index="1"></td>
                             <td id="tiltResult1">-</td>
                             <td id="tiltStatus1">-</td>
                         </tr>
                         <tr>
                             <td>상단 우측</td>
-                            <td><input type="number" step="0.1" name="tiltX2" class="tilt-input" oninput="calculateTiltResultant(2)" onchange="calculateTiltResultant(2)"></td>
-                            <td><input type="number" step="0.1" name="tiltY2" class="tilt-input" oninput="calculateTiltResultant(2)" onchange="calculateTiltResultant(2)"></td>
+                            <td><input type="number" step="0.1" name="tiltX2" class="tilt-input" data-index="2"></td>
+                            <td><input type="number" step="0.1" name="tiltY2" class="tilt-input" data-index="2"></td>
                             <td id="tiltResult2">-</td>
                             <td id="tiltStatus2">-</td>
                         </tr>
                         <tr>
                             <td>중앙</td>
-                            <td><input type="number" step="0.1" name="tiltX3" class="tilt-input" oninput="calculateTiltResultant(3)" onchange="calculateTiltResultant(3)"></td>
-                            <td><input type="number" step="0.1" name="tiltY3" class="tilt-input" oninput="calculateTiltResultant(3)" onchange="calculateTiltResultant(3)"></td>
+                            <td><input type="number" step="0.1" name="tiltX3" class="tilt-input" data-index="3"></td>
+                            <td><input type="number" step="0.1" name="tiltY3" class="tilt-input" data-index="3"></td>
                             <td id="tiltResult3">-</td>
                             <td id="tiltStatus3">-</td>
                         </tr>
                         <tr>
                             <td>하단 좌측</td>
-                            <td><input type="number" step="0.1" name="tiltX4" class="tilt-input" oninput="calculateTiltResultant(4)" onchange="calculateTiltResultant(4)"></td>
-                            <td><input type="number" step="0.1" name="tiltY4" class="tilt-input" oninput="calculateTiltResultant(4)" onchange="calculateTiltResultant(4)"></td>
+                            <td><input type="number" step="0.1" name="tiltX4" class="tilt-input" data-index="4"></td>
+                            <td><input type="number" step="0.1" name="tiltY4" class="tilt-input" data-index="4"></td>
                             <td id="tiltResult4">-</td>
                             <td id="tiltStatus4">-</td>
                         </tr>
                         <tr>
                             <td>하단 우측</td>
-                            <td><input type="number" step="0.1" name="tiltX5" class="tilt-input" oninput="calculateTiltResultant(5)" onchange="calculateTiltResultant(5)"></td>
-                            <td><input type="number" step="0.1" name="tiltY5" class="tilt-input" oninput="calculateTiltResultant(5)" onchange="calculateTiltResultant(5)"></td>
+                            <td><input type="number" step="0.1" name="tiltX5" class="tilt-input" data-index="5"></td>
+                            <td><input type="number" step="0.1" name="tiltY5" class="tilt-input" data-index="5"></td>
                             <td id="tiltResult5">-</td>
                             <td id="tiltStatus5">-</td>
                         </tr>
@@ -152,7 +152,7 @@
                     <canvas id="tiltChart"></canvas>
                 </div>
                 <div class="mt-3">
-                    <button class="btn btn-primary" onclick="updateTiltChart()">📈 그래프 업데이트</button>
+                    <button id="updateChartBtn" class="btn btn-primary">📈 그래프 업데이트</button>
                 </div>
             </div>
         </div>
@@ -202,7 +202,7 @@
         <!-- 네비게이션 버튼 -->
         <div class="nav-buttons">
             <a href="page3.html" class="btn btn-secondary">← 이전: 가속도 데이터</a>
-            <button class="btn btn-success" onclick="saveTiltData()">💾 저장하기</button>
+            <button id="saveTiltBtn" class="btn btn-success">💾 저장하기</button>
             <a href="page5.html" class="btn btn-primary">다음: 변형률 데이터 →</a>
         </div>
     </main>
@@ -215,25 +215,66 @@
         // 2.0 초과는 위험
 
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('=== DOMContentLoaded 이벤트 발생 ===');
+            console.log('페이지 초기화 시작');
+            
             // 저장된 데이터 로드
             loadTiltData();
             
-            // 저장된 이미지 로드
-
-
-            // 현재 날짜/시간 설정
-            const now = new Date();
-            now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
-            document.getElementById('tiltDate').value = now.toISOString().slice(0, 16);
-
-            // 입력 필드 변경 시 자동 저장
+            // 입력 필드에 이벤트 리스너 등록
+            console.log('입력 필드에 이벤트 리스너 등록 중...');
             document.querySelectorAll('.tilt-input').forEach(input => {
-                input.addEventListener('change', autoSaveTiltData);
+                const index = input.dataset.index;
+                console.log(`입력 필드 등록: ${input.name}, index: ${index}`);
+                
+                // input 이벤트 (실시간 계산)
+                input.addEventListener('input', function() {
+                    console.log(`입력 이벤트 발생: ${input.name}, 값: ${input.value}`);
+                    calculateTiltResultant(parseInt(index));
+                });
+                
+                // change 이벤트 (자동 저장)
+                input.addEventListener('change', function() {
+                    console.log(`변경 이벤트 발생: ${input.name}, 값: ${input.value}`);
+                    calculateTiltResultant(parseInt(index));
+                    autoSaveTiltData();
+                });
             });
             
-            document.getElementById('tiltAdjustmentHistory').addEventListener('change', autoSaveTiltData);
+            // 그래프 업데이트 버튼
+            const updateChartBtn = document.getElementById('updateChartBtn');
+            if (updateChartBtn) {
+                console.log('그래프 업데이트 버튼 이벤트 등록');
+                updateChartBtn.addEventListener('click', function() {
+                    console.log('그래프 업데이트 버튼 클릭됨');
+                    updateTiltChart();
+                });
+            } else {
+                console.error('그래프 업데이트 버튼을 찾을 수 없습니다!');
+            }
             
+            // 저장 버튼
+            const saveTiltBtn = document.getElementById('saveTiltBtn');
+            if (saveTiltBtn) {
+                console.log('저장 버튼 이벤트 등록');
+                saveTiltBtn.addEventListener('click', function() {
+                    console.log('저장 버튼 클릭됨');
+                    saveTiltData();
+                });
+            } else {
+                console.error('저장 버튼을 찾을 수 없습니다!');
+            }
+            
+            // 조정 이력 자동 저장
+            const historyTextarea = document.getElementById('tiltAdjustmentHistory');
+            if (historyTextarea) {
+                historyTextarea.addEventListener('change', autoSaveTiltData);
+            }
+            
+            // 계측 정보 폼 자동 저장
             autoSaveForm('tiltInfoForm', STORAGE_KEYS.TILT_DATA);
+            
+            console.log('✅ 페이지 초기화 완료');
         });
 
         // 합성 기울기 계산
@@ -362,11 +403,6 @@
                     <div class="alert alert-success">
                         <strong>✅ 정상 범위</strong><br>
                         모든 측정 지점의 기울기가 정상 범위(1.0° 미만)입니다.
-                    </div>
-                `;
-            }
-                        <strong>❌ 측정 결과 부적합</strong><br>
-                        ${exceedCount}개 지점의 기울기가 허용 범위를 초과했습니다. 조정이 필요합니다.
                     </div>
                 `;
             }
