@@ -57,13 +57,21 @@
                 <form id="tiltInfoForm">
                     <div class="info-grid">
                         <div class="info-item">
-                            <label class="info-label" for="tiltPhase">측정 단계</label>
-                            <select id="tiltPhase" name="tiltPhase" class="info-value" required>
-                                <option value="">선택하세요</option>
-                                <option value="운송전">운송 전</option>
-                                <option value="운송중">운송 중</option>
-                                <option value="운송후">운송 후</option>
-                            </select>
+                            <label class="info-label">측정 단계 (복수 선택 가능)</label>
+                            <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                                <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                                    <input type="checkbox" name="tiltPhase" value="운송전" style="width: auto; cursor: pointer;">
+                                    <span>운송 전</span>
+                                </label>
+                                <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                                    <input type="checkbox" name="tiltPhase" value="운송중" style="width: auto; cursor: pointer;">
+                                    <span>운송 중</span>
+                                </label>
+                                <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                                    <input type="checkbox" name="tiltPhase" value="운송후" style="width: auto; cursor: pointer;">
+                                    <span>운송 후</span>
+                                </label>
+                            </div>
                         </div>
                         <div class="info-item">
                             <label class="info-label" for="tiltDevice">측정 장비</label>
