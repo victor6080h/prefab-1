@@ -93,20 +93,20 @@
                 <!-- 부재 측면 (가로로 길게) -->
                 <div class="mb-3">
                     <h3 class="mb-2">부재 측면</h3>
-                    <div class="photo-upload" style="min-height: 150px; width: 100%;">
+                    <div class="photo-upload" style="min-height: 150px; width: 100%;" onclick="document.getElementById('errorFileInput1').click()">
+                        <input type="file" id="errorFileInput1" accept="image/*" onchange="previewImage(this, 'errorPhoto1')" style="display: none;">
                         <img id="errorPhoto1" style="display:none;">
-                        <input type="file" accept="image/*" onchange="previewImage(this, 'errorPhoto1')">
-                        <span class="placeholder">📷 사진 업로드</span>
+                        <span class="placeholder">📷 사진 업로드 (클릭하여 업로드)</span>
                     </div>
                 </div>
                 
                 <!-- 부재 사진 -->
                 <div>
                     <h3 class="mb-2">부재 사진</h3>
-                    <div class="photo-upload" style="min-height: 500px;">
+                    <div class="photo-upload" style="min-height: 500px;" onclick="document.getElementById('errorFileInput2').click()">
+                        <input type="file" id="errorFileInput2" accept="image/*" onchange="previewImage(this, 'errorPhoto2')" style="display: none;">
                         <img id="errorPhoto2" style="display:none;">
-                        <input type="file" accept="image/*" onchange="previewImage(this, 'errorPhoto2')">
-                        <span class="placeholder">📷 사진 업로드</span>
+                        <span class="placeholder">📷 사진 업로드 (클릭하여 업로드)</span>
                     </div>
                 </div>
             </div>
@@ -245,10 +245,21 @@
         }
 
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('부재 제작 오차 페이지 로드 시작');
+            
             loadErrorData();
             
-            loadSavedImage('errorPhoto1');
-            loadSavedImage('errorPhoto2');
+            // 저장된 이미지 로드 (DOM이 완전히 로드된 후)
+            console.log('이미지 로드 시작...');
+            const savedPhotos = getFromStorage(STORAGE_KEYS.PHOTOS);
+            console.log('저장된 사진 데이터:', savedPhotos);
+            
+            setTimeout(function() {
+                console.log('이미지 로드 실행 (100ms 후)');
+                loadSavedImage('errorPhoto1');
+                loadSavedImage('errorPhoto2');
+                console.log('이미지 로드 완료');
+            }, 100);
 
             const now = new Date();
             now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
