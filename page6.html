@@ -93,7 +93,7 @@
                 <!-- 부재 측면 (가로로 길게) -->
                 <div class="mb-3">
                     <h3 class="mb-2">부재 측면</h3>
-                    <div class="photo-upload" style="min-height: 150px; width: 100%;" onclick="document.getElementById('errorFileInput1').click()">
+                    <div class="photo-upload" style="min-height: 150px; width: 100%;" onclick="handleErrorPhotoClick('errorFileInput1')">
                         <input type="file" id="errorFileInput1" accept="image/*" onchange="previewImage(this, 'errorPhoto1')" style="display: none;">
                         <img id="errorPhoto1" style="display:none;">
                         <span class="placeholder">📷 사진 업로드 (클릭하여 업로드)</span>
@@ -103,7 +103,7 @@
                 <!-- 부재 사진 -->
                 <div>
                     <h3 class="mb-2">부재 사진</h3>
-                    <div class="photo-upload" style="min-height: 500px;" onclick="document.getElementById('errorFileInput2').click()">
+                    <div class="photo-upload" style="min-height: 500px;" onclick="handleErrorPhotoClick('errorFileInput2')">
                         <input type="file" id="errorFileInput2" accept="image/*" onchange="previewImage(this, 'errorPhoto2')" style="display: none;">
                         <img id="errorPhoto2" style="display:none;">
                         <span class="placeholder">📷 사진 업로드 (클릭하여 업로드)</span>
@@ -242,6 +242,23 @@
                 return { upper: 10, lower: 5 };
             }
             return 5; // 기본값
+        }
+        
+        // 사진 클릭 핸들러
+        function handleErrorPhotoClick(inputId) {
+            console.log('=== handleErrorPhotoClick 호출 ===');
+            console.log('inputId:', inputId);
+            
+            const input = document.getElementById(inputId);
+            console.log('input 요소:', input);
+            
+            if (input) {
+                console.log('input.click() 실행');
+                input.click();
+            } else {
+                console.error('❌ input 요소를 찾을 수 없습니다:', inputId);
+                alert('파일 입력 요소를 찾을 수 없습니다. 페이지를 새로고침해주세요.');
+            }
         }
 
         document.addEventListener('DOMContentLoaded', function() {
