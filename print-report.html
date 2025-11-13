@@ -112,7 +112,7 @@
             box-shadow: 0 6px 8px rgba(0,0,0,0.15);
         }
     </style>
-    <script defer src="assets/js/script.js"></script>
+    <script src="assets/js/script.js"></script>
 </head>
 <body>
     <!-- 인쇄 버튼 -->
@@ -125,6 +125,7 @@
     <div id="loadingMessage" class="loading-message">
         <h2>📄 전체 보고서 생성 중...</h2>
         <p>모든 데이터를 불러오고 있습니다. 잠시만 기다려주세요.</p>
+        <div id="debugInfo" style="margin-top: 1rem; font-size: 0.9rem; color: #666;"></div>
     </div>
 
     <!-- 보고서 컨테이너 -->
@@ -184,15 +185,33 @@
     <script>
         // 전체 보고서 생성
         document.addEventListener('DOMContentLoaded', async function() {
-            console.log('전체 보고서 생성 시작');
+            console.log('=== 전체 보고서 생성 시작 ===');
             
-            // 현재 날짜/시간 표시
-            const now = new Date();
-            document.getElementById('reportDate').textContent = 
-                `생성일시: ${now.toLocaleString('ko-KR')}`;
-
+            const debugInfo = document.getElementById('debugInfo');
+            
             try {
+                // 필수 함수 확인
+                debugInfo.textContent = '필수 함수 확인 중...';
+                console.log('STORAGE_KEYS 확인:', typeof STORAGE_KEYS);
+                console.log('getFromStorage 확인:', typeof getFromStorage);
+                console.log('drawBarChart 확인:', typeof drawBarChart);
+                
+                if (typeof STORAGE_KEYS === 'undefined') {
+                    throw new Error('STORAGE_KEYS가 정의되지 않았습니다. script.js 로드를 확인하세요.');
+                }
+                
+                if (typeof getFromStorage === 'undefined') {
+                    throw new Error('getFromStorage 함수가 정의되지 않았습니다.');
+                }
+                
+                // 현재 날짜/시간 표시
+                debugInfo.textContent = '날짜/시간 설정 중...';
+                const now = new Date();
+                document.getElementById('reportDate').textContent = 
+                    `생성일시: ${now.toLocaleString('ko-KR')}`;
+
                 // 모든 섹션 로드
+                debugInfo.textContent = '데이터 로드 중...';
                 await loadAllSections();
                 
                 // 로딩 메시지 숨기고 보고서 표시
@@ -202,35 +221,84 @@
                 console.log('✅ 전체 보고서 생성 완료');
             } catch (error) {
                 console.error('❌ 보고서 생성 오류:', error);
+                console.error('오류 스택:', error.stack);
                 document.getElementById('loadingMessage').innerHTML = `
                     <h2>❌ 보고서 생성 실패</h2>
-                    <p>오류가 발생했습니다: ${error.message}</p>
+                    <p style="color: red; font-weight: bold;">오류: ${error.message}</p>
+                    <pre style="text-align: left; background: #f5f5f5; padding: 1rem; border-radius: 4px; overflow: auto; max-width: 600px; margin: 1rem auto;">${error.stack || '스택 정보 없음'}</pre>
                     <button class="btn btn-primary" onclick="location.reload()">다시 시도</button>
+                    <button class="btn btn-secondary" onclick="window.location.href='index.html'" style="margin-left: 1rem;">메인으로</button>
                 `;
             }
         });
 
         async function loadAllSections() {
-            // 1. 종합 요약
-            await loadSection1();
+            const debugInfo = document.getElementById('debugInfo');
             
-            // 2. 운송결과 리포트
-            await loadSection2();
+            try {
+                debugInfo.textContent = '1. 종합 요약 로드 중...';
+                console.log('섹션 1 로드 시작');
+                loadSection1();
+                console.log('섹션 1 로드 완료');
+            } catch (e) {
+                console.error('섹션 1 오류:', e);
+            }
             
-            // 3. 가속도 데이터
-            await loadSection3();
+            try {
+                debugInfo.textContent = '2. 운송결과 리포트 로드 중...';
+                console.log('섹션 2 로드 시작');
+                loadSection2();
+                console.log('섹션 2 로드 완료');
+            } catch (e) {
+                console.error('섹션 2 오류:', e);
+            }
             
-            // 4. 기울기 데이터
-            await loadSection4();
+            try {
+                debugInfo.textContent = '3. 가속도 데이터 로드 중...';
+                console.log('섹션 3 로드 시작');
+                loadSection3();
+                console.log('섹션 3 로드 완료');
+            } catch (e) {
+                console.error('섹션 3 오류:', e);
+            }
             
-            // 5. 변형률 데이터
-            await loadSection5();
+            try {
+                debugInfo.textContent = '4. 기울기 데이터 로드 중...';
+                console.log('섹션 4 로드 시작');
+                loadSection4();
+                console.log('섹션 4 로드 완료');
+            } catch (e) {
+                console.error('섹션 4 오류:', e);
+            }
             
-            // 6. 부재 제작 오차
-            await loadSection6();
+            try {
+                debugInfo.textContent = '5. 변형률 데이터 로드 중...';
+                console.log('섹션 5 로드 시작');
+                loadSection5();
+                console.log('섹션 5 로드 완료');
+            } catch (e) {
+                console.error('섹션 5 오류:', e);
+            }
             
-            // 7. 종합 대시보드
-            await loadSection7();
+            try {
+                debugInfo.textContent = '6. 부재 제작 오차 로드 중...';
+                console.log('섹션 6 로드 시작');
+                loadSection6();
+                console.log('섹션 6 로드 완료');
+            } catch (e) {
+                console.error('섹션 6 오류:', e);
+            }
+            
+            try {
+                debugInfo.textContent = '7. 종합 대시보드 로드 중...';
+                console.log('섹션 7 로드 시작');
+                loadSection7();
+                console.log('섹션 7 로드 완료');
+            } catch (e) {
+                console.error('섹션 7 오류:', e);
+            }
+            
+            debugInfo.textContent = '모든 섹션 로드 완료!';
         }
 
         // 1. 종합 요약 로드
