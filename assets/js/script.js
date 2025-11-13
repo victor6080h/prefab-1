@@ -23,27 +23,67 @@ const STORAGE_KEYS = {
  * @param {string} previewId - 미리보기 이미지 요소의 ID
  */
 function previewImage(input, previewId) {
-    const preview = document.getElementById(previewId);
-    const container = input.closest('.photo-upload');
-    const placeholder = container.querySelector('.placeholder');
+    if (!input || !input.files || !input.files[0]) {
+        console.error('파일이 선택되지 않았습니다.');
+        return;
+    }
     
-    if (input.files && input.files[0]) {
-        const reader = new FileReader();
-        
-        reader.onload = function(e) {
+    const preview = document.getElementById(previewId);
+    if (!preview) {
+        console.error('미리보기 요소를 찾을 수 없습니다:', previewId);
+        return;
+    }
+    
+    const container = input.parentElement;
+    const placeholder = container ? container.querySelector('.placeholder') : null;
+    
+    const file = input.files[0];
+    
+    // 파일 크기 체크 (5MB 제한)
+    if (file.size > 5 * 1024 * 1024) {
+        alert('이미지 크기가 너무 큽니다. 5MB 이하의 이미지를 선택해주세요.');
+        input.value = '';
+        return;
+    }
+    
+    // 이미지 파일 타입 체크
+    if (!file.type.startsWith('image/')) {
+        alert('이미지 파일만 업로드 가능합니다.');
+        input.value = '';
+        return;
+    }
+    
+    const reader = new FileReader();
+    
+    reader.onload = function(e) {
+        try {
             preview.src = e.target.result;
             preview.style.display = 'block';
+            
             if (placeholder) {
                 placeholder.style.display = 'none';
             }
-            container.classList.add('has-image');
+            
+            if (container) {
+                container.classList.add('has-image');
+            }
             
             // 이미지를 LocalStorage에 저장
             saveImageToStorage(previewId, e.target.result);
-        };
-        
-        reader.readAsDataURL(input.files[0]);
-    }
+            
+            console.log('이미지 업로드 성공:', previewId);
+        } catch (error) {
+            console.error('이미지 처리 오류:', error);
+            alert('이미지 처리 중 오류가 발생했습니다.');
+        }
+    };
+    
+    reader.onerror = function(error) {
+        console.error('파일 읽기 오류:', error);
+        alert('파일을 읽는 중 오류가 발생했습니다.');
+    };
+    
+    reader.readAsDataURL(file);
 }
 
 /**
@@ -64,22 +104,41 @@ function saveImageToStorage(key, imageData) {
 
 /**
  * 저장된 이미지 로드
- * @param {string} key - 저장 키
  * @param {string} previewId - 미리보기 이미지 요소의 ID
  */
 function loadSavedImage(previewId) {
-    const photos = getFromStorage(STORAGE_KEYS.PHOTOS);
-    if (photos && photos[previewId]) {
+    try {
+        const photos = getFromStorage(STORAGE_KEYS.PHOTOS);
+        if (!photos || !photos[previewId]) {
+            return;
+        }
+        
         const preview = document.getElementById(previewId);
+        if (!preview) {
+            console.error('미리보기 요소를 찾을 수 없습니다:', previewId);
+            return;
+        }
+        
         const container = preview.closest('.photo-upload');
+        if (!container) {
+            console.error('컨테이너를 찾을 수 없습니다:', previewId);
+            return;
+        }
+        
         const placeholder = container.querySelector('.placeholder');
         
         preview.src = photos[previewId];
         preview.style.display = 'block';
+        
         if (placeholder) {
             placeholder.style.display = 'none';
         }
+        
         container.classList.add('has-image');
+        
+        console.log('저장된 이미지 로드 성공:', previewId);
+    } catch (error) {
+        console.error('이미지 로드 오류:', error);
     }
 }
 
