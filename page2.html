@@ -148,34 +148,48 @@
                 <h2 class="card-title">현장 사진</h2>
             </div>
             <div class="card-body">
-                <!-- 2x2 그리드 레이아웃 -->
-                <div style="display: grid; grid-template-columns: repeat(2, 1fr); grid-template-rows: repeat(2, 1fr); gap: 1.5rem;">
-                    <!-- 사진 1 (좌상) -->
+                <!-- 2x3 그리드 레이아웃 (6장) -->
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem;">
+                    <!-- 사진 1 -->
                     <div class="photo-upload">
                         <img id="photo1Preview" style="display:none;">
                         <input type="file" accept="image/*" onchange="previewImage(this, 'photo1Preview')">
                         <span class="placeholder">📷 사진 1</span>
                     </div>
 
-                    <!-- 사진 2 (우상) -->
+                    <!-- 사진 2 -->
                     <div class="photo-upload">
                         <img id="photo2Preview" style="display:none;">
                         <input type="file" accept="image/*" onchange="previewImage(this, 'photo2Preview')">
                         <span class="placeholder">📷 사진 2</span>
                     </div>
 
-                    <!-- 사진 3 (좌하) -->
+                    <!-- 사진 3 -->
                     <div class="photo-upload">
                         <img id="photo3Preview" style="display:none;">
                         <input type="file" accept="image/*" onchange="previewImage(this, 'photo3Preview')">
                         <span class="placeholder">📷 사진 3</span>
                     </div>
 
-                    <!-- 사진 4 (우하) -->
+                    <!-- 사진 4 -->
                     <div class="photo-upload">
                         <img id="photo4Preview" style="display:none;">
                         <input type="file" accept="image/*" onchange="previewImage(this, 'photo4Preview')">
                         <span class="placeholder">📷 사진 4</span>
+                    </div>
+
+                    <!-- 사진 5 -->
+                    <div class="photo-upload">
+                        <img id="photo5Preview" style="display:none;">
+                        <input type="file" accept="image/*" onchange="previewImage(this, 'photo5Preview')">
+                        <span class="placeholder">📷 사진 5</span>
+                    </div>
+
+                    <!-- 사진 6 -->
+                    <div class="photo-upload">
+                        <img id="photo6Preview" style="display:none;">
+                        <input type="file" accept="image/*" onchange="previewImage(this, 'photo6Preview')">
+                        <span class="placeholder">📷 사진 6</span>
                     </div>
                 </div>
             </div>
@@ -219,6 +233,8 @@
             loadSavedImage('photo2Preview');
             loadSavedImage('photo3Preview');
             loadSavedImage('photo4Preview');
+            loadSavedImage('photo5Preview');
+            loadSavedImage('photo6Preview');
             
             // 폼 변경 시 진행률 업데이트
             document.getElementById('surveyForm').addEventListener('change', updateSurveyProgress);
