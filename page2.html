@@ -213,11 +213,19 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('페이지 로드 시작');
+            
+            // 저장된 데이터 확인
+            const savedData = getFromStorage(STORAGE_KEYS.SURVEY_DATA);
+            console.log('저장된 설문 데이터:', savedData);
+            
             // 폼 데이터 로드
             loadFormData('surveyForm', STORAGE_KEYS.SURVEY_DATA);
+            console.log('폼 데이터 로드 완료');
             
             // 자동 저장 설정
             autoSaveForm('surveyForm', STORAGE_KEYS.SURVEY_DATA);
+            console.log('자동 저장 설정 완료');
             
             // 저장된 이미지 로드 (DOM이 완전히 로드된 후)
             setTimeout(function() {
@@ -227,13 +235,21 @@
                 loadSavedImage('photo4Preview');
                 loadSavedImage('photo5Preview');
                 loadSavedImage('photo6Preview');
+                console.log('이미지 로드 완료');
             }, 100);
             
             // 폼 변경 시 진행률 업데이트
-            document.getElementById('surveyForm').addEventListener('change', updateSurveyProgress);
+            const surveyForm = document.getElementById('surveyForm');
+            if (surveyForm) {
+                surveyForm.addEventListener('change', function() {
+                    console.log('폼 변경 감지 - 자동 저장 실행');
+                    updateSurveyProgress();
+                });
+            }
             
             // 초기 진행률 계산
             updateSurveyProgress();
+            console.log('초기 진행률 계산 완료');
         });
 
         // 설문 진행률 업데이트
@@ -340,32 +356,55 @@
         function saveSurvey() {
             const form = document.getElementById('surveyForm');
             
+            if (!form) {
+                console.error('설문 폼을 찾을 수 없습니다.');
+                alert('폼을 찾을 수 없습니다. 페이지를 새로고침해주세요.');
+                return;
+            }
+            
             // 필수 질문 확인
             let allAnswered = true;
+            let unansweredQuestions = [];
+            
             for (let i = 1; i <= 5; i++) {
                 const question = form.querySelector(`input[name="q${i}"]:checked`);
                 if (!question) {
                     allAnswered = false;
-                    break;
+                    unansweredQuestions.push(i);
                 }
             }
 
             if (!allAnswered) {
-                alert('모든 질문에 답변해 주세요.');
+                alert(`모든 질문에 답변해 주세요.\n미답변 질문: ${unansweredQuestions.join(', ')}번`);
                 return;
             }
 
             // 폼 데이터 저장
             const formData = new FormData(form);
             const data = {};
+            
             for (let [key, value] of formData.entries()) {
                 data[key] = value;
             }
             
-            saveToStorage(STORAGE_KEYS.SURVEY_DATA, data);
+            console.log('저장할 데이터:', data);
             
-            alert('운송결과 리포트가 저장되었습니다!');
-            updateSurveyProgress();
+            // LocalStorage에 저장
+            const saveResult = saveToStorage(STORAGE_KEYS.SURVEY_DATA, data);
+            
+            if (saveResult !== false) {
+                console.log('저장 성공:', STORAGE_KEYS.SURVEY_DATA);
+                
+                // 저장된 데이터 확인
+                const savedData = getFromStorage(STORAGE_KEYS.SURVEY_DATA);
+                console.log('저장된 데이터 확인:', savedData);
+                
+                alert('✅ 운송결과 리포트가 저장되었습니다!');
+                updateSurveyProgress();
+            } else {
+                console.error('저장 실패');
+                alert('❌ 저장에 실패했습니다. 다시 시도해주세요.');
+            }
         }
     </script>
 </body>
