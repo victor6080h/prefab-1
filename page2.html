@@ -379,16 +379,21 @@
 
         // 저장된 사진 데이터 확인
         function checkStoredPhotos() {
+            console.log('=== 사진 데이터 확인 시작 ===');
             const photos = getFromStorage(STORAGE_KEYS.PHOTOS);
             
             if (!photos) {
-                alert('저장된 사진이 없습니다.');
+                alert('저장된 사진이 없습니다.\n\n먼저 사진을 업로드해주세요.');
                 console.log('저장된 사진 데이터: null');
                 return;
             }
             
             const photoKeys = Object.keys(photos);
             const photoCount = photoKeys.length;
+            
+            // 운송결과 리포트 사진만 필터링
+            const transportPhotos = photoKeys.filter(key => key.startsWith('photo') && key.endsWith('Preview'));
+            const transportPhotoCount = transportPhotos.length;
             
             console.log('=== 저장된 사진 데이터 확인 ===');
             console.log('사진 개수:', photoCount);
@@ -399,7 +404,24 @@
                 console.log(`${key}: ${(dataSize / 1024).toFixed(2)} KB`);
             });
             
-            alert(`저장된 사진: ${photoCount}개\n\n${photoKeys.join('\n')}\n\n자세한 정보는 콘솔을 확인하세요.`);
+            // 상세 정보 생성
+            let detailInfo = `📊 전체 저장된 사진: ${photoCount}개\n`;
+            detailInfo += `📷 운송결과 리포트 사진: ${transportPhotoCount}개\n\n`;
+            detailInfo += `--- 사진 목록 ---\n`;
+            
+            for (let i = 1; i <= 6; i++) {
+                const key = `photo${i}Preview`;
+                if (photos[key]) {
+                    const size = (photos[key].length / 1024).toFixed(2);
+                    detailInfo += `✅ 사진 ${i}: ${size} KB\n`;
+                } else {
+                    detailInfo += `❌ 사진 ${i}: 없음\n`;
+                }
+            }
+            
+            detailInfo += `\n자세한 정보는 콘솔(F12)을 확인하세요.`;
+            
+            alert(detailInfo);
         }
         
         // 설문 저장
