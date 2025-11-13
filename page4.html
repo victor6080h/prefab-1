@@ -103,36 +103,36 @@
                     <tbody id="tiltDataTable">
                         <tr>
                             <td>상단 좌측</td>
-                            <td><input type="number" step="0.1" name="tiltX1" class="tilt-input" onchange="calculateTiltResultant(1)"></td>
-                            <td><input type="number" step="0.1" name="tiltY1" class="tilt-input" onchange="calculateTiltResultant(1)"></td>
+                            <td><input type="number" step="0.1" name="tiltX1" class="tilt-input" oninput="calculateTiltResultant(1)" onchange="calculateTiltResultant(1)"></td>
+                            <td><input type="number" step="0.1" name="tiltY1" class="tilt-input" oninput="calculateTiltResultant(1)" onchange="calculateTiltResultant(1)"></td>
                             <td id="tiltResult1">-</td>
                             <td id="tiltStatus1">-</td>
                         </tr>
                         <tr>
                             <td>상단 우측</td>
-                            <td><input type="number" step="0.1" name="tiltX2" class="tilt-input" onchange="calculateTiltResultant(2)"></td>
-                            <td><input type="number" step="0.1" name="tiltY2" class="tilt-input" onchange="calculateTiltResultant(2)"></td>
+                            <td><input type="number" step="0.1" name="tiltX2" class="tilt-input" oninput="calculateTiltResultant(2)" onchange="calculateTiltResultant(2)"></td>
+                            <td><input type="number" step="0.1" name="tiltY2" class="tilt-input" oninput="calculateTiltResultant(2)" onchange="calculateTiltResultant(2)"></td>
                             <td id="tiltResult2">-</td>
                             <td id="tiltStatus2">-</td>
                         </tr>
                         <tr>
                             <td>중앙</td>
-                            <td><input type="number" step="0.1" name="tiltX3" class="tilt-input" onchange="calculateTiltResultant(3)"></td>
-                            <td><input type="number" step="0.1" name="tiltY3" class="tilt-input" onchange="calculateTiltResultant(3)"></td>
+                            <td><input type="number" step="0.1" name="tiltX3" class="tilt-input" oninput="calculateTiltResultant(3)" onchange="calculateTiltResultant(3)"></td>
+                            <td><input type="number" step="0.1" name="tiltY3" class="tilt-input" oninput="calculateTiltResultant(3)" onchange="calculateTiltResultant(3)"></td>
                             <td id="tiltResult3">-</td>
                             <td id="tiltStatus3">-</td>
                         </tr>
                         <tr>
                             <td>하단 좌측</td>
-                            <td><input type="number" step="0.1" name="tiltX4" class="tilt-input" onchange="calculateTiltResultant(4)"></td>
-                            <td><input type="number" step="0.1" name="tiltY4" class="tilt-input" onchange="calculateTiltResultant(4)"></td>
+                            <td><input type="number" step="0.1" name="tiltX4" class="tilt-input" oninput="calculateTiltResultant(4)" onchange="calculateTiltResultant(4)"></td>
+                            <td><input type="number" step="0.1" name="tiltY4" class="tilt-input" oninput="calculateTiltResultant(4)" onchange="calculateTiltResultant(4)"></td>
                             <td id="tiltResult4">-</td>
                             <td id="tiltStatus4">-</td>
                         </tr>
                         <tr>
                             <td>하단 우측</td>
-                            <td><input type="number" step="0.1" name="tiltX5" class="tilt-input" onchange="calculateTiltResultant(5)"></td>
-                            <td><input type="number" step="0.1" name="tiltY5" class="tilt-input" onchange="calculateTiltResultant(5)"></td>
+                            <td><input type="number" step="0.1" name="tiltX5" class="tilt-input" oninput="calculateTiltResultant(5)" onchange="calculateTiltResultant(5)"></td>
+                            <td><input type="number" step="0.1" name="tiltY5" class="tilt-input" oninput="calculateTiltResultant(5)" onchange="calculateTiltResultant(5)"></td>
                             <td id="tiltResult5">-</td>
                             <td id="tiltStatus5">-</td>
                         </tr>
@@ -238,32 +238,63 @@
 
         // 합성 기울기 계산
         function calculateTiltResultant(index) {
+            console.log('=== calculateTiltResultant 호출 ===');
+            console.log('index:', index);
+            
             const xInput = document.querySelector(`input[name="tiltX${index}"]`);
             const yInput = document.querySelector(`input[name="tiltY${index}"]`);
+            
+            console.log('xInput:', xInput);
+            console.log('yInput:', yInput);
+            
+            if (!xInput || !yInput) {
+                console.error('입력 필드를 찾을 수 없습니다:', index);
+                return;
+            }
             
             const x = parseFloat(xInput.value) || 0;
             const y = parseFloat(yInput.value) || 0;
             
-            const resultant = Math.sqrt(x*x + y*y);
+            console.log('X값:', x, 'Y값:', y);
             
-            document.getElementById(`tiltResult${index}`).textContent = resultant.toFixed(2) + '°';
+            const resultant = Math.sqrt(x*x + y*y);
+            console.log('합성 기울기:', resultant);
+            
+            const resultCell = document.getElementById(`tiltResult${index}`);
+            if (resultCell) {
+                resultCell.textContent = resultant.toFixed(2) + '°';
+                console.log('결과 셀 업데이트:', resultant.toFixed(2) + '°');
+            } else {
+                console.error('결과 셀을 찾을 수 없습니다:', `tiltResult${index}`);
+            }
             
             // 상태 표시 (3단계 평가)
             const statusCell = document.getElementById(`tiltStatus${index}`);
+            if (!statusCell) {
+                console.error('상태 셀을 찾을 수 없습니다:', `tiltStatus${index}`);
+                return;
+            }
+            
             if (resultant > TILT_WARNING) {
                 statusCell.innerHTML = '<span class="badge badge-danger">위험</span>';
+                console.log('상태: 위험');
             } else if (resultant >= TILT_CAUTION) {
                 statusCell.innerHTML = '<span class="badge" style="background-color: #f97316; color: white;">경고</span>';
+                console.log('상태: 경고');
             } else if (resultant >= TILT_NORMAL) {
                 statusCell.innerHTML = '<span class="badge badge-warning">주의</span>';
+                console.log('상태: 주의');
             } else if (resultant > 0) {
                 statusCell.innerHTML = '<span class="badge badge-success">정상</span>';
+                console.log('상태: 정상');
             } else {
                 statusCell.textContent = '-';
+                console.log('상태: 값 없음');
             }
             
             // 통계 업데이트
             updateTiltStatistics();
+            console.log('통계 업데이트 완료');
         }
 
         // 통계 업데이트
