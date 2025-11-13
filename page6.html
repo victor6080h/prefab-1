@@ -93,21 +93,21 @@
                 <!-- 부재 측면 (가로로 길게) -->
                 <div class="mb-3">
                     <h3 class="mb-2">부재 측면</h3>
-                    <div class="photo-upload" style="min-height: 150px; width: 100%;" onclick="handleErrorPhotoClick('errorFileInput1')">
+                    <label for="errorFileInput1" class="photo-upload" style="min-height: 150px; width: 100%; margin: 0;">
                         <input type="file" id="errorFileInput1" accept="image/*" onchange="previewImage(this, 'errorPhoto1')" style="display: none;">
                         <img id="errorPhoto1" style="display:none;">
                         <span class="placeholder">📷 사진 업로드 (클릭하여 업로드)</span>
-                    </div>
+                    </label>
                 </div>
                 
                 <!-- 부재 사진 -->
                 <div>
                     <h3 class="mb-2">부재 사진</h3>
-                    <div class="photo-upload" style="min-height: 500px;" onclick="handleErrorPhotoClick('errorFileInput2')">
+                    <label for="errorFileInput2" class="photo-upload" style="min-height: 500px; margin: 0;">
                         <input type="file" id="errorFileInput2" accept="image/*" onchange="previewImage(this, 'errorPhoto2')" style="display: none;">
                         <img id="errorPhoto2" style="display:none;">
                         <span class="placeholder">📷 사진 업로드 (클릭하여 업로드)</span>
-                    </div>
+                    </label>
                 </div>
             </div>
         </div>
