@@ -299,6 +299,25 @@ tbody tr:last-child td {
     border-bottom: none;
 }
 
+/* 테이블 내 입력 필드 */
+table input[type="number"],
+table input[type="text"] {
+    width: 100%;
+    min-width: 80px;
+    padding: 0.5rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    font-size: var(--font-size-base);
+}
+
+table input[type="number"]:focus,
+table input[type="text"]:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
+}
+}
+
 /* 이미지 업로드 */
 .photo-upload {
     position: relative;
