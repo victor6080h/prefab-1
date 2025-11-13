@@ -6,8 +6,13 @@
     <title>전체 보고서 인쇄 - Prefab 품질관리 시스템</title>
     <link rel="stylesheet" href="assets/css/style.css">
     <style>
-        /* 인쇄 전용 스타일 */
+        /* 인쇄 전용 스타일 - 기본 (세로) */
         @media print {
+            @page {
+                size: A4 portrait;
+                margin: 15mm;
+            }
+            
             body {
                 margin: 0;
                 padding: 0;
@@ -33,6 +38,7 @@
             .card {
                 page-break-inside: avoid;
                 break-inside: avoid;
+                margin-bottom: 1rem;
             }
             
             /* 그래프 크기 조정 */
@@ -41,15 +47,84 @@
                 height: auto !important;
             }
             
-            /* 사진 크기 조정 */
+            /* 사진 크기 조정 - 세로 */
             .photo-upload img {
                 max-width: 200px !important;
                 max-height: 200px !important;
             }
             
-            /* 운송결과 리포트 사진 그리드 - 인쇄 시 2열 */
+            /* 운송결과 리포트 사진 그리드 - 세로: 2열 */
             .transport-photo-grid {
                 grid-template-columns: repeat(2, 1fr) !important;
+            }
+            
+            /* 표 스타일 최적화 */
+            table {
+                font-size: 10pt;
+                width: 100%;
+            }
+            
+            th, td {
+                padding: 0.5rem;
+            }
+            
+            /* 헤더 최적화 */
+            .print-header {
+                padding: 1.5rem 1rem !important;
+            }
+            
+            .print-header h1 {
+                font-size: 2rem !important;
+            }
+            
+            .section-title {
+                font-size: 1.5rem !important;
+                margin-top: 1rem !important;
+            }
+        }
+        
+        /* 가로 방향 인쇄 스타일 */
+        @media print {
+            body.landscape-print {
+                width: 297mm;
+                height: 210mm;
+            }
+            
+            body.landscape-print @page {
+                size: A4 landscape;
+                margin: 15mm;
+            }
+            
+            body.landscape-print .container {
+                max-width: 100% !important;
+            }
+            
+            /* 가로 모드에서 사진 그리드 3열 */
+            body.landscape-print .transport-photo-grid {
+                grid-template-columns: repeat(3, 1fr) !important;
+            }
+            
+            /* 가로 모드에서 사진 크기 조정 */
+            body.landscape-print .photo-upload img {
+                max-width: 250px !important;
+                max-height: 250px !important;
+            }
+            
+            /* 가로 모드에서 표 폰트 크기 증가 */
+            body.landscape-print table {
+                font-size: 11pt;
+            }
+            
+            /* 가로 모드에서 카드 2열 배치 */
+            body.landscape-print .two-column-landscape {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1rem;
+            }
+            
+            /* 그래프 크기 최적화 */
+            body.landscape-print .chart-container {
+                height: 400px !important;
             }
         }
         
@@ -97,6 +172,58 @@
             top: 20px;
             right: 20px;
             z-index: 1000;
+            background: white;
+            padding: 1rem;
+            border-radius: var(--radius-lg);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        .print-options {
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--border-color);
+        }
+        
+        .print-options h3 {
+            margin: 0 0 0.75rem 0;
+            font-size: 1rem;
+            color: var(--text-primary);
+        }
+        
+        .orientation-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .orientation-btn {
+            flex: 1;
+            padding: 0.75rem 1rem;
+            border: 2px solid var(--border-color);
+            background: white;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.25rem;
+        }
+        
+        .orientation-btn:hover {
+            border-color: var(--primary-color);
+            background: #f0f9ff;
+        }
+        
+        .orientation-btn.active {
+            border-color: var(--primary-color);
+            background: var(--primary-color);
+            color: white;
+            font-weight: 600;
+        }
+        
+        .orientation-btn .icon {
+            font-size: 1.5rem;
         }
         
         .print-button {
@@ -109,6 +236,9 @@
             cursor: pointer;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
             transition: all 0.3s ease;
+            width: 100%;
+            display: block;
+            margin-bottom: 0.5rem;
         }
         
         .print-button:hover {
@@ -116,14 +246,43 @@
             transform: translateY(-2px);
             box-shadow: 0 6px 8px rgba(0,0,0,0.15);
         }
+        
+        .back-button {
+            background: #6b7280;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            font-size: 0.95rem;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            width: 100%;
+            display: block;
+        }
+        
+        .back-button:hover {
+            background: #4b5563;
+        }
     </style>
     <script src="assets/js/script.js"></script>
 </head>
 <body>
     <!-- 인쇄 버튼 -->
     <div class="print-button-container no-print">
-        <button class="print-button" onclick="window.print()">🖨️ 전체 보고서 인쇄</button>
-        <button class="btn btn-secondary" onclick="window.location.href='index.html'" style="margin-top: 0.5rem; display: block;">← 돌아가기</button>
+        <div class="print-options">
+            <h3>📄 용지 방향 선택</h3>
+            <div class="orientation-buttons">
+                <button class="orientation-btn active" id="portraitBtn" onclick="setOrientation('portrait')">
+                    <span class="icon">📄</span>
+                    <span>세로 (A4)</span>
+                </button>
+                <button class="orientation-btn" id="landscapeBtn" onclick="setOrientation('landscape')">
+                    <span class="icon">📃</span>
+                    <span>가로 (A4)</span>
+                </button>
+            </div>
+        </div>
+        <button class="print-button" onclick="printReport()">🖨️ 전체 보고서 인쇄</button>
+        <button class="back-button" onclick="window.location.href='index.html'">← 돌아가기</button>
     </div>
 
     <!-- 로딩 메시지 -->
@@ -188,6 +347,55 @@
     </div>
 
     <script>
+        // 인쇄 방향 설정 변수
+        let currentOrientation = 'portrait'; // 기본값: 세로
+        
+        // 방향 설정 함수
+        function setOrientation(orientation) {
+            console.log('용지 방향 변경:', orientation);
+            currentOrientation = orientation;
+            
+            // 버튼 활성화 상태 변경
+            document.getElementById('portraitBtn').classList.toggle('active', orientation === 'portrait');
+            document.getElementById('landscapeBtn').classList.toggle('active', orientation === 'landscape');
+            
+            // body 클래스 변경
+            if (orientation === 'landscape') {
+                document.body.classList.add('landscape-print');
+            } else {
+                document.body.classList.remove('landscape-print');
+            }
+        }
+        
+        // 인쇄 함수
+        function printReport() {
+            console.log('보고서 인쇄 시작, 방향:', currentOrientation);
+            
+            // 인쇄 전 확인 메시지
+            const orientationText = currentOrientation === 'portrait' ? '세로 (Portrait)' : '가로 (Landscape)';
+            const printConfirm = confirm(
+                `📄 전체 보고서를 ${orientationText} 방향으로 인쇄하시겠습니까?\n\n` +
+                `인쇄 설정:\n` +
+                `• 용지 방향: ${orientationText}\n` +
+                `• 용지 크기: A4\n` +
+                `• 배경 그래픽: 활성화 권장\n` +
+                `• 여백: 보통\n\n` +
+                `인쇄 대화상자에서 방향을 "${orientationText}"로 설정해주세요.`
+            );
+            
+            if (printConfirm) {
+                // 방향에 따라 body 클래스 설정
+                if (currentOrientation === 'landscape') {
+                    document.body.classList.add('landscape-print');
+                } else {
+                    document.body.classList.remove('landscape-print');
+                }
+                
+                // 인쇄 실행
+                window.print();
+            }
+        }
+        
         // 전체 보고서 생성
         document.addEventListener('DOMContentLoaded', async function() {
             console.log('=== 전체 보고서 생성 시작 ===');
