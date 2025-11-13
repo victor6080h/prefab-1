@@ -314,7 +314,16 @@
                 if (changeText !== '-') {
                     const value = Math.abs(parseFloat(changeText));
                     values.push(value);
-                    colors.push(value > STRAIN_THRESHOLD ? '#ef4444' : '#3b82f6');
+                    // 3단계 평가 색상
+                    if (value > STRAIN_WARNING) {
+                        colors.push('#ef4444'); // 위험
+                    } else if (value >= STRAIN_CAUTION) {
+                        colors.push('#f97316'); // 경고
+                    } else if (value >= STRAIN_NORMAL) {
+                        colors.push('#f59e0b'); // 주의
+                    } else {
+                        colors.push('#10b981'); // 정상
+                    }
                 } else {
                     values.push(0);
                     colors.push('#9ca3af');
@@ -325,6 +334,11 @@
                 labels: labels,
                 values: values,
                 colors: colors,
+                thresholds: {
+                    upper: STRAIN_WARNING,
+                    warning: STRAIN_CAUTION,
+                    caution: STRAIN_NORMAL
+                },
                 title: '센서별 변형률 측정 결과',
                 yLabel: '변형률 (με)'
             });
