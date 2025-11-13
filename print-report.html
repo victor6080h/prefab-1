@@ -1067,13 +1067,16 @@
             
             const errorData = getFromStorage(STORAGE_KEYS.FABRICATION_ERROR) || {};
             console.log('부재 제작 오차 데이터:', errorData);
+            console.log('부재 제작 오차 info:', errorData.info);
+            console.log('부재 제작 오차 measurements:', errorData.measurements);
+            console.log('부재 제작 오차 notes:', errorData.notes);
             
-            // 사진 데이터
+            // 사진 데이터 - page6.html은 2개의 사진만 사용 (errorPhoto1, errorPhoto2)
             let photosHTML = '';
             const photos = getFromStorage(STORAGE_KEYS.PHOTOS) || {};
             console.log('저장된 사진 데이터:', photos);
             
-            for (let i = 1; i <= 3; i++) {
+            for (let i = 1; i <= 2; i++) {
                 const photoKey = `errorPhoto${i}`;
                 const photoData = photos[photoKey];
                 
@@ -1082,7 +1085,7 @@
                 if (photoData) {
                     photosHTML += `
                         <div class="photo-upload has-image" style="min-height: 200px;">
-                            <img src="${photoData}" style="display: block; max-width: 100%; max-height: 200px;">
+                            <img src="${photoData}" style="display: block; max-width: 100%; max-height: 300px; object-fit: contain;">
                         </div>
                     `;
                 } else {
@@ -1094,20 +1097,41 @@
                 }
             }
             
+            // 측정 일시 포맷팅
+            let formattedDate = '-';
+            if (errorData.info?.errorDate) {
+                try {
+                    const date = new Date(errorData.info.errorDate);
+                    formattedDate = date.toLocaleString('ko-KR', {
+                        year: 'numeric',
+                        month: '2-digit',
+                        day: '2-digit',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    });
+                } catch (e) {
+                    formattedDate = errorData.info.errorDate;
+                }
+            }
+            
             container.innerHTML = `
                 <div class="card">
                     <div class="card-header">
-                        <h3 class="card-title">계측 정보</h3>
+                        <h3 class="card-title">측정 정보</h3>
                     </div>
                     <div class="card-body">
                         <div class="info-grid">
                             <div class="info-item">
-                                <label class="info-label">측정일</label>
-                                <div class="info-value">${errorData.info?.errorDate || '-'}</div>
+                                <label class="info-label">측정 일시</label>
+                                <div class="info-value">${formattedDate}</div>
                             </div>
                             <div class="info-item">
-                                <label class="info-label">측정자</label>
-                                <div class="info-value">${errorData.info?.errorInspector || '-'}</div>
+                                <label class="info-label">측정 장비</label>
+                                <div class="info-value">${errorData.info?.errorDevice || '-'}</div>
+                            </div>
+                            <div class="info-item">
+                                <label class="info-label">측정 환경</label>
+                                <div class="info-value">${errorData.info?.errorWeather || '-'}</div>
                             </div>
                         </div>
                     </div>
@@ -1149,14 +1173,25 @@
 
                 <div class="card" style="margin-top: 1rem;">
                     <div class="card-header">
-                        <h3 class="card-title">현장 사진</h3>
+                        <h3 class="card-title">부재 사진</h3>
                     </div>
                     <div class="card-body">
-                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;">
+                        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem;">
                             ${photosHTML}
                         </div>
                     </div>
                 </div>
+                
+                ${errorData.notes ? `
+                <div class="card" style="margin-top: 1rem;">
+                    <div class="card-header">
+                        <h3 class="card-title">비고 및 특이사항</h3>
+                    </div>
+                    <div class="card-body">
+                        <p style="white-space: pre-wrap;">${errorData.notes}</p>
+                    </div>
+                </div>
+                ` : ''}
             `;
             
             console.log('섹션 6 HTML 설정 완료');
@@ -1179,43 +1214,112 @@
         }
 
         function generateErrorTableRows(measurements) {
+            console.log('generateErrorTableRows 호출, measurements:', measurements);
+            
             if (!measurements || measurements.length === 0) {
+                console.log('측정 데이터 없음');
                 return '<tr><td colspan="6" style="text-align: center;">데이터 없음</td></tr>';
             }
             
-            const labels = ['길이', '너비', '높이', '대각선 1', '대각선 2'];
+            // page6.html의 실제 항목명 사용 (3개만)
+            const labels = ['패널 길이', '패널 폭', '패널 두께'];
             let html = '';
             
             measurements.forEach((m, i) => {
+                console.log(`측정 항목 ${i}:`, m);
+                
+                // page6.html은 { design, measured, error } 구조 사용
+                const design = m.design || 0;
+                const measured = m.measured || 0;
                 const error = m.error || 0;
-                const tolerance = m.tolerance || 0;
-                const status = Math.abs(error) > tolerance ? '불합격' : '합격';
-                const statusClass = Math.abs(error) > tolerance ? 'danger' : 'success';
+                
+                // 허용오차 계산 (page6.html의 로직 복제)
+                let tolerance = 5; // 기본값
+                let toleranceDisplay = '±5.0';
+                
+                if (i === 0) { // 패널 길이
+                    const onePct = design * 0.01;
+                    tolerance = Math.min(onePct, 30);
+                    toleranceDisplay = `±${tolerance.toFixed(1)}`;
+                } else if (i === 1) { // 패널 폭
+                    const onePct = design * 0.01;
+                    tolerance = Math.min(onePct, 30);
+                    toleranceDisplay = `±${tolerance.toFixed(1)}`;
+                } else if (i === 2) { // 패널 두께
+                    toleranceDisplay = '+10.0 ~ -5.0';
+                    // 두께는 비대칭 허용오차: +10mm ~ -5mm
+                    const passCheck = error >= -5 && error <= 10;
+                    const status = passCheck ? '합격' : '불합격';
+                    const statusClass = passCheck ? 'success' : 'danger';
+                    
+                    html += `
+                        <tr>
+                            <td>${labels[i]}</td>
+                            <td>${design.toFixed(1)}</td>
+                            <td>${measured.toFixed(1)}</td>
+                            <td>${error.toFixed(1)}</td>
+                            <td>${toleranceDisplay}</td>
+                            <td><span class="badge badge-${statusClass}">${status}</span></td>
+                        </tr>
+                    `;
+                    return;
+                }
+                
+                // 길이, 폭은 대칭 허용오차
+                const status = Math.abs(error) <= tolerance ? '합격' : '불합격';
+                const statusClass = Math.abs(error) <= tolerance ? 'success' : 'danger';
                 
                 html += `
                     <tr>
-                        <td>${labels[i] || `항목 ${i+1}`}</td>
-                        <td>${m.design.toFixed(1)}</td>
-                        <td>${m.actual.toFixed(1)}</td>
+                        <td>${labels[i]}</td>
+                        <td>${design.toFixed(1)}</td>
+                        <td>${measured.toFixed(1)}</td>
                         <td>${error.toFixed(1)}</td>
-                        <td>±${tolerance.toFixed(1)}</td>
+                        <td>${toleranceDisplay}</td>
                         <td><span class="badge badge-${statusClass}">${status}</span></td>
                     </tr>
                 `;
             });
             
+            console.log('생성된 HTML:', html);
             return html;
         }
 
         function drawErrorChart(measurements) {
-            const labels = ['길이', '너비', '높이', '대각선 1', '대각선 2'];
+            console.log('drawErrorChart 호출, measurements:', measurements);
+            
+            // page6.html의 실제 항목명 사용 (3개만)
+            const labels = ['패널 길이', '패널 폭', '패널 두께'];
             const values = measurements.map(m => Math.abs(m.error || 0));
-            const tolerances = measurements.map(m => m.tolerance || 0);
-            const colors = measurements.map(m => {
-                const error = Math.abs(m.error || 0);
-                const tolerance = m.tolerance || 0;
-                return error > tolerance ? '#ef4444' : '#10b981';
+            
+            // 각 항목의 허용오차 계산
+            const tolerances = measurements.map((m, i) => {
+                if (i === 0 || i === 1) { // 길이, 폭
+                    const onePct = (m.design || 0) * 0.01;
+                    return Math.min(onePct, 30);
+                } else { // 두께
+                    return 10; // 상한 허용오차
+                }
             });
+            
+            // 합격/불합격 색상
+            const colors = measurements.map((m, i) => {
+                const error = m.error || 0;
+                
+                if (i === 2) { // 패널 두께 (비대칭)
+                    return (error >= -5 && error <= 10) ? '#10b981' : '#ef4444';
+                } else { // 길이, 폭 (대칭)
+                    const design = m.design || 0;
+                    const onePct = design * 0.01;
+                    const tolerance = Math.min(onePct, 30);
+                    return Math.abs(error) <= tolerance ? '#10b981' : '#ef4444';
+                }
+            });
+            
+            console.log('차트 labels:', labels.slice(0, measurements.length));
+            console.log('차트 values:', values);
+            console.log('차트 colors:', colors);
+            console.log('차트 tolerances:', tolerances);
             
             const chartData = {
                 labels: labels.slice(0, measurements.length),
@@ -1228,7 +1332,14 @@
                 yLabel: '오차 (mm)'
             };
             
-            drawBarChart('errorChart', chartData);
+            console.log('차트 데이터:', chartData);
+            
+            try {
+                drawBarChart('errorChart', chartData);
+                console.log('차트 그리기 성공');
+            } catch (error) {
+                console.error('차트 그리기 실패:', error);
+            }
         }
 
         // 7. 종합 대시보드 로드
