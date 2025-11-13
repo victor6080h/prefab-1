@@ -176,20 +176,6 @@
                         <input type="file" accept="image/*" onchange="previewImage(this, 'photo4Preview')">
                         <span class="placeholder">📷 사진 업로드</span>
                     </div>
-
-                    <!-- 사진 5 -->
-                    <div class="photo-upload">
-                        <img id="photo5Preview" style="display:none;">
-                        <input type="file" accept="image/*" onchange="previewImage(this, 'photo5Preview')">
-                        <span class="placeholder">📷 사진 업로드</span>
-                    </div>
-
-                    <!-- 사진 6 -->
-                    <div class="photo-upload">
-                        <img id="photo6Preview" style="display:none;">
-                        <input type="file" accept="image/*" onchange="previewImage(this, 'photo6Preview')">
-                        <span class="placeholder">📷 사진 업로드</span>
-                    </div>
                 </div>
             </div>
         </div>
@@ -232,8 +218,6 @@
             loadSavedImage('photo2Preview');
             loadSavedImage('photo3Preview');
             loadSavedImage('photo4Preview');
-            loadSavedImage('photo5Preview');
-            loadSavedImage('photo6Preview');
             
             // 폼 변경 시 진행률 업데이트
             document.getElementById('surveyForm').addEventListener('change', updateSurveyProgress);
