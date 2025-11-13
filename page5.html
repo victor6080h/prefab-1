@@ -52,23 +52,26 @@
                 <form id="strainInfoForm">
                     <div class="info-grid">
                         <div class="info-item">
-                            <label class="info-label" for="strainDate">측정 일시</label>
-                            <input type="datetime-local" id="strainDate" name="strainDate" class="info-value" required>
-                        </div>
-                        <div class="info-item">
-                            <label class="info-label" for="strainLoadCondition">하중 조건</label>
-                            <select id="strainLoadCondition" name="strainLoadCondition" class="info-value" required>
-                                <option value="">선택하세요</option>
-                                <option value="무하중">무하중</option>
-                                <option value="자중">자중</option>
-                                <option value="설계하중">설계하중</option>
-                                <option value="시험하중">시험하중</option>
-                            </select>
+                            <label class="info-label">측정 단계 (복수 선택 가능)</label>
+                            <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                                <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                                    <input type="checkbox" name="strainPhase" value="운송전" style="width: auto; cursor: pointer;">
+                                    <span>운송 전</span>
+                                </label>
+                                <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                                    <input type="checkbox" name="strainPhase" value="운송중" style="width: auto; cursor: pointer;">
+                                    <span>운송 중</span>
+                                </label>
+                                <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                                    <input type="checkbox" name="strainPhase" value="운송후" style="width: auto; cursor: pointer;">
+                                    <span>운송 후</span>
+                                </label>
+                            </div>
                         </div>
                         <div class="info-item">
                             <label class="info-label" for="strainDevice">측정 장비</label>
                             <input type="text" id="strainDevice" name="strainDevice" class="info-value" 
-                                   placeholder="예: 스트레인 게이지" required>
+                                   placeholder="예: 디지털 경사계" required>
                         </div>
                     </div>
                 </form>
