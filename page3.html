@@ -51,28 +51,9 @@
                 <form id="accelInfoForm">
                     <div class="info-grid">
                         <div class="info-item">
-                            <label class="info-label" for="accelDate">측정 일시</label>
-                            <input type="datetime-local" id="accelDate" name="accelDate" class="info-value" required>
-                        </div>
-                        <div class="info-item">
-                            <label class="info-label" for="accelLocation">측정 위치</label>
-                            <select id="accelLocation" name="accelLocation" class="info-value" required>
-                                <option value="">선택하세요</option>
-                                <option value="제작장">제작장</option>
-                                <option value="운반중">운반중</option>
-                                <option value="양중">양중</option>
-                                <option value="설치">설치</option>
-                            </select>
-                        </div>
-                        <div class="info-item">
                             <label class="info-label" for="accelDevice">측정 장비</label>
                             <input type="text" id="accelDevice" name="accelDevice" class="info-value" 
                                    placeholder="예: ABC-100" required>
-                        </div>
-                        <div class="info-item">
-                            <label class="info-label" for="accelOperator">측정자</label>
-                            <input type="text" id="accelOperator" name="accelOperator" class="info-value" 
-                                   placeholder="측정자명" required>
                         </div>
                     </div>
                 </form>
@@ -188,32 +169,7 @@
             </div>
         </div>
 
-        <!-- 측정 사진 -->
-        <div class="card">
-            <div class="card-header">
-                <h2 class="card-title">측정 현장 사진</h2>
-            </div>
-            <div class="card-body">
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;">
-                    <div>
-                        <h3 class="mb-2">측정 장비 설치</h3>
-                        <div class="photo-upload">
-                            <img id="accelPhoto1" style="display:none;">
-                            <input type="file" accept="image/*" onchange="previewImage(this, 'accelPhoto1')">
-                            <span class="placeholder">📷 사진 업로드</span>
-                        </div>
-                    </div>
-                    <div>
-                        <h3 class="mb-2">측정 중 현장</h3>
-                        <div class="photo-upload">
-                            <img id="accelPhoto2" style="display:none;">
-                            <input type="file" accept="image/*" onchange="previewImage(this, 'accelPhoto2')">
-                            <span class="placeholder">📷 사진 업로드</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+
 
         <!-- 네비게이션 버튼 -->
         <div class="nav-buttons">
@@ -231,14 +187,7 @@
             // 저장된 데이터 로드
             loadAccelData();
             
-            // 저장된 이미지 로드
-            loadSavedImage('accelPhoto1');
-            loadSavedImage('accelPhoto2');
 
-            // 현재 날짜/시간 설정
-            const now = new Date();
-            now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
-            document.getElementById('accelDate').value = now.toISOString().slice(0, 16);
 
             // 입력 필드 변경 시 자동 저장
             document.querySelectorAll('.accel-input').forEach(input => {
