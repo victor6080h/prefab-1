@@ -190,41 +190,6 @@
             </div>
         </div>
 
-        <!-- 측정 사진 -->
-        <div class="card">
-            <div class="card-header">
-                <h2 class="card-title">측정 현장 사진</h2>
-            </div>
-            <div class="card-body">
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;">
-                    <div>
-                        <h3 class="mb-2">설치 전 상태</h3>
-                        <div class="photo-upload">
-                            <img id="tiltPhoto1" style="display:none;">
-                            <input type="file" accept="image/*" onchange="previewImage(this, 'tiltPhoto1')">
-                            <span class="placeholder">📷 사진 업로드</span>
-                        </div>
-                    </div>
-                    <div>
-                        <h3 class="mb-2">설치 완료 상태</h3>
-                        <div class="photo-upload">
-                            <img id="tiltPhoto2" style="display:none;">
-                            <input type="file" accept="image/*" onchange="previewImage(this, 'tiltPhoto2')">
-                            <span class="placeholder">📷 사진 업로드</span>
-                        </div>
-                    </div>
-                    <div>
-                        <h3 class="mb-2">측정 장비</h3>
-                        <div class="photo-upload">
-                            <img id="tiltPhoto3" style="display:none;">
-                            <input type="file" accept="image/*" onchange="previewImage(this, 'tiltPhoto3')">
-                            <span class="placeholder">📷 사진 업로드</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
         <!-- 네비게이션 버튼 -->
         <div class="nav-buttons">
             <a href="page3.html" class="btn btn-secondary">← 이전: 가속도 데이터</a>
@@ -242,9 +207,7 @@
             loadTiltData();
             
             // 저장된 이미지 로드
-            loadSavedImage('tiltPhoto1');
-            loadSavedImage('tiltPhoto2');
-            loadSavedImage('tiltPhoto3');
+
 
             // 현재 날짜/시간 설정
             const now = new Date();

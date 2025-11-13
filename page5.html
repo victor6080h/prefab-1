@@ -174,32 +174,6 @@
             </div>
         </div>
 
-        <div class="card">
-            <div class="card-header">
-                <h2 class="card-title">측정 사진</h2>
-            </div>
-            <div class="card-body">
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;">
-                    <div>
-                        <h3 class="mb-2">센서 부착 위치</h3>
-                        <div class="photo-upload">
-                            <img id="strainPhoto1" style="display:none;">
-                            <input type="file" accept="image/*" onchange="previewImage(this, 'strainPhoto1')">
-                            <span class="placeholder">📷 사진 업로드</span>
-                        </div>
-                    </div>
-                    <div>
-                        <h3 class="mb-2">측정 장비</h3>
-                        <div class="photo-upload">
-                            <img id="strainPhoto2" style="display:none;">
-                            <input type="file" accept="image/*" onchange="previewImage(this, 'strainPhoto2')">
-                            <span class="placeholder">📷 사진 업로드</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
         <div class="nav-buttons">
             <a href="page4.html" class="btn btn-secondary">← 이전: 기울기 데이터</a>
             <button class="btn btn-success" onclick="saveStrainData()">💾 저장하기</button>
@@ -212,8 +186,7 @@
 
         document.addEventListener('DOMContentLoaded', function() {
             loadStrainData();
-            loadSavedImage('strainPhoto1');
-            loadSavedImage('strainPhoto2');
+
 
             const now = new Date();
             now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
