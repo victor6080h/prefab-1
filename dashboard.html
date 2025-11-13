@@ -226,8 +226,15 @@
                 <h2 class="card-title">보고서 관리</h2>
             </div>
             <div class="card-body">
+                <div class="alert alert-info mb-3">
+                    <strong>📄 인쇄 안내</strong>
+                    <p style="margin-top: 0.5rem;">
+                        보고서 인쇄 시 모든 데이터, 그래프, 이미지가 포함됩니다. 
+                        인쇄 설정에서 <strong>"배경 그래픽 인쇄"</strong> 옵션을 활성화하면 색상이 출력됩니다.
+                    </p>
+                </div>
                 <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
-                    <button class="btn btn-primary" onclick="window.print()">🖨️ 보고서 인쇄</button>
+                    <button class="btn btn-primary" onclick="printDashboard()">🖨️ 전체 보고서 인쇄</button>
                     <button class="btn btn-success" onclick="exportData()">📥 데이터 내보내기</button>
                     <button class="btn btn-warning" onclick="location.href='index.html'">🏠 처음으로</button>
                 </div>
@@ -438,6 +445,37 @@
                     document.getElementById('finalJudgmentCard').className = 'card';
                     document.getElementById('finalJudgmentCard').style.borderLeft = '8px solid var(--danger-color)';
                 }
+            }
+        }
+        
+        // 인쇄 함수
+        function printDashboard() {
+            // 인쇄 전 확인 메시지
+            const printConfirm = confirm(
+                '📄 전체 보고서를 인쇄하시겠습니까?\n\n' +
+                '인쇄 팁:\n' +
+                '1. 인쇄 설정에서 "배경 그래픽" 옵션을 활성화하세요\n' +
+                '2. 용지 방향: 세로 (Portrait)\n' +
+                '3. 용지 크기: A4\n' +
+                '4. 여백: 보통\n\n' +
+                '모든 데이터, 그래프, 이미지가 포함됩니다.'
+            );
+            
+            if (printConfirm) {
+                // 인쇄 전 페이지 제목 변경
+                const originalTitle = document.title;
+                const projectInfo = getFromStorage(STORAGE_KEYS.PROJECT_INFO);
+                if (projectInfo && projectInfo.projectName) {
+                    document.title = `품질관리보고서_${projectInfo.projectName}_${getCurrentDate()}`;
+                }
+                
+                // 인쇄 실행
+                window.print();
+                
+                // 제목 복원
+                setTimeout(() => {
+                    document.title = originalTitle;
+                }, 100);
             }
         }
     </script>
