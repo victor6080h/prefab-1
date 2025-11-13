@@ -95,10 +95,24 @@ function saveImageToStorage(key, imageData) {
     try {
         const photos = getFromStorage(STORAGE_KEYS.PHOTOS) || {};
         photos[key] = imageData;
-        saveToStorage(STORAGE_KEYS.PHOTOS, photos);
+        
+        const saveResult = saveToStorage(STORAGE_KEYS.PHOTOS, photos);
+        
+        if (saveResult !== false) {
+            console.log('이미지 저장 성공:', key);
+            console.log('현재 저장된 사진 개수:', Object.keys(photos).length);
+        } else {
+            console.error('이미지 저장 실패:', key);
+        }
     } catch (e) {
         console.error('이미지 저장 실패:', e);
-        alert('이미지가 너무 큽니다. 더 작은 이미지를 선택해주세요.');
+        
+        // LocalStorage 용량 초과 시
+        if (e.name === 'QuotaExceededError' || e.code === 22) {
+            alert('저장공간이 부족합니다. 이미지 크기를 줄이거나 기존 데이터를 삭제해주세요.');
+        } else {
+            alert('이미지 저장 중 오류가 발생했습니다.');
+        }
     }
 }
 
@@ -109,7 +123,17 @@ function saveImageToStorage(key, imageData) {
 function loadSavedImage(previewId) {
     try {
         const photos = getFromStorage(STORAGE_KEYS.PHOTOS);
-        if (!photos || !photos[previewId]) {
+        
+        console.log('이미지 로드 시도:', previewId);
+        console.log('저장된 사진 데이터:', photos ? Object.keys(photos) : 'null');
+        
+        if (!photos) {
+            console.log('저장된 사진 데이터가 없습니다.');
+            return;
+        }
+        
+        if (!photos[previewId]) {
+            console.log('해당 ID의 사진이 없습니다:', previewId);
             return;
         }
         
@@ -127,6 +151,7 @@ function loadSavedImage(previewId) {
         
         const placeholder = container.querySelector('.placeholder');
         
+        // 이미지 데이터 설정
         preview.src = photos[previewId];
         preview.style.display = 'block';
         
@@ -136,9 +161,9 @@ function loadSavedImage(previewId) {
         
         container.classList.add('has-image');
         
-        console.log('저장된 이미지 로드 성공:', previewId);
+        console.log('✅ 저장된 이미지 로드 성공:', previewId);
     } catch (error) {
-        console.error('이미지 로드 오류:', error);
+        console.error('❌ 이미지 로드 오류:', previewId, error);
     }
 }
 

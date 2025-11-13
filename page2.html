@@ -228,7 +228,14 @@
             console.log('자동 저장 설정 완료');
             
             // 저장된 이미지 로드 (DOM이 완전히 로드된 후)
+            console.log('이미지 로드 시작...');
+            
+            // LocalStorage에 저장된 사진 데이터 확인
+            const savedPhotos = getFromStorage(STORAGE_KEYS.PHOTOS);
+            console.log('저장된 사진 데이터:', savedPhotos);
+            
             setTimeout(function() {
+                console.log('이미지 로드 실행 (100ms 후)');
                 loadSavedImage('photo1Preview');
                 loadSavedImage('photo2Preview');
                 loadSavedImage('photo3Preview');
