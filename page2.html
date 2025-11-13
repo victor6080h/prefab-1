@@ -142,59 +142,6 @@
             </div>
         </div>
 
-        <!-- 사진 첨부 -->
-        <div class="card">
-            <div class="card-header">
-                <h2 class="card-title">현장 사진</h2>
-            </div>
-            <div class="card-body">
-                <!-- 2x3 그리드 레이아웃 (6장) -->
-                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem;">
-                    <!-- 사진 1 -->
-                    <div class="photo-upload" onclick="document.getElementById('fileInput1').click()">
-                        <input type="file" id="fileInput1" accept="image/*" onchange="previewImage(this, 'photo1Preview')" style="display: none;">
-                        <img id="photo1Preview" style="display:none;">
-                        <span class="placeholder">📷 사진 1 (클릭하여 업로드)</span>
-                    </div>
-
-                    <!-- 사진 2 -->
-                    <div class="photo-upload" onclick="document.getElementById('fileInput2').click()">
-                        <input type="file" id="fileInput2" accept="image/*" onchange="previewImage(this, 'photo2Preview')" style="display: none;">
-                        <img id="photo2Preview" style="display:none;">
-                        <span class="placeholder">📷 사진 2 (클릭하여 업로드)</span>
-                    </div>
-
-                    <!-- 사진 3 -->
-                    <div class="photo-upload" onclick="document.getElementById('fileInput3').click()">
-                        <input type="file" id="fileInput3" accept="image/*" onchange="previewImage(this, 'photo3Preview')" style="display: none;">
-                        <img id="photo3Preview" style="display:none;">
-                        <span class="placeholder">📷 사진 3 (클릭하여 업로드)</span>
-                    </div>
-
-                    <!-- 사진 4 -->
-                    <div class="photo-upload" onclick="document.getElementById('fileInput4').click()">
-                        <input type="file" id="fileInput4" accept="image/*" onchange="previewImage(this, 'photo4Preview')" style="display: none;">
-                        <img id="photo4Preview" style="display:none;">
-                        <span class="placeholder">📷 사진 4 (클릭하여 업로드)</span>
-                    </div>
-
-                    <!-- 사진 5 -->
-                    <div class="photo-upload" onclick="document.getElementById('fileInput5').click()">
-                        <input type="file" id="fileInput5" accept="image/*" onchange="previewImage(this, 'photo5Preview')" style="display: none;">
-                        <img id="photo5Preview" style="display:none;">
-                        <span class="placeholder">📷 사진 5 (클릭하여 업로드)</span>
-                    </div>
-
-                    <!-- 사진 6 -->
-                    <div class="photo-upload" onclick="document.getElementById('fileInput6').click()">
-                        <input type="file" id="fileInput6" accept="image/*" onchange="previewImage(this, 'photo6Preview')" style="display: none;">
-                        <img id="photo6Preview" style="display:none;">
-                        <span class="placeholder">📷 사진 6 (클릭하여 업로드)</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-
         <!-- 설문 결과 요약 -->
         <div class="card">
             <div class="card-header">
@@ -227,16 +174,6 @@
             
             // 자동 저장 설정
             autoSaveForm('surveyForm', STORAGE_KEYS.SURVEY_DATA);
-            
-            // 저장된 이미지 로드 (DOM이 완전히 로드된 후)
-            setTimeout(function() {
-                loadSavedImage('photo1Preview');
-                loadSavedImage('photo2Preview');
-                loadSavedImage('photo3Preview');
-                loadSavedImage('photo4Preview');
-                loadSavedImage('photo5Preview');
-                loadSavedImage('photo6Preview');
-            }, 100);
             
             // 폼 변경 시 진행률 업데이트
             document.getElementById('surveyForm').addEventListener('change', updateSurveyProgress);
