@@ -19,7 +19,7 @@
         <div class="container">
             <ul>
                 <li><a href="index.html">1. 종합 요약</a></li>
-                <li><a href="page2.html">2. 품질관리자 설문</a></li>
+                <li><a href="page2.html">2. 운송결과 리포트</a></li>
                 <li><a href="page3.html">3. 가속도 데이터</a></li>
                 <li><a href="page4.html">4. 기울기 데이터</a></li>
                 <li><a href="page5.html" class="active">5. 변형률 데이터</a></li>
@@ -33,9 +33,15 @@
         <div class="alert alert-info">
             <strong>📏 변형률 계측 안내</strong>
             <p style="margin-top: 0.5rem;">
-                Prefab 부재의 응력 상태를 확인하기 위한 변형률 측정입니다. 
-                허용 범위: <strong>±100με</strong> (마이크로 스트레인)
+                Prefab 부재의 응력 상태를 확인하기 위한 변형률 측정입니다. (마이크로 스트레인)
             </p>
+            <div style="margin-top: 0.75rem; padding: 0.5rem; background-color: white; border-radius: 0.25rem;">
+                <strong>평가 기준:</strong><br>
+                <span style="color: #10b981;">✓ 정상: 60με 미만</span> | 
+                <span style="color: #f59e0b;">⚠ 주의: 60με ~ 80με</span> | 
+                <span style="color: #f97316;">⚠️ 경고: 80με ~ 100με</span> | 
+                <span style="color: #ef4444;">❌ 위험: 100με 초과</span>
+            </div>
         </div>
 
         <div class="card">
@@ -46,28 +52,30 @@
                 <form id="strainInfoForm">
                     <div class="info-grid">
                         <div class="info-item">
-                            <label class="info-label" for="strainDate">측정 일시</label>
-                            <input type="datetime-local" id="strainDate" name="strainDate" class="info-value" required>
-                        </div>
-                        <div class="info-item">
-                            <label class="info-label" for="strainLoadCondition">하중 조건</label>
-                            <select id="strainLoadCondition" name="strainLoadCondition" class="info-value" required>
-                                <option value="">선택하세요</option>
-                                <option value="무하중">무하중</option>
-                                <option value="자중">자중</option>
-                                <option value="설계하중">설계하중</option>
-                                <option value="시험하중">시험하중</option>
-                            </select>
+                            <label class="info-label">측정 단계 (복수 선택 가능)</label>
+                            <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                                <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                                    <input type="checkbox" name="strainPhase" value="운송전" style="width: auto; cursor: pointer;">
+                                    <span>운송전</span>
+                                </label>
+                                <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                                    <input type="checkbox" name="strainPhase" value="운송중" style="width: auto; cursor: pointer;">
+                                    <span>운송중</span>
+                                </label>
+                                <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                                    <input type="checkbox" name="strainPhase" value="운송후" style="width: auto; cursor: pointer;">
+                                    <span>운송후</span>
+                                </label>
+                                <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                                    <input type="checkbox" name="strainPhase" value="운송전-운송중-운송후" style="width: auto; cursor: pointer;">
+                                    <span>운송전-운송중-운송후</span>
+                                </label>
+                            </div>
                         </div>
                         <div class="info-item">
                             <label class="info-label" for="strainDevice">측정 장비</label>
                             <input type="text" id="strainDevice" name="strainDevice" class="info-value" 
-                                   placeholder="예: 스트레인 게이지" required>
-                        </div>
-                        <div class="info-item">
-                            <label class="info-label" for="strainOperator">측정자</label>
-                            <input type="text" id="strainOperator" name="strainOperator" class="info-value" 
-                                   placeholder="측정자명" required>
+                                   placeholder="예: 디지털 경사계" required>
                         </div>
                     </div>
                 </form>
@@ -179,32 +187,6 @@
             </div>
         </div>
 
-        <div class="card">
-            <div class="card-header">
-                <h2 class="card-title">측정 사진</h2>
-            </div>
-            <div class="card-body">
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;">
-                    <div>
-                        <h3 class="mb-2">센서 부착 위치</h3>
-                        <div class="photo-upload">
-                            <img id="strainPhoto1" style="display:none;">
-                            <input type="file" accept="image/*" onchange="previewImage(this, 'strainPhoto1')">
-                            <span class="placeholder">📷 사진 업로드</span>
-                        </div>
-                    </div>
-                    <div>
-                        <h3 class="mb-2">측정 장비</h3>
-                        <div class="photo-upload">
-                            <img id="strainPhoto2" style="display:none;">
-                            <input type="file" accept="image/*" onchange="previewImage(this, 'strainPhoto2')">
-                            <span class="placeholder">📷 사진 업로드</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
         <div class="nav-buttons">
             <a href="page4.html" class="btn btn-secondary">← 이전: 기울기 데이터</a>
             <button class="btn btn-success" onclick="saveStrainData()">💾 저장하기</button>
@@ -213,12 +195,15 @@
     </main>
 
     <script>
-        const STRAIN_THRESHOLD = 100; // με
+        // 변형률 임계값 (με) - 3단계 평가
+        const STRAIN_NORMAL = 60;    // 정상
+        const STRAIN_CAUTION = 80;   // 주의
+        const STRAIN_WARNING = 100;  // 경고
+        // 100 초과는 위험
 
         document.addEventListener('DOMContentLoaded', function() {
             loadStrainData();
-            loadSavedImage('strainPhoto1');
-            loadSavedImage('strainPhoto2');
+
 
             const now = new Date();
             now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
@@ -242,8 +227,13 @@
             document.getElementById(`strainChange${index}`).textContent = change.toFixed(0) + ' με';
             
             const statusCell = document.getElementById(`strainStatus${index}`);
-            if (Math.abs(change) > STRAIN_THRESHOLD) {
-                statusCell.innerHTML = '<span class="badge badge-danger">초과</span>';
+            const absChange = Math.abs(change);
+            if (absChange > STRAIN_WARNING) {
+                statusCell.innerHTML = '<span class="badge badge-danger">위험</span>';
+            } else if (absChange >= STRAIN_CAUTION) {
+                statusCell.innerHTML = '<span class="badge" style="background-color: #f97316; color: white;">경고</span>';
+            } else if (absChange >= STRAIN_NORMAL) {
+                statusCell.innerHTML = '<span class="badge badge-warning">주의</span>';
             } else if (change !== 0) {
                 statusCell.innerHTML = '<span class="badge badge-success">정상</span>';
             } else {
@@ -266,31 +256,56 @@
             
             const max = Math.max(...changes);
             const avg = changes.reduce((a, b) => a + b, 0) / changes.length;
-            const exceedCount = changes.filter(c => c > STRAIN_THRESHOLD).length;
+            
+            // 3단계 평가 카운트
+            const dangerCount = changes.filter(c => c > STRAIN_WARNING).length;
+            const warningCount = changes.filter(c => c >= STRAIN_CAUTION && c <= STRAIN_WARNING).length;
+            const cautionCount = changes.filter(c => c >= STRAIN_NORMAL && c < STRAIN_CAUTION).length;
+            const normalCount = changes.filter(c => c < STRAIN_NORMAL).length;
             
             document.getElementById('maxStrain').textContent = max.toFixed(0) + ' με';
             document.getElementById('avgStrain').textContent = avg.toFixed(0) + ' με';
-            document.getElementById('strainExceedCount').textContent = exceedCount + ' 개';
+            document.getElementById('strainExceedCount').textContent = dangerCount + ' 개';
             
             const finalStatus = document.getElementById('strainFinalStatus');
             const resultAlert = document.getElementById('strainResultAlert');
             
-            if (exceedCount === 0) {
-                finalStatus.className = 'stat-card success';
-                finalStatus.querySelector('.stat-value').textContent = '적합';
+            if (dangerCount > 0) {
+                finalStatus.className = 'stat-card danger';
+                finalStatus.querySelector('.stat-value').textContent = '위험';
                 resultAlert.innerHTML = `
-                    <div class="alert alert-success">
-                        <strong>✅ 측정 결과 적합</strong><br>
-                        모든 센서의 변형률이 허용 범위(±${STRAIN_THRESHOLD}με) 이내입니다.
+                    <div class="alert alert-danger">
+                        <strong>❌ 위험 수준</strong><br>
+                        ${dangerCount}개 센서가 위험 기준(100με)을 초과했습니다. 즉시 점검이 필요합니다.
+                    </div>
+                `;
+            } else if (warningCount > 0) {
+                finalStatus.className = 'stat-card';
+                finalStatus.style.backgroundColor = '#f97316';
+                finalStatus.style.color = 'white';
+                finalStatus.querySelector('.stat-value').textContent = '경고';
+                resultAlert.innerHTML = `
+                    <div class="alert" style="background-color: #fff7ed; border-color: #f97316; color: #9a3412;">
+                        <strong>⚠️ 경고 수준</strong><br>
+                        ${warningCount}개 센서가 경고 범위(80με~100με)입니다. 면밀한 모니터링이 필요합니다.
+                    </div>
+                `;
+            } else if (cautionCount > 0) {
+                finalStatus.className = 'stat-card warning';
+                finalStatus.querySelector('.stat-value').textContent = '주의';
+                resultAlert.innerHTML = `
+                    <div class="alert alert-warning">
+                        <strong>⚠ 주의 필요</strong><br>
+                        ${cautionCount}개 센서가 주의 범위(60με~80με)입니다. 지속적인 관찰이 필요합니다.
                     </div>
                 `;
             } else {
-                finalStatus.className = 'stat-card danger';
-                finalStatus.querySelector('.stat-value').textContent = '부적합';
+                finalStatus.className = 'stat-card success';
+                finalStatus.querySelector('.stat-value').textContent = '정상';
                 resultAlert.innerHTML = `
-                    <div class="alert alert-danger">
-                        <strong>❌ 측정 결과 부적합</strong><br>
-                        ${exceedCount}개 센서의 변형률이 허용 범위를 초과했습니다.
+                    <div class="alert alert-success">
+                        <strong>✅ 정상 범위</strong><br>
+                        모든 센서의 변형률이 정상 범위(60με 미만)입니다.
                     </div>
                 `;
             }
@@ -306,7 +321,16 @@
                 if (changeText !== '-') {
                     const value = Math.abs(parseFloat(changeText));
                     values.push(value);
-                    colors.push(value > STRAIN_THRESHOLD ? '#ef4444' : '#3b82f6');
+                    // 3단계 평가 색상
+                    if (value > STRAIN_WARNING) {
+                        colors.push('#ef4444'); // 위험
+                    } else if (value >= STRAIN_CAUTION) {
+                        colors.push('#f97316'); // 경고
+                    } else if (value >= STRAIN_NORMAL) {
+                        colors.push('#f59e0b'); // 주의
+                    } else {
+                        colors.push('#10b981'); // 정상
+                    }
                 } else {
                     values.push(0);
                     colors.push('#9ca3af');
@@ -317,6 +341,11 @@
                 labels: labels,
                 values: values,
                 colors: colors,
+                thresholds: {
+                    upper: STRAIN_WARNING,
+                    warning: STRAIN_CAUTION,
+                    caution: STRAIN_NORMAL
+                },
                 title: '센서별 변형률 측정 결과',
                 yLabel: '변형률 (με)'
             });

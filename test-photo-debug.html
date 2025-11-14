@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>사진 업로드 디버깅 테스트</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <style>
+        .debug-panel {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            width: 400px;
+            max-height: 90vh;
+            overflow-y: auto;
+            background: white;
+            border: 2px solid #333;
+            border-radius: 8px;
+            padding: 1rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            z-index: 9999;
+        }
+        
+        .debug-panel h3 {
+            margin: 0 0 1rem 0;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #333;
+        }
+        
+        .log-entry {
+            padding: 0.5rem;
+            margin-bottom: 0.5rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-family: monospace;
+        }
+        
+        .log-success {
+            background: #d1fae5;
+            border-left: 4px solid #10b981;
+        }
+        
+        .log-error {
+            background: #fee2e2;
+            border-left: 4px solid #ef4444;
+        }
+        
+        .log-info {
+            background: #dbeafe;
+            border-left: 4px solid #3b82f6;
+        }
+        
+        .log-warning {
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+        }
+        
+        .storage-info {
+            background: #f3f4f6;
+            padding: 1rem;
+            border-radius: 4px;
+            margin-top: 1rem;
+        }
+        
+        .storage-info h4 {
+            margin: 0 0 0.5rem 0;
+        }
+        
+        .photo-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.25rem 0;
+            font-size: 0.8rem;
+        }
+    </style>
+    <script src="assets/js/script.js"></script>
+</head>
+<body>
+    <!-- 디버그 패널 -->
+    <div class="debug-panel">
+        <h3>🔍 실시간 디버깅</h3>
+        <button onclick="clearLogs()" style="width: 100%; margin-bottom: 1rem;" class="btn btn-secondary">로그 지우기</button>
+        <div id="debugLogs"></div>
+        <div class="storage-info">
+            <h4>📊 LocalStorage 상태</h4>
+            <div>사용량: <span id="storageUsage">0</span> / <span id="storageLimit">5120</span> KB</div>
+            <div style="margin-top: 0.5rem;">
+                <strong>저장된 사진:</strong>
+                <div id="photoList"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container" style="margin-top: 2rem;">
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">사진 업로드 테스트 (6장)</h2>
+                <p class="card-description">각 사진을 순차적으로 업로드하고 저장 상태를 확인하세요</p>
+            </div>
+            <div class="card-body">
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem;">
+                    <!-- 사진 1 -->
+                    <label for="fileInput1" class="photo-upload" style="margin: 0;">
+                        <input type="file" id="fileInput1" accept="image/*" onchange="testPhotoUpload(this, 'photo1Preview', 1)" style="display: none;">
+                        <img id="photo1Preview" style="display:none;">
+                        <span class="placeholder">📷 사진 1 (클릭하여 업로드)</span>
+                    </label>
+
+                    <!-- 사진 2 -->
+                    <label for="fileInput2" class="photo-upload" style="margin: 0;">
+                        <input type="file" id="fileInput2" accept="image/*" onchange="testPhotoUpload(this, 'photo2Preview', 2)" style="display: none;">
+                        <img id="photo2Preview" style="display:none;">
+                        <span class="placeholder">📷 사진 2 (클릭하여 업로드)</span>
+                    </label>
+
+                    <!-- 사진 3 -->
+                    <label for="fileInput3" class="photo-upload" style="margin: 0;">
+                        <input type="file" id="fileInput3" accept="image/*" onchange="testPhotoUpload(this, 'photo3Preview', 3)" style="display: none;">
+                        <img id="photo3Preview" style="display:none;">
+                        <span class="placeholder">📷 사진 3 (클릭하여 업로드)</span>
+                    </label>
+
+                    <!-- 사진 4 -->
+                    <label for="fileInput4" class="photo-upload" style="margin: 0;">
+                        <input type="file" id="fileInput4" accept="image/*" onchange="testPhotoUpload(this, 'photo4Preview', 4)" style="display: none;">
+                        <img id="photo4Preview" style="display:none;">
+                        <span class="placeholder">📷 사진 4 (클릭하여 업로드)</span>
+                    </label>
+
+                    <!-- 사진 5 -->
+                    <label for="fileInput5" class="photo-upload" style="margin: 0;">
+                        <input type="file" id="fileInput5" accept="image/*" onchange="testPhotoUpload(this, 'photo5Preview', 5)" style="display: none;">
+                        <img id="photo5Preview" style="display:none;">
+                        <span class="placeholder">📷 사진 5 (클릭하여 업로드)</span>
+                    </label>
+
+                    <!-- 사진 6 -->
+                    <label for="fileInput6" class="photo-upload" style="margin: 0;">
+                        <input type="file" id="fileInput6" accept="image/*" onchange="testPhotoUpload(this, 'photo6Preview', 6)" style="display: none;">
+                        <img id="photo6Preview" style="display:none;">
+                        <span class="placeholder">📷 사진 6 (클릭하여 업로드)</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" style="margin-top: 2rem;">
+            <div class="card-header">
+                <h2 class="card-title">테스트 도구</h2>
+            </div>
+            <div class="card-body">
+                <button onclick="checkAllPhotos()" class="btn btn-primary" style="margin-right: 1rem;">📊 전체 사진 상태 확인</button>
+                <button onclick="clearAllPhotos()" class="btn btn-danger" style="margin-right: 1rem;">🗑️ 모든 사진 삭제</button>
+                <button onclick="checkLocalStorageSize()" class="btn btn-info">💾 LocalStorage 크기 확인</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let uploadAttempts = 0;
+        let successfulUploads = 0;
+        let failedUploads = 0;
+
+        function addLog(message, type = 'info') {
+            const logsDiv = document.getElementById('debugLogs');
+            const logEntry = document.createElement('div');
+            logEntry.className = `log-entry log-${type}`;
+            logEntry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            logsDiv.insertBefore(logEntry, logsDiv.firstChild);
+            
+            // 최대 50개 로그만 유지
+            if (logsDiv.children.length > 50) {
+                logsDiv.removeChild(logsDiv.lastChild);
+            }
+        }
+
+        function clearLogs() {
+            document.getElementById('debugLogs').innerHTML = '';
+            addLog('로그가 지워졌습니다.', 'info');
+        }
+
+        function updateStorageInfo() {
+            try {
+                const photos = getFromStorage(STORAGE_KEYS.PHOTOS) || {};
+                const photoKeys = Object.keys(photos);
+                
+                // 총 사용량 계산
+                let totalSize = 0;
+                let allData = '';
+                for (let key in localStorage) {
+                    if (localStorage.hasOwnProperty(key)) {
+                        allData += localStorage[key];
+                    }
+                }
+                totalSize = new Blob([allData]).size / 1024; // KB
+                
+                document.getElementById('storageUsage').textContent = totalSize.toFixed(2);
+                
+                // 사진 목록 표시
+                const photoList = document.getElementById('photoList');
+                photoList.innerHTML = '';
+                
+                for (let i = 1; i <= 6; i++) {
+                    const key = `photo${i}Preview`;
+                    const photoItem = document.createElement('div');
+                    photoItem.className = 'photo-item';
+                    
+                    if (photos[key]) {
+                        const size = (photos[key].length / 1024).toFixed(2);
+                        photoItem.innerHTML = `<span>✅ 사진 ${i}</span><span>${size} KB</span>`;
+                        photoItem.style.color = '#10b981';
+                    } else {
+                        photoItem.innerHTML = `<span>❌ 사진 ${i}</span><span>없음</span>`;
+                        photoItem.style.color = '#6b7280';
+                    }
+                    
+                    photoList.appendChild(photoItem);
+                }
+            } catch (error) {
+                addLog(`Storage 정보 업데이트 오류: ${error.message}`, 'error');
+            }
+        }
+
+        function testPhotoUpload(input, previewId, photoNumber) {
+            uploadAttempts++;
+            addLog(`[사진 ${photoNumber}] 업로드 시도 #${uploadAttempts}`, 'info');
+            
+            if (!input || !input.files || !input.files[0]) {
+                addLog(`[사진 ${photoNumber}] 파일이 선택되지 않음`, 'error');
+                failedUploads++;
+                return;
+            }
+            
+            const file = input.files[0];
+            const fileSizeKB = (file.size / 1024).toFixed(2);
+            const fileSizeMB = (file.size / 1024 / 1024).toFixed(2);
+            
+            addLog(`[사진 ${photoNumber}] 파일명: ${file.name}`, 'info');
+            addLog(`[사진 ${photoNumber}] 파일 크기: ${fileSizeKB} KB (${fileSizeMB} MB)`, 'info');
+            addLog(`[사진 ${photoNumber}] 파일 타입: ${file.type}`, 'info');
+            
+            // 크기 체크
+            if (file.size > 5 * 1024 * 1024) {
+                addLog(`[사진 ${photoNumber}] ❌ 파일이 너무 큽니다! (5MB 제한)`, 'error');
+                alert(`사진 ${photoNumber}: 파일 크기가 ${fileSizeMB}MB입니다.\n5MB 이하만 업로드 가능합니다.`);
+                input.value = '';
+                failedUploads++;
+                return;
+            }
+            
+            // 타입 체크
+            if (!file.type.startsWith('image/')) {
+                addLog(`[사진 ${photoNumber}] ❌ 이미지 파일이 아닙니다!`, 'error');
+                alert(`사진 ${photoNumber}: 이미지 파일만 업로드 가능합니다.`);
+                input.value = '';
+                failedUploads++;
+                return;
+            }
+            
+            const preview = document.getElementById(previewId);
+            if (!preview) {
+                addLog(`[사진 ${photoNumber}] ❌ 미리보기 요소를 찾을 수 없음: ${previewId}`, 'error');
+                failedUploads++;
+                return;
+            }
+            
+            const container = preview.closest('.photo-upload');
+            const placeholder = container ? container.querySelector('.placeholder') : null;
+            
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                try {
+                    const imageData = e.target.result;
+                    const imageSizeKB = (imageData.length / 1024).toFixed(2);
+                    
+                    addLog(`[사진 ${photoNumber}] 이미지 로드 완료: ${imageSizeKB} KB`, 'success');
+                    
+                    // 미리보기 표시
+                    preview.src = imageData;
+                    preview.style.display = 'block';
+                    if (placeholder) placeholder.style.display = 'none';
+                    if (container) container.classList.add('has-image');
+                    
+                    addLog(`[사진 ${photoNumber}] 미리보기 표시 완료`, 'success');
+                    
+                    // LocalStorage 저장 전 상태 확인
+                    const beforePhotos = getFromStorage(STORAGE_KEYS.PHOTOS) || {};
+                    const beforeCount = Object.keys(beforePhotos).length;
+                    addLog(`[사진 ${photoNumber}] 저장 전 사진 개수: ${beforeCount}개`, 'info');
+                    
+                    // LocalStorage에 저장
+                    try {
+                        beforePhotos[previewId] = imageData;
+                        const saveResult = saveToStorage(STORAGE_KEYS.PHOTOS, beforePhotos);
+                        
+                        if (saveResult === false) {
+                            throw new Error('saveToStorage 실패');
+                        }
+                        
+                        // 저장 후 확인
+                        const afterPhotos = getFromStorage(STORAGE_KEYS.PHOTOS) || {};
+                        const afterCount = Object.keys(afterPhotos).length;
+                        
+                        if (afterPhotos[previewId]) {
+                            addLog(`[사진 ${photoNumber}] ✅ LocalStorage 저장 성공!`, 'success');
+                            addLog(`[사진 ${photoNumber}] 저장 후 사진 개수: ${afterCount}개`, 'success');
+                            successfulUploads++;
+                        } else {
+                            throw new Error('저장 후 확인 실패');
+                        }
+                        
+                    } catch (storageError) {
+                        addLog(`[사진 ${photoNumber}] ❌ LocalStorage 저장 실패: ${storageError.message}`, 'error');
+                        
+                        // LocalStorage quota 초과 확인
+                        if (storageError.name === 'QuotaExceededError') {
+                            addLog(`[사진 ${photoNumber}] ❌ LocalStorage 용량 초과!`, 'error');
+                            alert(`사진 ${photoNumber}: LocalStorage 용량이 부족합니다.\n일부 사진을 삭제하거나 작은 크기의 이미지를 사용해주세요.`);
+                        }
+                        failedUploads++;
+                    }
+                    
+                    updateStorageInfo();
+                    
+                } catch (error) {
+                    addLog(`[사진 ${photoNumber}] ❌ 처리 오류: ${error.message}`, 'error');
+                    console.error('상세 오류:', error);
+                    failedUploads++;
+                }
+            };
+            
+            reader.onerror = function(error) {
+                addLog(`[사진 ${photoNumber}] ❌ 파일 읽기 오류: ${error}`, 'error');
+                failedUploads++;
+            };
+            
+            reader.readAsDataURL(file);
+        }
+
+        function checkAllPhotos() {
+            addLog('=== 전체 사진 상태 확인 시작 ===', 'info');
+            
+            const photos = getFromStorage(STORAGE_KEYS.PHOTOS) || {};
+            const photoKeys = Object.keys(photos);
+            
+            addLog(`총 저장된 항목: ${photoKeys.length}개`, 'info');
+            
+            let message = `📊 업로드 통계:\n`;
+            message += `총 시도: ${uploadAttempts}회\n`;
+            message += `성공: ${successfulUploads}회\n`;
+            message += `실패: ${failedUploads}회\n\n`;
+            message += `--- 저장된 사진 ---\n`;
+            
+            for (let i = 1; i <= 6; i++) {
+                const key = `photo${i}Preview`;
+                if (photos[key]) {
+                    const size = (photos[key].length / 1024).toFixed(2);
+                    message += `✅ 사진 ${i}: ${size} KB\n`;
+                    addLog(`사진 ${i}: 저장됨 (${size} KB)`, 'success');
+                } else {
+                    message += `❌ 사진 ${i}: 없음\n`;
+                    addLog(`사진 ${i}: 없음`, 'warning');
+                }
+            }
+            
+            alert(message);
+            updateStorageInfo();
+        }
+
+        function clearAllPhotos() {
+            if (confirm('모든 사진을 삭제하시겠습니까?')) {
+                localStorage.removeItem('qms_photos');
+                addLog('모든 사진 삭제됨', 'warning');
+                
+                // 미리보기 초기화
+                for (let i = 1; i <= 6; i++) {
+                    const preview = document.getElementById(`photo${i}Preview`);
+                    if (preview) {
+                        preview.src = '';
+                        preview.style.display = 'none';
+                        const container = preview.closest('.photo-upload');
+                        if (container) {
+                            container.classList.remove('has-image');
+                            const placeholder = container.querySelector('.placeholder');
+                            if (placeholder) placeholder.style.display = 'block';
+                        }
+                    }
+                }
+                
+                uploadAttempts = 0;
+                successfulUploads = 0;
+                failedUploads = 0;
+                
+                updateStorageInfo();
+            }
+        }
+
+        function checkLocalStorageSize() {
+            let totalSize = 0;
+            let details = '=== LocalStorage 상세 정보 ===\n\n';
+            
+            for (let key in localStorage) {
+                if (localStorage.hasOwnProperty(key)) {
+                    const itemSize = localStorage[key].length;
+                    totalSize += itemSize;
+                    details += `${key}: ${(itemSize / 1024).toFixed(2)} KB\n`;
+                }
+            }
+            
+            details += `\n총 사용량: ${(totalSize / 1024).toFixed(2)} KB`;
+            details += `\n남은 용량: 약 ${(5120 - (totalSize / 1024)).toFixed(2)} KB`;
+            
+            addLog(`LocalStorage 총 사용량: ${(totalSize / 1024).toFixed(2)} KB`, 'info');
+            alert(details);
+        }
+
+        // 페이지 로드 시 Storage 정보 업데이트
+        document.addEventListener('DOMContentLoaded', function() {
+            addLog('페이지 로드 완료', 'success');
+            updateStorageInfo();
+            
+            // 저장된 이미지 로드
+            setTimeout(function() {
+                for (let i = 1; i <= 6; i++) {
+                    loadSavedImage(`photo${i}Preview`);
+                }
+                updateStorageInfo();
+            }, 100);
+        });
+    </script>
+</body>
+</html>

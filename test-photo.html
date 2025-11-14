@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>사진 업로드 테스트</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <script defer src="assets/js/script.js"></script>
+</head>
+<body>
+    <div class="container" style="margin-top: 2rem;">
+        <h1>사진 업로드 테스트 페이지</h1>
+        
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">테스트 사진 1</h2>
+            </div>
+            <div class="card-body">
+                <div class="photo-upload" onclick="handlePhotoClick('testInput1')">
+                    <input type="file" id="testInput1" accept="image/*" 
+                           onchange="previewImage(this, 'testPhoto1')" style="display: none;">
+                    <img id="testPhoto1" style="display:none;">
+                    <span class="placeholder">📷 사진 1 업로드 (클릭)</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">테스트 사진 2</h2>
+            </div>
+            <div class="card-body">
+                <div class="photo-upload" onclick="handlePhotoClick('testInput2')">
+                    <input type="file" id="testInput2" accept="image/*" 
+                           onchange="previewImage(this, 'testPhoto2')" style="display: none;">
+                    <img id="testPhoto2" style="display:none;">
+                    <span class="placeholder">📷 사진 2 업로드 (클릭)</span>
+                </div>
+            </div>
+        </div>
+        
+        <button class="btn btn-info" onclick="checkPhotos()">저장된 사진 확인</button>
+    </div>
+    
+    <script>
+        function handlePhotoClick(inputId) {
+            console.log('=== handlePhotoClick 호출 ===');
+            console.log('inputId:', inputId);
+            
+            const input = document.getElementById(inputId);
+            console.log('input 요소:', input);
+            
+            if (input) {
+                console.log('input.click() 실행');
+                input.click();
+            } else {
+                console.error('input 요소를 찾을 수 없습니다:', inputId);
+            }
+        }
+        
+        function checkPhotos() {
+            const photos = getFromStorage(STORAGE_KEYS.PHOTOS);
+            console.log('저장된 사진:', photos);
+            
+            if (photos) {
+                alert('저장된 사진 개수: ' + Object.keys(photos).length + '\n\n' + 
+                      Object.keys(photos).join('\n'));
+            } else {
+                alert('저장된 사진이 없습니다.');
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('테스트 페이지 로드 완료');
+            
+            // 저장된 이미지 로드
+            setTimeout(function() {
+                loadSavedImage('testPhoto1');
+                loadSavedImage('testPhoto2');
+            }, 100);
+        });
+    </script>
+</body>
+</html>

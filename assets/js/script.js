@@ -23,27 +23,79 @@ const STORAGE_KEYS = {
  * @param {string} previewId - 미리보기 이미지 요소의 ID
  */
 function previewImage(input, previewId) {
+    console.log('=== previewImage 호출 ===');
+    console.log('input:', input);
+    console.log('previewId:', previewId);
+    
+    if (!input || !input.files || !input.files[0]) {
+        console.error('파일이 선택되지 않았습니다.');
+        return;
+    }
+    
     const preview = document.getElementById(previewId);
-    const container = input.closest('.photo-upload');
+    if (!preview) {
+        console.error('미리보기 요소를 찾을 수 없습니다:', previewId);
+        return;
+    }
+    
+    // preview 요소에서 가장 가까운 .photo-upload 컨테이너 찾기
+    const container = preview.closest('.photo-upload');
+    if (!container) {
+        console.error('photo-upload 컨테이너를 찾을 수 없습니다:', previewId);
+        return;
+    }
+    
     const placeholder = container.querySelector('.placeholder');
     
-    if (input.files && input.files[0]) {
-        const reader = new FileReader();
-        
-        reader.onload = function(e) {
+    const file = input.files[0];
+    console.log('선택된 파일:', file.name, '크기:', (file.size / 1024).toFixed(2), 'KB');
+    
+    // 파일 크기 체크 (5MB 제한)
+    if (file.size > 5 * 1024 * 1024) {
+        alert('이미지 크기가 너무 큽니다. 5MB 이하의 이미지를 선택해주세요.');
+        input.value = '';
+        return;
+    }
+    
+    // 이미지 파일 타입 체크
+    if (!file.type.startsWith('image/')) {
+        alert('이미지 파일만 업로드 가능합니다.');
+        input.value = '';
+        return;
+    }
+    
+    const reader = new FileReader();
+    
+    reader.onload = function(e) {
+        try {
+            console.log('이미지 로드 완료, 크기:', (e.target.result.length / 1024).toFixed(2), 'KB');
+            
             preview.src = e.target.result;
             preview.style.display = 'block';
+            
             if (placeholder) {
                 placeholder.style.display = 'none';
             }
+            
             container.classList.add('has-image');
             
             // 이미지를 LocalStorage에 저장
+            console.log('LocalStorage에 저장 시도:', previewId);
             saveImageToStorage(previewId, e.target.result);
-        };
-        
-        reader.readAsDataURL(input.files[0]);
-    }
+            
+            console.log('✅ 이미지 업로드 성공:', previewId);
+        } catch (error) {
+            console.error('❌ 이미지 처리 오류:', error);
+            alert('이미지 처리 중 오류가 발생했습니다.');
+        }
+    };
+    
+    reader.onerror = function(error) {
+        console.error('❌ 파일 읽기 오류:', error);
+        alert('파일을 읽는 중 오류가 발생했습니다.');
+    };
+    
+    reader.readAsDataURL(file);
 }
 
 /**
@@ -53,33 +105,93 @@ function previewImage(input, previewId) {
  */
 function saveImageToStorage(key, imageData) {
     try {
+        console.log('=== saveImageToStorage 호출 ===');
+        console.log('저장할 사진 ID:', key);
+        console.log('이미지 데이터 크기:', (imageData.length / 1024).toFixed(2), 'KB');
+        
+        // 기존 저장된 사진 데이터 가져오기
         const photos = getFromStorage(STORAGE_KEYS.PHOTOS) || {};
+        console.log('저장 전 사진 개수:', Object.keys(photos).length);
+        console.log('저장 전 사진 ID 목록:', Object.keys(photos));
+        
+        // 새 사진 추가
         photos[key] = imageData;
-        saveToStorage(STORAGE_KEYS.PHOTOS, photos);
+        console.log('저장 후 사진 개수:', Object.keys(photos).length);
+        console.log('저장 후 사진 ID 목록:', Object.keys(photos));
+        
+        // LocalStorage에 저장
+        const saveResult = saveToStorage(STORAGE_KEYS.PHOTOS, photos);
+        
+        if (saveResult !== false) {
+            console.log('✅ 이미지 저장 성공:', key);
+            
+            // 저장 확인
+            const savedPhotos = getFromStorage(STORAGE_KEYS.PHOTOS);
+            console.log('저장 확인 - 사진 개수:', Object.keys(savedPhotos).length);
+            console.log('저장 확인 - 사진 ID 목록:', Object.keys(savedPhotos));
+        } else {
+            console.error('❌ 이미지 저장 실패:', key);
+        }
     } catch (e) {
         console.error('이미지 저장 실패:', e);
-        alert('이미지가 너무 큽니다. 더 작은 이미지를 선택해주세요.');
+        
+        // LocalStorage 용량 초과 시
+        if (e.name === 'QuotaExceededError' || e.code === 22) {
+            alert('저장공간이 부족합니다. 이미지 크기를 줄이거나 기존 데이터를 삭제해주세요.');
+        } else {
+            alert('이미지 저장 중 오류가 발생했습니다.');
+        }
     }
 }
 
 /**
  * 저장된 이미지 로드
- * @param {string} key - 저장 키
  * @param {string} previewId - 미리보기 이미지 요소의 ID
  */
 function loadSavedImage(previewId) {
-    const photos = getFromStorage(STORAGE_KEYS.PHOTOS);
-    if (photos && photos[previewId]) {
+    try {
+        const photos = getFromStorage(STORAGE_KEYS.PHOTOS);
+        
+        console.log('이미지 로드 시도:', previewId);
+        console.log('저장된 사진 데이터:', photos ? Object.keys(photos) : 'null');
+        
+        if (!photos) {
+            console.log('저장된 사진 데이터가 없습니다.');
+            return;
+        }
+        
+        if (!photos[previewId]) {
+            console.log('해당 ID의 사진이 없습니다:', previewId);
+            return;
+        }
+        
         const preview = document.getElementById(previewId);
+        if (!preview) {
+            console.error('미리보기 요소를 찾을 수 없습니다:', previewId);
+            return;
+        }
+        
         const container = preview.closest('.photo-upload');
+        if (!container) {
+            console.error('컨테이너를 찾을 수 없습니다:', previewId);
+            return;
+        }
+        
         const placeholder = container.querySelector('.placeholder');
         
+        // 이미지 데이터 설정
         preview.src = photos[previewId];
         preview.style.display = 'block';
+        
         if (placeholder) {
             placeholder.style.display = 'none';
         }
+        
         container.classList.add('has-image');
+        
+        console.log('✅ 저장된 이미지 로드 성공:', previewId);
+    } catch (error) {
+        console.error('❌ 이미지 로드 오류:', previewId, error);
     }
 }
 
@@ -271,11 +383,12 @@ function drawLineChart(canvasId, data) {
         ctx.fillText(value.toFixed(2), padding - 10, y + 4);
     }
     
-    // 임계값 선 그리기
+    // 임계값 선 그리기 (3단계 평가 기준)
     if (thresholds) {
         ctx.lineWidth = 2;
         ctx.setLineDash([5, 5]);
         
+        // 위험 기준선 (상한)
         if (thresholds.upper) {
             const y = padding + height - ((thresholds.upper - minValue) / valueRange) * height;
             ctx.strokeStyle = '#ef4444';
@@ -285,11 +398,42 @@ function drawLineChart(canvasId, data) {
             ctx.stroke();
             
             ctx.fillStyle = '#ef4444';
-            ctx.font = 'bold 12px sans-serif';
+            ctx.font = 'bold 11px sans-serif';
             ctx.textAlign = 'left';
-            ctx.fillText(`상한: ${thresholds.upper}`, padding + width + 10, y + 4);
+            ctx.fillText(`위험: ${thresholds.upper}`, padding + width + 5, y + 4);
         }
         
+        // 경고 기준선
+        if (thresholds.warning) {
+            const y = padding + height - ((thresholds.warning - minValue) / valueRange) * height;
+            ctx.strokeStyle = '#f97316';
+            ctx.beginPath();
+            ctx.moveTo(padding, y);
+            ctx.lineTo(padding + width, y);
+            ctx.stroke();
+            
+            ctx.fillStyle = '#f97316';
+            ctx.font = 'bold 11px sans-serif';
+            ctx.textAlign = 'left';
+            ctx.fillText(`경고: ${thresholds.warning}`, padding + width + 5, y + 4);
+        }
+        
+        // 주의 기준선
+        if (thresholds.caution) {
+            const y = padding + height - ((thresholds.caution - minValue) / valueRange) * height;
+            ctx.strokeStyle = '#f59e0b';
+            ctx.beginPath();
+            ctx.moveTo(padding, y);
+            ctx.lineTo(padding + width, y);
+            ctx.stroke();
+            
+            ctx.fillStyle = '#f59e0b';
+            ctx.font = 'bold 11px sans-serif';
+            ctx.textAlign = 'left';
+            ctx.fillText(`주의: ${thresholds.caution}`, padding + width + 5, y + 4);
+        }
+        
+        // 하한선 (음수인 경우)
         if (thresholds.lower) {
             const y = padding + height - ((thresholds.lower - minValue) / valueRange) * height;
             ctx.strokeStyle = '#ef4444';
@@ -299,9 +443,9 @@ function drawLineChart(canvasId, data) {
             ctx.stroke();
             
             ctx.fillStyle = '#ef4444';
-            ctx.font = 'bold 12px sans-serif';
+            ctx.font = 'bold 11px sans-serif';
             ctx.textAlign = 'left';
-            ctx.fillText(`하한: ${thresholds.lower}`, padding + width + 10, y + 4);
+            ctx.fillText(`하한: ${thresholds.lower}`, padding + width + 5, y + 4);
         }
         
         ctx.setLineDash([]);
@@ -409,6 +553,60 @@ function drawBarChart(canvasId, data) {
         ctx.font = '12px sans-serif';
         ctx.textAlign = 'right';
         ctx.fillText(value.toFixed(1), padding - 10, y + 4);
+    }
+    
+    // 임계값 선 그리기 (막대그래프용)
+    if (data.thresholds) {
+        const thresholds = data.thresholds;
+        ctx.lineWidth = 2;
+        ctx.setLineDash([5, 5]);
+        
+        // 위험 기준선
+        if (thresholds.upper) {
+            const y = padding + height - (thresholds.upper / maxValue) * height;
+            ctx.strokeStyle = '#ef4444';
+            ctx.beginPath();
+            ctx.moveTo(padding, y);
+            ctx.lineTo(padding + width, y);
+            ctx.stroke();
+            
+            ctx.fillStyle = '#ef4444';
+            ctx.font = 'bold 11px sans-serif';
+            ctx.textAlign = 'left';
+            ctx.fillText(`위험: ${thresholds.upper}`, padding + width + 5, y + 4);
+        }
+        
+        // 경고 기준선
+        if (thresholds.warning) {
+            const y = padding + height - (thresholds.warning / maxValue) * height;
+            ctx.strokeStyle = '#f97316';
+            ctx.beginPath();
+            ctx.moveTo(padding, y);
+            ctx.lineTo(padding + width, y);
+            ctx.stroke();
+            
+            ctx.fillStyle = '#f97316';
+            ctx.font = 'bold 11px sans-serif';
+            ctx.textAlign = 'left';
+            ctx.fillText(`경고: ${thresholds.warning}`, padding + width + 5, y + 4);
+        }
+        
+        // 주의 기준선
+        if (thresholds.caution) {
+            const y = padding + height - (thresholds.caution / maxValue) * height;
+            ctx.strokeStyle = '#f59e0b';
+            ctx.beginPath();
+            ctx.moveTo(padding, y);
+            ctx.lineTo(padding + width, y);
+            ctx.stroke();
+            
+            ctx.fillStyle = '#f59e0b';
+            ctx.font = 'bold 11px sans-serif';
+            ctx.textAlign = 'left';
+            ctx.fillText(`주의: ${thresholds.caution}`, padding + width + 5, y + 4);
+        }
+        
+        ctx.setLineDash([]);
     }
     
     // 막대 그리기
