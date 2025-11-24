@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>데이터 마이그레이션</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .description {
+            color: #666;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+        
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .section h3 {
+            margin-top: 0;
+            color: #667eea;
+        }
+        
+        .status {
+            padding: 10px 15px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+        }
+        
+        .status.info {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+        
+        .status.success {
+            background: #e8f5e9;
+            color: #388e3c;
+        }
+        
+        .status.warning {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-right: 10px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-secondary {
+            background: #e0e0e0;
+            color: #333;
+        }
+        
+        .btn-secondary:hover {
+            background: #d0d0d0;
+        }
+        
+        .data-info {
+            background: white;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 15px;
+        }
+        
+        .data-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .data-item:last-child {
+            border-bottom: none;
+        }
+        
+        .data-label {
+            font-weight: 500;
+            color: #666;
+        }
+        
+        .data-value {
+            color: #333;
+        }
+        
+        .has-data {
+            color: #4caf50;
+            font-weight: bold;
+        }
+        
+        .no-data {
+            color: #999;
+        }
+        
+        .log {
+            background: #263238;
+            color: #aed581;
+            padding: 15px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 15px;
+        }
+        
+        .log-line {
+            margin: 3px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔄 데이터 마이그레이션</h1>
+        <p class="description">
+            이 페이지는 기존 데이터를 새로운 다중 보고서 시스템으로 마이그레이션하는 도구입니다.<br>
+            기존에 작성하신 데이터를 새 보고서로 변환하여 계속 사용하실 수 있습니다.
+        </p>
+        
+        <div class="section">
+            <h3>📊 기존 데이터 확인</h3>
+            <div id="oldDataStatus" class="status info">
+                데이터 확인 중...
+            </div>
+            <div id="oldDataInfo" class="data-info" style="display: none;">
+                <div class="data-item">
+                    <span class="data-label">프로젝트 정보:</span>
+                    <span class="data-value" id="hasProjectInfo">-</span>
+                </div>
+                <div class="data-item">
+                    <span class="data-label">운송결과 데이터:</span>
+                    <span class="data-value" id="hasSurveyData">-</span>
+                </div>
+                <div class="data-item">
+                    <span class="data-label">가속도 데이터:</span>
+                    <span class="data-value" id="hasAccelData">-</span>
+                </div>
+                <div class="data-item">
+                    <span class="data-label">기울기 데이터:</span>
+                    <span class="data-value" id="hasTiltData">-</span>
+                </div>
+                <div class="data-item">
+                    <span class="data-label">변형률 데이터:</span>
+                    <span class="data-value" id="hasStrainData">-</span>
+                </div>
+                <div class="data-item">
+                    <span class="data-label">제작 오차 데이터:</span>
+                    <span class="data-value" id="hasErrorData">-</span>
+                </div>
+                <div class="data-item">
+                    <span class="data-label">사진 데이터:</span>
+                    <span class="data-value" id="hasPhotoData">-</span>
+                </div>
+            </div>
+            
+            <div style="margin-top: 20px;">
+                <button class="btn btn-secondary" onclick="checkOldData()">🔍 다시 확인</button>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h3>🚀 마이그레이션 실행</h3>
+            <div class="status warning">
+                ⚠️ 마이그레이션을 실행하면 기존 데이터가 새 보고서로 복사됩니다.<br>
+                원본 데이터는 보존되니 안심하세요.
+            </div>
+            
+            <div style="margin-top: 20px;">
+                <label style="display: block; margin-bottom: 10px; font-weight: 500;">
+                    새 보고서명 (기본값: 마이그레이션된_보고서)
+                </label>
+                <input type="text" 
+                       id="migratedReportName" 
+                       placeholder="마이그레이션된_보고서" 
+                       style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 6px; font-size: 14px;">
+            </div>
+            
+            <div style="margin-top: 20px;">
+                <button class="btn btn-primary" onclick="migrateData()">
+                    ✨ 마이그레이션 시작
+                </button>
+                <button class="btn btn-secondary" onclick="window.location.href='index.html'">
+                    ❌ 취소
+                </button>
+            </div>
+            
+            <div id="migrationLog" class="log" style="display: none;"></div>
+        </div>
+        
+        <div class="section" style="border-left-color: #4caf50;">
+            <h3>✅ 완료 후</h3>
+            <div class="status info">
+                마이그레이션이 완료되면 자동으로 보고서 목록 페이지로 이동합니다.<br>
+                새로 생성된 보고서를 확인하고 계속 작업하실 수 있습니다.
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Old storage keys (without report prefix)
+        const OLD_KEYS = {
+            PROJECT_INFO: 'qms_project_info',
+            SURVEY_DATA: 'qms_survey_data',
+            ACCELERATION_DATA: 'qms_acceleration_data',
+            TILT_DATA: 'qms_tilt_data',
+            STRAIN_DATA: 'qms_strain_data',
+            FABRICATION_ERROR: 'qms_fabrication_error',
+            PHOTOS: 'qms_photos'
+        };
+        
+        // Check for old data
+        function checkOldData() {
+            log('기존 데이터 확인 중...');
+            
+            let hasAnyData = false;
+            
+            // Check each data type
+            const checks = {
+                hasProjectInfo: OLD_KEYS.PROJECT_INFO,
+                hasSurveyData: OLD_KEYS.SURVEY_DATA,
+                hasAccelData: OLD_KEYS.ACCELERATION_DATA,
+                hasTiltData: OLD_KEYS.TILT_DATA,
+                hasStrainData: OLD_KEYS.STRAIN_DATA,
+                hasErrorData: OLD_KEYS.FABRICATION_ERROR,
+                hasPhotoData: OLD_KEYS.PHOTOS
+            };
+            
+            Object.keys(checks).forEach(id => {
+                const key = checks[id];
+                const data = localStorage.getItem(key);
+                const element = document.getElementById(id);
+                
+                if (data && data !== 'null' && data !== '{}' && data !== '[]') {
+                    element.textContent = '✓ 있음';
+                    element.className = 'data-value has-data';
+                    hasAnyData = true;
+                } else {
+                    element.textContent = '없음';
+                    element.className = 'data-value no-data';
+                }
+            });
+            
+            // Update status
+            const statusEl = document.getElementById('oldDataStatus');
+            const infoEl = document.getElementById('oldDataInfo');
+            
+            if (hasAnyData) {
+                statusEl.textContent = '✓ 기존 데이터가 발견되었습니다. 마이그레이션을 진행할 수 있습니다.';
+                statusEl.className = 'status success';
+                infoEl.style.display = 'block';
+            } else {
+                statusEl.textContent = '기존 데이터가 없습니다. 마이그레이션이 필요하지 않습니다.';
+                statusEl.className = 'status info';
+                infoEl.style.display = 'none';
+            }
+        }
+        
+        // Log function
+        function log(message) {
+            const logEl = document.getElementById('migrationLog');
+            logEl.style.display = 'block';
+            
+            const timestamp = new Date().toLocaleTimeString();
+            const logLine = document.createElement('div');
+            logLine.className = 'log-line';
+            logLine.textContent = `[${timestamp}] ${message}`;
+            logEl.appendChild(logLine);
+            
+            // Auto scroll to bottom
+            logEl.scrollTop = logEl.scrollHeight;
+            
+            console.log(message);
+        }
+        
+        // Migrate data
+        function migrateData() {
+            const reportName = document.getElementById('migratedReportName').value.trim() || '마이그레이션된_보고서';
+            
+            if (!confirm(`"${reportName}" 이름으로 새 보고서를 생성하시겠습니까?`)) {
+                return;
+            }
+            
+            log('마이그레이션 시작...');
+            
+            try {
+                // Get project info for date
+                const projectInfoData = localStorage.getItem(OLD_KEYS.PROJECT_INFO);
+                let date = new Date().toISOString().split('T')[0];
+                
+                if (projectInfoData) {
+                    try {
+                        const projectInfo = JSON.parse(projectInfoData);
+                        if (projectInfo.inspectionDate) {
+                            date = projectInfo.inspectionDate;
+                        }
+                    } catch (e) {
+                        log('⚠️ 프로젝트 정보 날짜 파싱 실패, 오늘 날짜 사용');
+                    }
+                }
+                
+                log(`날짜: ${date}`);
+                
+                // Generate report ID
+                const reportId = `${date}_${reportName.replace(/\s+/g, '_')}`;
+                log(`보고서 ID: ${reportId}`);
+                
+                // Check if report already exists
+                const existingReports = JSON.parse(localStorage.getItem('PREFAB_REPORTS_LIST') || '[]');
+                if (existingReports.some(r => r.id === reportId)) {
+                    alert('동일한 이름의 보고서가 이미 존재합니다. 다른 이름을 사용해주세요.');
+                    return;
+                }
+                
+                // Create new report entry
+                const now = new Date().toISOString();
+                const newReport = {
+                    id: reportId,
+                    date: date,
+                    projectName: reportName,
+                    prefabType: '',
+                    location: '',
+                    createdAt: now,
+                    lastModified: now
+                };
+                
+                // Add project info details if available
+                if (projectInfoData) {
+                    try {
+                        const projectInfo = JSON.parse(projectInfoData);
+                        newReport.prefabType = projectInfo.prefabType || '';
+                        newReport.location = projectInfo.location || '';
+                    } catch (e) {
+                        log('⚠️ 프로젝트 상세 정보 파싱 실패');
+                    }
+                }
+                
+                log('새 보고서 생성...');
+                existingReports.push(newReport);
+                localStorage.setItem('PREFAB_REPORTS_LIST', JSON.stringify(existingReports));
+                
+                // Copy all data with new prefix
+                const prefix = `REPORT_${reportId}_`;
+                let copiedCount = 0;
+                
+                Object.entries(OLD_KEYS).forEach(([name, oldKey]) => {
+                    const data = localStorage.getItem(oldKey);
+                    if (data && data !== 'null') {
+                        const newKey = prefix + oldKey;
+                        localStorage.setItem(newKey, data);
+                        log(`✓ ${name} 복사 완료`);
+                        copiedCount++;
+                    }
+                });
+                
+                log(`총 ${copiedCount}개 데이터 항목 복사 완료`);
+                
+                // Set as active report
+                localStorage.setItem('ACTIVE_REPORT_ID', reportId);
+                log('활성 보고서로 설정 완료');
+                
+                log('✅ 마이그레이션 완료!');
+                
+                setTimeout(() => {
+                    alert('마이그레이션이 완료되었습니다!\n보고서 목록 페이지로 이동합니다.');
+                    window.location.href = 'index.html';
+                }, 1000);
+                
+            } catch (error) {
+                log('❌ 오류 발생: ' + error.message);
+                console.error('Migration error:', error);
+                alert('마이그레이션 중 오류가 발생했습니다. 콘솔을 확인해주세요.');
+            }
+        }
+        
+        // Initialize
+        window.addEventListener('DOMContentLoaded', checkOldData);
+    </script>
+</body>
+</html>

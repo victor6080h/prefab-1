@@ -3,25 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>품질관리 시스템 - 품질관리자 설문</title>
+    <title>품질관리 시스템 - 운송결과 리포트</title>
     <link rel="stylesheet" href="assets/css/style.css">
-    <script defer src="assets/js/script.js"></script>
+    <script src="assets/js/script.js?v=20231123-2"></script>
 </head>
 <body>
     <!-- 헤더 -->
     <header class="header">
         <div class="container">
             <h1 class="header-title">Prefab 품질관리 시스템</h1>
-            <p class="header-subtitle">품질관리자 설문조사</p>
+            <p class="header-subtitle">운송결과 리포트 (품질관리자)</p>
         </div>
     </header>
 
     <!-- 페이지 네비게이션 -->
     <nav class="page-nav">
         <div class="container">
+            <button onclick="window.location.href='index.html'" style="float: right; background: #667eea; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; margin-top: 10px;">
+                📋 보고서 목록
+            </button>
             <ul>
-                <li><a href="index.html">1. 종합 요약</a></li>
-                <li><a href="page2.html" class="active">2. 품질관리자 설문</a></li>
+                <li><a href="report.html">1. 종합 요약</a></li>
+                <li><a href="page2.html" class="active">2. 운송결과 리포트</a></li>
                 <li><a href="page3.html">3. 가속도 데이터</a></li>
                 <li><a href="page4.html">4. 기울기 데이터</a></li>
                 <li><a href="page5.html">5. 변형률 데이터</a></li>
@@ -33,20 +36,11 @@
 
     <!-- 메인 컨텐츠 -->
     <main class="container">
-        <!-- 안내 사항 -->
-        <div class="alert alert-info">
-            <strong>📋 설문 안내</strong>
-            <p style="margin-top: 0.5rem;">
-                Prefab 부재의 품질을 확인하기 위한 설문입니다. 각 항목에 대해 정확하게 답변해 주세요.
-                모든 항목은 자동으로 저장됩니다.
-            </p>
-        </div>
-
         <!-- 설문 폼 -->
         <div class="card">
             <div class="card-header">
-                <h2 class="card-title">품질관리 설문</h2>
-                <p class="card-description">Prefab 부재의 서류 및 외관 품질을 확인합니다</p>
+                <h2 class="card-title">운송결과 점검 항목</h2>
+                <p class="card-description">운송결과 리포트(품질관리자)</p>
             </div>
             <div class="card-body">
                 <form id="surveyForm">
@@ -65,150 +59,69 @@
 
                     <!-- 질문 2 -->
                     <fieldset>
-                        <legend>2. 시험성적서가 첨부되어 있는가?</legend>
+                        <legend>2. 슬래브에 손상 또는 균열은 없는가?</legend>
                         <label>
-                            <input type="radio" name="q2" value="첨부" required>
-                            첨부
+                            <input type="radio" name="q2" value="없음" required>
+                            없음
                         </label>
                         <label>
-                            <input type="radio" name="q2" value="미첨부">
-                            미첨부
+                            <input type="radio" name="q2" value="손상있음">
+                            손상 있음
+                        </label>
+                        <label>
+                            <input type="radio" name="q2" value="균열있음">
+                            균열 있음
                         </label>
                     </fieldset>
 
                     <!-- 질문 3 -->
                     <fieldset>
-                        <legend>3. 콘크리트 강도는 설계 기준을 만족하는가?</legend>
+                        <legend>3. 슬래브 하부에 그라우트 유출 방지를 위한 스펀지 등의 재료 부착상태는 양호한가?</legend>
                         <label>
-                            <input type="radio" name="q3" value="만족" required>
-                            만족
+                            <input type="radio" name="q3" value="양호" required>
+                            양호
                         </label>
                         <label>
-                            <input type="radio" name="q3" value="불만족">
-                            불만족
+                            <input type="radio" name="q3" value="보통">
+                            보통
                         </label>
                         <label>
-                            <input type="radio" name="q3" value="미확인">
-                            미확인
+                            <input type="radio" name="q3" value="불량">
+                            불량
                         </label>
                     </fieldset>
 
                     <!-- 질문 4 -->
                     <fieldset>
-                        <legend>4. 철근 배근은 설계도면과 일치하는가?</legend>
+                        <legend>4. 슬래브 인양시 사용하는 와이어 또는 슬링벨트는 결함 및 파손이 없는가?</legend>
                         <label>
-                            <input type="radio" name="q4" value="일치" required>
-                            일치
+                            <input type="radio" name="q4" value="없음" required>
+                            없음
                         </label>
                         <label>
-                            <input type="radio" name="q4" value="불일치">
-                            불일치
+                            <input type="radio" name="q4" value="결함있음">
+                            결함 있음
                         </label>
                         <label>
-                            <input type="radio" name="q4" value="미확인">
-                            미확인
+                            <input type="radio" name="q4" value="파손있음">
+                            파손 있음
                         </label>
                     </fieldset>
 
                     <!-- 질문 5 -->
                     <fieldset>
-                        <legend>5. 부재 표면에 균열이 발견되었는가?</legend>
+                        <legend>5. 슬래브는 상차 순서를 고려하여 적치 되었는가?</legend>
                         <label>
-                            <input type="radio" name="q5" value="없음" required>
-                            없음
+                            <input type="radio" name="q5" value="적치됨" required>
+                            적치됨
                         </label>
                         <label>
-                            <input type="radio" name="q5" value="미세균열">
-                            미세균열 (0.3mm 이하)
+                            <input type="radio" name="q5" value="부분적치">
+                            부분 적치
                         </label>
                         <label>
-                            <input type="radio" name="q5" value="주요균열">
-                            주요균열 (0.3mm 초과)
-                        </label>
-                    </fieldset>
-
-                    <!-- 질문 6 -->
-                    <fieldset>
-                        <legend>6. 부재 표면의 마감 상태는 양호한가?</legend>
-                        <label>
-                            <input type="radio" name="q6" value="양호" required>
-                            양호
-                        </label>
-                        <label>
-                            <input type="radio" name="q6" value="보통">
-                            보통
-                        </label>
-                        <label>
-                            <input type="radio" name="q6" value="불량">
-                            불량
-                        </label>
-                    </fieldset>
-
-                    <!-- 질문 7 -->
-                    <fieldset>
-                        <legend>7. 양생 상태는 적절한가?</legend>
-                        <label>
-                            <input type="radio" name="q7" value="적절" required>
-                            적절
-                        </label>
-                        <label>
-                            <input type="radio" name="q7" value="부적절">
-                            부적절
-                        </label>
-                        <label>
-                            <input type="radio" name="q7" value="미확인">
-                            미확인
-                        </label>
-                    </fieldset>
-
-                    <!-- 질문 8 -->
-                    <fieldset>
-                        <legend>8. 매입 부품(인서트, 앵커 등)은 정확히 설치되었는가?</legend>
-                        <label>
-                            <input type="radio" name="q8" value="정확" required>
-                            정확
-                        </label>
-                        <label>
-                            <input type="radio" name="q8" value="부정확">
-                            부정확
-                        </label>
-                        <label>
-                            <input type="radio" name="q8" value="해당없음">
-                            해당없음
-                        </label>
-                    </fieldset>
-
-                    <!-- 질문 9 -->
-                    <fieldset>
-                        <legend>9. 부재 식별 표시(마킹)가 명확한가?</legend>
-                        <label>
-                            <input type="radio" name="q9" value="명확" required>
-                            명확
-                        </label>
-                        <label>
-                            <input type="radio" name="q9" value="불명확">
-                            불명확
-                        </label>
-                        <label>
-                            <input type="radio" name="q9" value="없음">
-                            없음
-                        </label>
-                    </fieldset>
-
-                    <!-- 질문 10 -->
-                    <fieldset>
-                        <legend>10. 운반 및 보관 중 손상이 발견되었는가?</legend>
-                        <label>
-                            <input type="radio" name="q10" value="없음" required>
-                            없음
-                        </label>
-                        <label>
-                            <input type="radio" name="q10" value="경미한손상">
-                            경미한 손상
-                        </label>
-                        <label>
-                            <input type="radio" name="q10" value="심각한손상">
-                            심각한 손상
+                            <input type="radio" name="q5" value="미적치">
+                            미적치
                         </label>
                     </fieldset>
 
@@ -223,43 +136,41 @@
             </div>
         </div>
 
-        <!-- 사진 첨부 -->
+        <!-- 현장 사진 -->
         <div class="card">
             <div class="card-header">
                 <h2 class="card-title">현장 사진</h2>
-                <p class="card-description">부재 전체 및 특이사항이 있는 부분의 사진을 첨부하세요</p>
             </div>
             <div class="card-body">
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;">
+                <!-- 2x2 그리드 레이아웃 (4장) -->
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem;">
                     <!-- 사진 1 -->
-                    <div>
-                        <h3 class="mb-2">부재 전체 사진</h3>
-                        <div class="photo-upload">
-                            <img id="photo1Preview" style="display:none;">
-                            <input type="file" accept="image/*" onchange="previewImage(this, 'photo1Preview')">
-                            <span class="placeholder">📷 사진 업로드</span>
-                        </div>
-                    </div>
+                    <label for="fileInput1" class="photo-upload" style="margin: 0;">
+                        <input type="file" id="fileInput1" accept="image/*" style="display: none;">
+                        <img id="photo1Preview" style="display:none;">
+                        <span class="placeholder">📷 사진 1 (클릭하여 업로드)</span>
+                    </label>
 
                     <!-- 사진 2 -->
-                    <div>
-                        <h3 class="mb-2">품질보증서 사진</h3>
-                        <div class="photo-upload">
-                            <img id="photo2Preview" style="display:none;">
-                            <input type="file" accept="image/*" onchange="previewImage(this, 'photo2Preview')">
-                            <span class="placeholder">📷 사진 업로드</span>
-                        </div>
-                    </div>
+                    <label for="fileInput2" class="photo-upload" style="margin: 0;">
+                        <input type="file" id="fileInput2" accept="image/*" style="display: none;">
+                        <img id="photo2Preview" style="display:none;">
+                        <span class="placeholder">📷 사진 2 (클릭하여 업로드)</span>
+                    </label>
 
                     <!-- 사진 3 -->
-                    <div>
-                        <h3 class="mb-2">특이사항 사진 (선택)</h3>
-                        <div class="photo-upload">
-                            <img id="photo3Preview" style="display:none;">
-                            <input type="file" accept="image/*" onchange="previewImage(this, 'photo3Preview')">
-                            <span class="placeholder">📷 사진 업로드</span>
-                        </div>
-                    </div>
+                    <label for="fileInput3" class="photo-upload" style="margin: 0;">
+                        <input type="file" id="fileInput3" accept="image/*" style="display: none;">
+                        <img id="photo3Preview" style="display:none;">
+                        <span class="placeholder">📷 사진 3 (클릭하여 업로드)</span>
+                    </label>
+
+                    <!-- 사진 4 -->
+                    <label for="fileInput4" class="photo-upload" style="margin: 0;">
+                        <input type="file" id="fileInput4" accept="image/*" style="display: none;">
+                        <img id="photo4Preview" style="display:none;">
+                        <span class="placeholder">📷 사진 4 (클릭하여 업로드)</span>
+                    </label>
                 </div>
             </div>
         </div>
@@ -267,12 +178,12 @@
         <!-- 설문 결과 요약 -->
         <div class="card">
             <div class="card-header">
-                <h2 class="card-title">설문 결과 요약</h2>
+                <h2 class="card-title">점검 결과 요약</h2>
             </div>
             <div class="card-body">
                 <div id="surveyResult">
                     <p class="text-center" style="color: var(--text-secondary);">
-                        설문을 완료하면 결과가 여기에 표시됩니다.
+                        점검을 완료하면 결과가 여기에 표시됩니다.
                     </p>
                 </div>
                 <div class="progress-bar mt-3">
@@ -285,34 +196,98 @@
         <div class="nav-buttons">
             <a href="index.html" class="btn btn-secondary">← 이전: 종합 요약</a>
             <button class="btn btn-success" onclick="saveSurvey()">💾 저장하기</button>
+            <button class="btn btn-info" onclick="checkStoredPhotos()" style="background-color: #17a2b8;">🔍 사진 데이터 확인</button>
             <a href="page3.html" class="btn btn-primary">다음: 가속도 데이터 →</a>
         </div>
     </main>
 
     <script>
+        // 사진 클릭 핸들러
+        function handlePhotoClick(inputId) {
+            console.log('=== handlePhotoClick 호출 ===');
+            console.log('inputId:', inputId);
+            
+            const input = document.getElementById(inputId);
+            console.log('input 요소:', input);
+            
+            if (input) {
+                console.log('input.click() 실행');
+                input.click();
+            } else {
+                console.error('❌ input 요소를 찾을 수 없습니다:', inputId);
+                alert('파일 입력 요소를 찾을 수 없습니다. 페이지를 새로고침해주세요.');
+            }
+        }
+        
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('페이지 로드 시작');
+            
+            // 저장된 데이터 확인
+            const savedData = getFromStorage(STORAGE_KEYS.SURVEY_DATA);
+            console.log('저장된 설문 데이터:', savedData);
+            
             // 폼 데이터 로드
             loadFormData('surveyForm', STORAGE_KEYS.SURVEY_DATA);
+            console.log('폼 데이터 로드 완료');
             
             // 자동 저장 설정
             autoSaveForm('surveyForm', STORAGE_KEYS.SURVEY_DATA);
+            console.log('자동 저장 설정 완료');
             
-            // 저장된 이미지 로드
-            loadSavedImage('photo1Preview');
-            loadSavedImage('photo2Preview');
-            loadSavedImage('photo3Preview');
+            // 저장된 이미지 로드 (DOM이 완전히 로드된 후)
+            console.log('이미지 로드 시작...');
+            
+            // LocalStorage에 저장된 사진 데이터 확인
+            const savedPhotos = getFromStorage(STORAGE_KEYS.PHOTOS);
+            console.log('저장된 사진 데이터:', savedPhotos);
+            
+            setTimeout(function() {
+                console.log('이미지 로드 실행 (100ms 후)');
+                loadSavedImage('photo1Preview');
+                loadSavedImage('photo2Preview');
+                loadSavedImage('photo3Preview');
+                loadSavedImage('photo4Preview');
+                console.log('이미지 로드 완료');
+            }, 100);
             
             // 폼 변경 시 진행률 업데이트
-            document.getElementById('surveyForm').addEventListener('change', updateSurveyProgress);
+            const surveyForm = document.getElementById('surveyForm');
+            if (surveyForm) {
+                surveyForm.addEventListener('change', function() {
+                    console.log('폼 변경 감지 - 자동 저장 실행');
+                    updateSurveyProgress();
+                });
+            }
             
             // 초기 진행률 계산
             updateSurveyProgress();
+            console.log('초기 진행률 계산 완료');
+            
+            // 사진 업로드 이벤트 리스너 등록
+            console.log('사진 업로드 이벤트 리스너 등록 시작');
+            document.getElementById('fileInput1').addEventListener('change', function() {
+                console.log('fileInput1 change 이벤트 발생');
+                previewImage(this, 'photo1Preview');
+            });
+            document.getElementById('fileInput2').addEventListener('change', function() {
+                console.log('fileInput2 change 이벤트 발생');
+                previewImage(this, 'photo2Preview');
+            });
+            document.getElementById('fileInput3').addEventListener('change', function() {
+                console.log('fileInput3 change 이벤트 발생');
+                previewImage(this, 'photo3Preview');
+            });
+            document.getElementById('fileInput4').addEventListener('change', function() {
+                console.log('fileInput4 change 이벤트 발생');
+                previewImage(this, 'photo4Preview');
+            });
+            console.log('사진 업로드 이벤트 리스너 등록 완료');
         });
 
         // 설문 진행률 업데이트
         function updateSurveyProgress() {
             const form = document.getElementById('surveyForm');
-            const totalQuestions = 10; // 전체 질문 수
+            const totalQuestions = 5; // 전체 질문 수
             let answeredQuestions = 0;
 
             // 각 질문별로 답변 여부 확인
@@ -351,18 +326,13 @@
             // 각 질문의 답변 평가
             const evaluations = {
                 q1: { pass: ['수령'], fail: ['미수령'] },
-                q2: { pass: ['첨부'], fail: ['미첨부'] },
-                q3: { pass: ['만족'], fail: ['불만족'], warning: ['미확인'] },
-                q4: { pass: ['일치'], fail: ['불일치'], warning: ['미확인'] },
-                q5: { pass: ['없음'], warning: ['미세균열'], fail: ['주요균열'] },
-                q6: { pass: ['양호'], warning: ['보통'], fail: ['불량'] },
-                q7: { pass: ['적절'], fail: ['부적절'], warning: ['미확인'] },
-                q8: { pass: ['정확', '해당없음'], fail: ['부정확'] },
-                q9: { pass: ['명확'], warning: ['불명확'], fail: ['없음'] },
-                q10: { pass: ['없음'], warning: ['경미한손상'], fail: ['심각한손상'] }
+                q2: { pass: ['없음'], fail: ['손상있음', '균열있음'] },
+                q3: { pass: ['양호'], warning: ['보통'], fail: ['불량'] },
+                q4: { pass: ['없음'], fail: ['결함있음', '파손있음'] },
+                q5: { pass: ['적치됨'], warning: ['부분적치'], fail: ['미적치'] }
             };
 
-            for (let i = 1; i <= 10; i++) {
+            for (let i = 1; i <= 5; i++) {
                 const answer = formData.get(`q${i}`);
                 const eval = evaluations[`q${i}`];
                 
@@ -414,36 +384,106 @@
             document.getElementById('surveyResult').innerHTML = resultHTML;
         }
 
+        // 저장된 사진 데이터 확인
+        function checkStoredPhotos() {
+            console.log('=== 사진 데이터 확인 시작 ===');
+            const photos = getFromStorage(STORAGE_KEYS.PHOTOS);
+            
+            if (!photos) {
+                alert('저장된 사진이 없습니다.\n\n먼저 사진을 업로드해주세요.');
+                console.log('저장된 사진 데이터: null');
+                return;
+            }
+            
+            const photoKeys = Object.keys(photos);
+            const photoCount = photoKeys.length;
+            
+            // 운송결과 리포트 사진만 필터링
+            const transportPhotos = photoKeys.filter(key => key.startsWith('photo') && key.endsWith('Preview'));
+            const transportPhotoCount = transportPhotos.length;
+            
+            console.log('=== 저장된 사진 데이터 확인 ===');
+            console.log('사진 개수:', photoCount);
+            console.log('사진 ID 목록:', photoKeys);
+            
+            photoKeys.forEach(key => {
+                const dataSize = photos[key] ? photos[key].length : 0;
+                console.log(`${key}: ${(dataSize / 1024).toFixed(2)} KB`);
+            });
+            
+            // 상세 정보 생성
+            let detailInfo = `📊 전체 저장된 사진: ${photoCount}개\n`;
+            detailInfo += `📷 운송결과 리포트 사진: ${transportPhotoCount}개\n\n`;
+            detailInfo += `--- 사진 목록 ---\n`;
+            
+            for (let i = 1; i <= 4; i++) {
+                const key = `photo${i}Preview`;
+                if (photos[key]) {
+                    const size = (photos[key].length / 1024).toFixed(2);
+                    detailInfo += `✅ 사진 ${i}: ${size} KB\n`;
+                } else {
+                    detailInfo += `❌ 사진 ${i}: 없음\n`;
+                }
+            }
+            
+            detailInfo += `\n자세한 정보는 콘솔(F12)을 확인하세요.`;
+            
+            alert(detailInfo);
+        }
+        
         // 설문 저장
         function saveSurvey() {
             const form = document.getElementById('surveyForm');
             
+            if (!form) {
+                console.error('설문 폼을 찾을 수 없습니다.');
+                alert('폼을 찾을 수 없습니다. 페이지를 새로고침해주세요.');
+                return;
+            }
+            
             // 필수 질문 확인
             let allAnswered = true;
-            for (let i = 1; i <= 10; i++) {
+            let unansweredQuestions = [];
+            
+            for (let i = 1; i <= 5; i++) {
                 const question = form.querySelector(`input[name="q${i}"]:checked`);
                 if (!question) {
                     allAnswered = false;
-                    break;
+                    unansweredQuestions.push(i);
                 }
             }
 
             if (!allAnswered) {
-                alert('모든 질문에 답변해 주세요.');
+                alert(`모든 질문에 답변해 주세요.\n미답변 질문: ${unansweredQuestions.join(', ')}번`);
                 return;
             }
 
             // 폼 데이터 저장
             const formData = new FormData(form);
             const data = {};
+            
             for (let [key, value] of formData.entries()) {
                 data[key] = value;
             }
             
-            saveToStorage(STORAGE_KEYS.SURVEY_DATA, data);
+            console.log('저장할 데이터:', data);
             
-            alert('설문 데이터가 저장되었습니다!');
-            updateSurveyProgress();
+            // LocalStorage에 저장
+            const saveResult = saveToStorage(STORAGE_KEYS.SURVEY_DATA, data);
+            
+            if (saveResult !== false) {
+                console.log('저장 성공:', STORAGE_KEYS.SURVEY_DATA);
+                
+                // 저장된 데이터 확인
+                const savedData = getFromStorage(STORAGE_KEYS.SURVEY_DATA);
+                console.log('저장된 데이터 확인:', savedData);
+                
+                alert('✅ 운송결과 리포트가 저장되었습니다!');
+                updateSurveyProgress();
+            } else {
+                console.error('저장 실패');
+                alert('❌ 저장에 실패했습니다. 다시 시도해주세요.');
+            }
         }
     </script>
 </body>

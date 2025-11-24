@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>품질관리 시스템 - 종합 요약</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <script defer src="assets/js/script.js"></script>
+</head>
+<body>
+    <!-- 헤더 -->
+    <header class="header">
+        <div class="container">
+            <h1 class="header-title">Prefab 품질관리 시스템</h1>
+            <p class="header-subtitle">종합 요약 페이지</p>
+        </div>
+    </header>
+
+    <!-- 페이지 네비게이션 -->
+    <nav class="page-nav">
+        <div class="container">
+            <button onclick="window.location.href='index.html'" style="float: right; background: #667eea; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; margin-top: 10px;">
+                📋 보고서 목록
+            </button>
+            <ul>
+                <li><a href="report.html" class="active">1. 종합 요약</a></li>
+                <li><a href="page2.html">2. 운송결과 리포트</a></li>
+                <li><a href="page3.html">3. 가속도 데이터</a></li>
+                <li><a href="page4.html">4. 기울기 데이터</a></li>
+                <li><a href="page5.html">5. 변형률 데이터</a></li>
+                <li><a href="page6.html">6. 부재 제작 오차</a></li>
+                <li><a href="dashboard.html">7. 종합 대시보드</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- 메인 컨텐츠 -->
+    <main class="container">
+        <!-- 프로젝트 정보 -->
+        <section class="project-info">
+            <h2 class="mb-3">프로젝트 정보</h2>
+            <form id="projectInfoForm">
+                <div class="info-grid">
+                    <div class="info-item">
+                        <label class="info-label" for="projectName">공사명</label>
+                        <input type="text" id="projectName" name="projectName" class="info-value" 
+                               placeholder="공사명을 입력하세요" required>
+                    </div>
+                    <div class="info-item">
+                        <label class="info-label" for="inspectionDate">점검일</label>
+                        <input type="date" id="inspectionDate" name="inspectionDate" class="info-value" required>
+                    </div>
+                    <div class="info-item">
+                        <label class="info-label" for="prefabType">Prefab 종류</label>
+                        <select id="prefabType" name="prefabType" class="info-value" required>
+                            <option value="">선택하세요</option>
+                            <option value="기둥">기둥</option>
+                            <option value="보">보</option>
+                            <option value="슬래브">슬래브</option>
+                            <option value="벽체">벽체</option>
+                            <option value="계단">계단</option>
+                            <option value="버스정차대 프리캐스트 바닥판">버스정차대 프리캐스트 바닥판</option>
+                            <option value="기타">기타</option>
+                        </select>
+                    </div>
+                    <div class="info-item">
+                        <label class="info-label" for="location">설치 위치</label>
+                        <input type="text" id="location" name="location" class="info-value" 
+                               placeholder="예: 3층 A동" required>
+                    </div>
+                </div>
+                <div style="margin-top: 1.5rem; text-align: center;">
+                    <button type="button" class="btn btn-success" onclick="saveProjectInfo()" style="font-size: 1rem; padding: 0.75rem 2rem;">
+                        💾 프로젝트 정보 저장
+                    </button>
+                </div>
+            </form>
+        </section>
+
+        <!-- 품질 점검 개요 -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">품질 점검 개요</h2>
+                <p class="card-description">Prefab 부재의 전체 품질 상태를 요약합니다</p>
+            </div>
+            <div class="card-body">
+                <div class="stats-grid">
+                    <div class="stat-card success">
+                        <div class="stat-label">서류 검증</div>
+                        <div class="stat-value" id="docStatus">대기중</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">가속도 계측</div>
+                        <div class="stat-value" id="accelStatus">대기중</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">기울기 계측</div>
+                        <div class="stat-value" id="tiltStatus">대기중</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">변형률 계측</div>
+                        <div class="stat-value" id="strainStatus">대기중</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">제작 오차</div>
+                        <div class="stat-value" id="errorStatus">대기중</div>
+                    </div>
+                    <div class="stat-card success">
+                        <div class="stat-label">종합 평가</div>
+                        <div class="stat-value" id="overallStatus">양호</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 점검 항목 체크리스트 -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">점검 항목 체크리스트</h2>
+                <p class="card-description">모든 항목을 확인하여 품질관리를 완료하세요</p>
+            </div>
+            <div class="card-body">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>순번</th>
+                            <th>점검 항목</th>
+                            <th>상태</th>
+                            <th>이동</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td>운송결과 리포트 (품질관리자)</td>
+                            <td><span class="badge badge-warning" id="badge1">미완료</span></td>
+                            <td><a href="page2.html" class="btn btn-primary">이동</a></td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>가속도 데이터 측정 및 분석</td>
+                            <td><span class="badge badge-warning" id="badge2">미완료</span></td>
+                            <td><a href="page3.html" class="btn btn-primary">이동</a></td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td>기울기 데이터 측정 및 분석</td>
+                            <td><span class="badge badge-warning" id="badge3">미완료</span></td>
+                            <td><a href="page4.html" class="btn btn-primary">이동</a></td>
+                        </tr>
+                        <tr>
+                            <td>4</td>
+                            <td>변형률 데이터 측정 및 분석</td>
+                            <td><span class="badge badge-warning" id="badge4">미완료</span></td>
+                            <td><a href="page5.html" class="btn btn-primary">이동</a></td>
+                        </tr>
+                        <tr>
+                            <td>5</td>
+                            <td>부재 제작 오차 측정 및 비교</td>
+                            <td><span class="badge badge-warning" id="badge5">미완료</span></td>
+                            <td><a href="page6.html" class="btn btn-primary">이동</a></td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td>종합 대시보드 확인</td>
+                            <td><span class="badge badge-info" id="badge6">확인 필요</span></td>
+                            <td><a href="dashboard.html" class="btn btn-success">확인</a></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 주요 안내 사항 -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">주요 안내 사항</h2>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-success">
+                    <strong>✅ 품질 기준</strong>
+                    <ul style="margin-top: 0.5rem; padding-left: 1.5rem;">
+                        <li>가속도: ±0.5g 이내</li>
+                        <li>기울기: ±2° 이내</li>
+                        <li>변형률: ±100με 이내</li>
+                        <li>제작 오차: ±5mm 이내</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- 데이터 관리 -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">데이터 관리</h2>
+                <p class="card-description">저장된 데이터를 백업하거나 불러올 수 있습니다</p>
+            </div>
+            <div class="card-body">
+                <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                    <button class="btn btn-success" onclick="exportData()">📥 데이터 내보내기</button>
+                    <label class="btn btn-primary" style="cursor: pointer;">
+                        📤 데이터 가져오기
+                        <input type="file" accept=".json" onchange="importData(this)" style="display: none;">
+                    </label>
+                    <button class="btn btn-danger" onclick="clearAllData()">🗑️ 모든 데이터 삭제</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 전체 보고서 인쇄 -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">전체 보고서 인쇄</h2>
+                <p class="card-description">모든 페이지의 데이터를 통합하여 인쇄할 수 있습니다</p>
+            </div>
+            <div class="card-body">
+                <a href="print-report.html" class="btn btn-primary" style="font-size: 1.1rem; padding: 1rem 2rem;">
+                    🖨️ 전체 보고서 인쇄 페이지로 이동
+                </a>
+                <div class="alert alert-info" style="margin-top: 1rem;">
+                    <strong>📋 포함 내용:</strong>
+                    <ul style="margin-top: 0.5rem; padding-left: 1.5rem;">
+                        <li>1. 종합 요약</li>
+                        <li>2. 운송결과 리포트 (사진 포함)</li>
+                        <li>3. 가속도 데이터 (그래프 포함)</li>
+                        <li>4. 기울기 데이터 (그래프 포함)</li>
+                        <li>5. 변형률 데이터 (그래프 포함)</li>
+                        <li>6. 부재 제작 오차 (사진, 그래프 포함)</li>
+                        <li>7. 종합 대시보드 (종합 평가 포함)</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- 네비게이션 버튼 -->
+        <div class="nav-buttons">
+            <div></div>
+            <a href="page2.html" class="btn btn-primary">다음: 운송결과 리포트 →</a>
+        </div>
+    </main>
+
+    <script>
+        // Check if active report exists
+        function checkActiveReport() {
+            const activeReportId = localStorage.getItem('ACTIVE_REPORT_ID');
+            if (!activeReportId) {
+                alert('활성화된 보고서가 없습니다. 보고서 목록에서 보고서를 선택하거나 새로 작성해주세요.');
+                window.location.href = 'index.html';
+                return false;
+            }
+            return true;
+        }
+        
+        // 페이지 로드 시 프로젝트 정보 자동 저장 및 로드
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check active report
+            if (!checkActiveReport()) return;
+            
+            // 현재 날짜 자동 입력
+            setCurrentDate('inspectionDate');
+            
+            // 폼 데이터 로드 (report ID prefix added in script.js)
+            loadFormData('projectInfoForm', STORAGE_KEYS.PROJECT_INFO);
+            
+            // 자동 저장 설정
+            autoSaveForm('projectInfoForm', STORAGE_KEYS.PROJECT_INFO);
+            
+            // 상태 업데이트
+            updateStatus();
+        });
+
+        // 프로젝트 정보 저장 함수
+        function saveProjectInfo() {
+            const form = document.getElementById('projectInfoForm');
+            
+            // 폼 유효성 검사
+            if (!form.checkValidity()) {
+                alert('모든 필수 항목을 입력해주세요.');
+                form.reportValidity();
+                return;
+            }
+            
+            // 폼 데이터 수집
+            const formData = new FormData(form);
+            const data = {};
+            for (let [key, value] of formData.entries()) {
+                data[key] = value;
+            }
+            
+            // LocalStorage에 저장
+            saveToStorage(STORAGE_KEYS.PROJECT_INFO, data);
+            
+            // 성공 메시지
+            alert('✅ 프로젝트 정보가 저장되었습니다!');
+            
+            console.log('프로젝트 정보 저장 완료:', data);
+        }
+
+        // 각 페이지의 완료 상태 확인 및 업데이트
+        function updateStatus() {
+            // 품질관리자 설문
+            const surveyData = getFromStorage(STORAGE_KEYS.SURVEY_DATA);
+            if (surveyData) {
+                document.getElementById('badge1').textContent = '완료';
+                document.getElementById('badge1').className = 'badge badge-success';
+                document.getElementById('docStatus').textContent = '완료';
+            }
+
+            // 가속도 데이터
+            const accelData = getFromStorage(STORAGE_KEYS.ACCELERATION_DATA);
+            if (accelData) {
+                document.getElementById('badge2').textContent = '완료';
+                document.getElementById('badge2').className = 'badge badge-success';
+                document.getElementById('accelStatus').textContent = '정상';
+            }
+
+            // 기울기 데이터
+            const tiltData = getFromStorage(STORAGE_KEYS.TILT_DATA);
+            if (tiltData) {
+                document.getElementById('badge3').textContent = '완료';
+                document.getElementById('badge3').className = 'badge badge-success';
+                document.getElementById('tiltStatus').textContent = '정상';
+            }
+
+            // 변형률 데이터
+            const strainData = getFromStorage(STORAGE_KEYS.STRAIN_DATA);
+            if (strainData) {
+                document.getElementById('badge4').textContent = '완료';
+                document.getElementById('badge4').className = 'badge badge-success';
+                document.getElementById('strainStatus').textContent = '정상';
+            }
+
+            // 제작 오차
+            const errorData = getFromStorage(STORAGE_KEYS.FABRICATION_ERROR);
+            if (errorData) {
+                document.getElementById('badge5').textContent = '완료';
+                document.getElementById('badge5').className = 'badge badge-success';
+                document.getElementById('errorStatus').textContent = '양호';
+            }
+
+            // 종합 평가
+            const allComplete = surveyData && accelData && tiltData && strainData && errorData;
+            if (allComplete) {
+                document.getElementById('overallStatus').textContent = '적합';
+                document.getElementById('badge6').textContent = '완료';
+                document.getElementById('badge6').className = 'badge badge-success';
+            }
+        }
+    </script>
+</body>
+</html>

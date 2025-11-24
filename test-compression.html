@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>압축 테스트</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .upload-area {
+            border: 2px dashed #ccc;
+            padding: 40px;
+            text-align: center;
+            margin: 20px 0;
+            cursor: pointer;
+        }
+        .upload-area:hover {
+            border-color: #007bff;
+            background: #f8f9fa;
+        }
+        #preview {
+            max-width: 100%;
+            max-height: 400px;
+            margin: 20px 0;
+            display: none;
+        }
+        .log {
+            background: #f5f5f5;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .info {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .warning { background: #fff3cd; color: #856404; }
+    </style>
+</head>
+<body>
+    <h1>🧪 사진 압축 테스트</h1>
+    
+    <div id="status"></div>
+    
+    <div class="upload-area" onclick="document.getElementById('fileInput').click()">
+        <input type="file" id="fileInput" accept="image/*" style="display: none;">
+        <p>📷 클릭하여 사진 업로드</p>
+        <p style="font-size: 0.9em; color: #666;">대용량 사진을 선택하세요 (4-5MB 권장)</p>
+    </div>
+    
+    <img id="preview" alt="미리보기">
+    
+    <div id="info"></div>
+    
+    <h3>📋 압축 로그</h3>
+    <div class="log" id="log"></div>
+    
+    <script>
+        const logDiv = document.getElementById('log');
+        const infoDiv = document.getElementById('info');
+        const statusDiv = document.getElementById('status');
+        const preview = document.getElementById('preview');
+        
+        // 콘솔 로그 캡처
+        const originalLog = console.log;
+        const originalError = console.error;
+        const originalWarn = console.warn;
+        
+        function addLog(message, type = 'log') {
+            const time = new Date().toLocaleTimeString();
+            const line = document.createElement('div');
+            line.style.color = type === 'error' ? 'red' : type === 'warn' ? 'orange' : 'black';
+            line.textContent = `[${time}] ${message}`;
+            logDiv.appendChild(line);
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+        
+        console.log = function(...args) {
+            originalLog.apply(console, args);
+            addLog(args.join(' '), 'log');
+        };
+        
+        console.error = function(...args) {
+            originalError.apply(console, args);
+            addLog('ERROR: ' + args.join(' '), 'error');
+        };
+        
+        console.warn = function(...args) {
+            originalWarn.apply(console, args);
+            addLog('WARN: ' + args.join(' '), 'warn');
+        };
+        
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            console.log('=== 파일 선택됨 ===');
+            console.log('파일명:', file.name);
+            console.log('파일 크기:', (file.size / 1024).toFixed(0), 'KB');
+            console.log('파일 타입:', file.type);
+            
+            statusDiv.innerHTML = '<div class="info warning">⏳ 압축 진행 중...</div>';
+            infoDiv.innerHTML = '';
+            
+            // 압축 함수 호출
+            resizeAndCompressImage(file, 110, null, 
+                function(compressedDataUrl) {
+                    // 성공
+                    const compressedSize = compressedDataUrl.length / 1024;
+                    preview.src = compressedDataUrl;
+                    preview.style.display = 'block';
+                    
+                    statusDiv.innerHTML = '<div class="info success">✅ 압축 성공!</div>';
+                    infoDiv.innerHTML = `
+                        <div class="info success">
+                            <strong>압축 완료</strong><br>
+                            원본 크기: ${(file.size / 1024).toFixed(0)} KB<br>
+                            압축 후 크기: ${compressedSize.toFixed(0)} KB<br>
+                            압축률: ${((1 - compressedDataUrl.length / file.size) * 100).toFixed(1)}%
+                        </div>
+                    `;
+                },
+                function(error) {
+                    // 실패
+                    statusDiv.innerHTML = '<div class="info error">❌ 압축 실패!</div>';
+                    infoDiv.innerHTML = `
+                        <div class="info error">
+                            <strong>오류 발생</strong><br>
+                            ${error}
+                        </div>
+                    `;
+                    console.error('압축 실패:', error);
+                }
+            );
+        });
+        
+        // 압축 함수 (script.js에서 복사)
+        function resizeAndCompressImage(file, targetSizeKB, quality, successCallback, errorCallback) {
+            const TARGET_SIZE_KB = 110;
+            const TARGET_SIZE_BYTES = TARGET_SIZE_KB * 1024;
+            
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                const img = new Image();
+                
+                img.onload = function() {
+                    try {
+                        console.log('=== 자동 압축 시작 ===');
+                        console.log('원본 이미지 크기:', img.width, 'x', img.height);
+                        console.log('원본 파일 크기:', (file.size / 1024).toFixed(0), 'KB');
+                        console.log('목표 크기:', TARGET_SIZE_KB, 'KB');
+                        
+                        const canvas = document.createElement('canvas');
+                        const ctx = canvas.getContext('2d');
+                        
+                        function tryCompress(width, height, quality) {
+                            canvas.width = width;
+                            canvas.height = height;
+                            ctx.clearRect(0, 0, width, height);
+                            ctx.drawImage(img, 0, 0, width, height);
+                            
+                            const dataUrl = canvas.toDataURL('image/jpeg', quality);
+                            const sizeKB = dataUrl.length / 1024;
+                            
+                            console.log(`시도: ${width}x${height}, 품질: ${(quality * 100).toFixed(0)}% → ${sizeKB.toFixed(0)}KB`);
+                            
+                            return {
+                                dataUrl: dataUrl,
+                                size: dataUrl.length,
+                                sizeKB: sizeKB,
+                                width: width,
+                                height: height,
+                                quality: quality
+                            };
+                        }
+                        
+                        let currentWidth = img.width;
+                        let currentHeight = img.height;
+                        let currentQuality = 0.85;
+                        
+                        const MAX_ATTEMPTS = 30;
+                        let attempt = 0;
+                        let bestResult = null;
+                        
+                        const MIN_PIXELS = 200 * 200;
+                        
+                        while (attempt < MAX_ATTEMPTS) {
+                            attempt++;
+                            
+                            const result = tryCompress(currentWidth, currentHeight, currentQuality);
+                            
+                            if (result.size <= TARGET_SIZE_BYTES) {
+                                bestResult = result;
+                                console.log(`✅ 목표 달성! ${attempt}번 시도`);
+                                break;
+                            }
+                            
+                            if (!bestResult || Math.abs(result.size - TARGET_SIZE_BYTES) < Math.abs(bestResult.size - TARGET_SIZE_BYTES)) {
+                                bestResult = result;
+                            }
+                            
+                            const ratio = result.size / TARGET_SIZE_BYTES;
+                            const currentPixels = currentWidth * currentHeight;
+                            
+                            if (currentPixels > MIN_PIXELS) {
+                                if (ratio > 2.5) {
+                                    currentWidth = Math.floor(currentWidth * 0.65);
+                                    currentHeight = Math.floor(currentHeight * 0.65);
+                                } else if (ratio > 2.0) {
+                                    currentWidth = Math.floor(currentWidth * 0.75);
+                                    currentHeight = Math.floor(currentHeight * 0.75);
+                                } else if (ratio > 1.5) {
+                                    currentWidth = Math.floor(currentWidth * 0.85);
+                                    currentHeight = Math.floor(currentHeight * 0.85);
+                                } else if (ratio > 1.2) {
+                                    currentWidth = Math.floor(currentWidth * 0.92);
+                                    currentHeight = Math.floor(currentHeight * 0.92);
+                                } else {
+                                    currentQuality = Math.max(0.3, currentQuality - 0.05);
+                                }
+                            } else {
+                                console.log('⚠️ 최소 해상도 도달, 품질 우선 압축');
+                                currentQuality = Math.max(0.2, currentQuality - 0.05);
+                                
+                                if (currentQuality <= 0.2) {
+                                    console.log('⚠️ 최소 품질 도달, 압축 중단');
+                                    break;
+                                }
+                            }
+                        }
+                        
+                        if (!bestResult) {
+                            throw new Error('압축 실패');
+                        }
+                        
+                        const originalSizeKB = file.size / 1024;
+                        const finalSizeKB = bestResult.sizeKB;
+                        const compressionRatio = ((1 - bestResult.size / file.size) * 100).toFixed(1);
+                        
+                        console.log('=== 압축 완료 ===');
+                        console.log(`원본: ${originalSizeKB.toFixed(0)}KB (${img.width}x${img.height})`);
+                        console.log(`결과: ${finalSizeKB.toFixed(0)}KB (${bestResult.width}x${bestResult.height})`);
+                        console.log(`품질: ${(bestResult.quality * 100).toFixed(0)}%`);
+                        console.log(`압축률: ${compressionRatio}%`);
+                        console.log(`시도 횟수: ${attempt}회`);
+                        
+                        if (bestResult.sizeKB > TARGET_SIZE_KB) {
+                            console.warn(`⚠️ 목표 크기(${TARGET_SIZE_KB}KB) 미달성, 최선의 결과: ${finalSizeKB.toFixed(0)}KB`);
+                        } else {
+                            console.log(`✅ 목표 크기 달성! (${TARGET_SIZE_KB}KB 이하)`);
+                        }
+                        
+                        successCallback(bestResult.dataUrl);
+                        
+                    } catch (error) {
+                        console.error('이미지 압축 오류:', error);
+                        errorCallback(error);
+                    }
+                };
+                
+                img.onerror = function(error) {
+                    console.error('이미지 로드 오류:', error);
+                    errorCallback(error);
+                };
+                
+                img.src = e.target.result;
+            };
+            
+            reader.onerror = function(error) {
+                console.error('파일 읽기 오류:', error);
+                errorCallback(error);
+            };
+            
+            reader.readAsDataURL(file);
+        }
+        
+        console.log('🚀 압축 테스트 페이지 준비 완료');
+        console.log('대용량 사진을 업로드하여 압축을 테스트하세요');
+    </script>
+</body>
+</html>

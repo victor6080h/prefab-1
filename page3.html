@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>품질관리 시스템 - 가속도 데이터</title>
     <link rel="stylesheet" href="assets/css/style.css">
-    <script defer src="assets/js/script.js"></script>
 </head>
 <body>
     <!-- 헤더 -->
@@ -19,9 +18,12 @@
     <!-- 페이지 네비게이션 -->
     <nav class="page-nav">
         <div class="container">
+            <button onclick="window.location.href='index.html'" style="float: right; background: #667eea; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; margin-top: 10px;">
+                📋 보고서 목록
+            </button>
             <ul>
-                <li><a href="index.html">1. 종합 요약</a></li>
-                <li><a href="page2.html">2. 품질관리자 설문</a></li>
+                <li><a href="report.html">1. 종합 요약</a></li>
+                <li><a href="page2.html">2. 운송결과 리포트</a></li>
                 <li><a href="page3.html" class="active">3. 가속도 데이터</a></li>
                 <li><a href="page4.html">4. 기울기 데이터</a></li>
                 <li><a href="page5.html">5. 변형률 데이터</a></li>
@@ -37,9 +39,15 @@
         <div class="alert alert-info">
             <strong>📊 가속도 계측 안내</strong>
             <p style="margin-top: 0.5rem;">
-                Prefab 부재의 운반 및 설치 과정에서 발생하는 가속도를 측정합니다. 
-                허용 범위: <strong>±0.5g</strong> (1g = 9.8 m/s²)
+                Prefab 부재의 운반 및 설치 과정에서 발생하는 가속도를 측정합니다. (1g = 9.8 m/s²)
             </p>
+            <div style="margin-top: 0.75rem; padding: 0.5rem; background-color: white; border-radius: 0.25rem;">
+                <strong>평가 기준:</strong><br>
+                <span style="color: #10b981;">✓ 정상: 0.20G 미만</span> | 
+                <span style="color: #f59e0b;">⚠ 주의: 0.20~0.30G</span> | 
+                <span style="color: #f97316;">⚠️ 경고: 0.30~0.40G</span> | 
+                <span style="color: #ef4444;">❌ 위험: 0.40G 초과</span>
+            </div>
         </div>
 
         <!-- 계측 정보 입력 -->
@@ -51,28 +59,30 @@
                 <form id="accelInfoForm">
                     <div class="info-grid">
                         <div class="info-item">
-                            <label class="info-label" for="accelDate">측정 일시</label>
-                            <input type="datetime-local" id="accelDate" name="accelDate" class="info-value" required>
-                        </div>
-                        <div class="info-item">
-                            <label class="info-label" for="accelLocation">측정 위치</label>
-                            <select id="accelLocation" name="accelLocation" class="info-value" required>
-                                <option value="">선택하세요</option>
-                                <option value="제작장">제작장</option>
-                                <option value="운반중">운반중</option>
-                                <option value="양중">양중</option>
-                                <option value="설치">설치</option>
-                            </select>
+                            <label class="info-label">측정 단계 (복수 선택 가능)</label>
+                            <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                                <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                                    <input type="checkbox" name="accelPhase" value="운송전" style="width: auto; cursor: pointer;">
+                                    <span>운송전</span>
+                                </label>
+                                <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                                    <input type="checkbox" name="accelPhase" value="운송중" style="width: auto; cursor: pointer;">
+                                    <span>운송중</span>
+                                </label>
+                                <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                                    <input type="checkbox" name="accelPhase" value="운송후" style="width: auto; cursor: pointer;">
+                                    <span>운송후</span>
+                                </label>
+                                <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                                    <input type="checkbox" name="accelPhase" value="운송전-운송중-운송후" style="width: auto; cursor: pointer;">
+                                    <span>운송전-운송중-운송후</span>
+                                </label>
+                            </div>
                         </div>
                         <div class="info-item">
                             <label class="info-label" for="accelDevice">측정 장비</label>
                             <input type="text" id="accelDevice" name="accelDevice" class="info-value" 
-                                   placeholder="예: ABC-100" required>
-                        </div>
-                        <div class="info-item">
-                            <label class="info-label" for="accelOperator">측정자</label>
-                            <input type="text" id="accelOperator" name="accelOperator" class="info-value" 
-                                   placeholder="측정자명" required>
+                                   placeholder="예: 디지털 경사계" required>
                         </div>
                     </div>
                 </form>
@@ -114,30 +124,7 @@
                             <td id="result2">-</td>
                             <td id="status2">-</td>
                         </tr>
-                        <tr>
-                            <td>측정 3</td>
-                            <td><input type="number" step="0.01" name="x3" class="accel-input" onchange="calculateResultant(3)"></td>
-                            <td><input type="number" step="0.01" name="y3" class="accel-input" onchange="calculateResultant(3)"></td>
-                            <td><input type="number" step="0.01" name="z3" class="accel-input" onchange="calculateResultant(3)"></td>
-                            <td id="result3">-</td>
-                            <td id="status3">-</td>
-                        </tr>
-                        <tr>
-                            <td>측정 4</td>
-                            <td><input type="number" step="0.01" name="x4" class="accel-input" onchange="calculateResultant(4)"></td>
-                            <td><input type="number" step="0.01" name="y4" class="accel-input" onchange="calculateResultant(4)"></td>
-                            <td><input type="number" step="0.01" name="z4" class="accel-input" onchange="calculateResultant(4)"></td>
-                            <td id="result4">-</td>
-                            <td id="status4">-</td>
-                        </tr>
-                        <tr>
-                            <td>측정 5</td>
-                            <td><input type="number" step="0.01" name="x5" class="accel-input" onchange="calculateResultant(5)"></td>
-                            <td><input type="number" step="0.01" name="y5" class="accel-input" onchange="calculateResultant(5)"></td>
-                            <td><input type="number" step="0.01" name="z5" class="accel-input" onchange="calculateResultant(5)"></td>
-                            <td id="result5">-</td>
-                            <td id="status5">-</td>
-                        </tr>
+
                     </tbody>
                 </table>
             </div>
@@ -155,6 +142,25 @@
                 </div>
                 <div class="mt-3">
                     <button class="btn btn-primary" onclick="updateChart()">📈 그래프 업데이트</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 전체 가속도 그래프 이미지 -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">전체 가속도 그래프</h2>
+                <p class="card-description">전체 가속도 데이터 그래프 이미지를 업로드하세요</p>
+            </div>
+            <div class="card-body">
+                <div class="photo-upload-container">
+                    <div class="photo-upload" id="accelGraphPreview" onclick="console.log('📊 업로드 영역 클릭됨'); document.getElementById('accelGraphInput').click();" style="cursor: pointer;">
+                        <input type="file" id="accelGraphInput" accept="image/*" style="display: none;" onchange="console.log('📁 파일 선택됨:', this.files[0]?.name); handleAccelGraphImageUpload(this);">
+                        <span class="placeholder">📊 클릭하여 그래프 이미지 업로드</span>
+                    </div>
+                </div>
+                <div class="mt-3" style="text-align: center;">
+                    <button class="btn btn-secondary" onclick="clearAccelGraph()" style="margin-right: 10px;">🗑️ 이미지 삭제</button>
                 </div>
             </div>
         </div>
@@ -188,57 +194,34 @@
             </div>
         </div>
 
-        <!-- 측정 사진 -->
-        <div class="card">
-            <div class="card-header">
-                <h2 class="card-title">측정 현장 사진</h2>
-            </div>
-            <div class="card-body">
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;">
-                    <div>
-                        <h3 class="mb-2">측정 장비 설치</h3>
-                        <div class="photo-upload">
-                            <img id="accelPhoto1" style="display:none;">
-                            <input type="file" accept="image/*" onchange="previewImage(this, 'accelPhoto1')">
-                            <span class="placeholder">📷 사진 업로드</span>
-                        </div>
-                    </div>
-                    <div>
-                        <h3 class="mb-2">측정 중 현장</h3>
-                        <div class="photo-upload">
-                            <img id="accelPhoto2" style="display:none;">
-                            <input type="file" accept="image/*" onchange="previewImage(this, 'accelPhoto2')">
-                            <span class="placeholder">📷 사진 업로드</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+
 
         <!-- 네비게이션 버튼 -->
         <div class="nav-buttons">
-            <a href="page2.html" class="btn btn-secondary">← 이전: 품질관리자 설문</a>
+            <a href="page2.html" class="btn btn-secondary">← 이전: 운송결과 리포트</a>
             <button class="btn btn-success" onclick="saveAccelData()">💾 저장하기</button>
             <a href="page4.html" class="btn btn-primary">다음: 기울기 데이터 →</a>
         </div>
     </main>
 
+    <!-- Load script.js before inline scripts -->
+    <script src="assets/js/script.js"></script>
+
     <script>
-        // 가속도 임계값 (g)
-        const ACCEL_THRESHOLD = 0.5;
+        // 가속도 임계값 (g) - 3단계 평가
+        const ACCEL_NORMAL = 0.20;    // 정상
+        const ACCEL_CAUTION = 0.30;   // 주의
+        const ACCEL_WARNING = 0.40;   // 경고
+        // 0.40 초과는 위험
 
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 페이지 로드 완료');
+            
             // 저장된 데이터 로드
             loadAccelData();
             
-            // 저장된 이미지 로드
-            loadSavedImage('accelPhoto1');
-            loadSavedImage('accelPhoto2');
-
-            // 현재 날짜/시간 설정
-            const now = new Date();
-            now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
-            document.getElementById('accelDate').value = now.toISOString().slice(0, 16);
+            // 전체 가속도 그래프 이미지 로드
+            loadAccelGraphImage();
 
             // 입력 필드 변경 시 자동 저장
             document.querySelectorAll('.accel-input').forEach(input => {
@@ -246,6 +229,8 @@
             });
             
             autoSaveForm('accelInfoForm', STORAGE_KEYS.ACCELERATION_DATA);
+            
+            console.log('✅ 이벤트 리스너 등록 완료');
         });
 
         // 합성 가속도 계산
@@ -262,10 +247,14 @@
             
             document.getElementById(`result${index}`).textContent = resultant.toFixed(3) + ' g';
             
-            // 상태 표시
+            // 상태 표시 (3단계 평가)
             const statusCell = document.getElementById(`status${index}`);
-            if (resultant > ACCEL_THRESHOLD) {
-                statusCell.innerHTML = '<span class="badge badge-danger">초과</span>';
+            if (resultant > ACCEL_WARNING) {
+                statusCell.innerHTML = '<span class="badge badge-danger">위험</span>';
+            } else if (resultant >= ACCEL_CAUTION) {
+                statusCell.innerHTML = '<span class="badge" style="background-color: #f97316; color: white;">경고</span>';
+            } else if (resultant >= ACCEL_NORMAL) {
+                statusCell.innerHTML = '<span class="badge badge-warning">주의</span>';
             } else if (resultant > 0) {
                 statusCell.innerHTML = '<span class="badge badge-success">정상</span>';
             } else {
@@ -279,7 +268,7 @@
         // 통계 업데이트
         function updateStatistics() {
             const results = [];
-            for (let i = 1; i <= 5; i++) {
+            for (let i = 1; i <= 2; i++) {
                 const resultText = document.getElementById(`result${i}`).textContent;
                 if (resultText !== '-') {
                     results.push(parseFloat(resultText));
@@ -290,32 +279,57 @@
             
             const max = Math.max(...results);
             const avg = results.reduce((a, b) => a + b, 0) / results.length;
-            const exceedCount = results.filter(r => r > ACCEL_THRESHOLD).length;
+            
+            // 3단계 평가 카운트
+            const dangerCount = results.filter(r => r > ACCEL_WARNING).length;
+            const warningCount = results.filter(r => r >= ACCEL_CAUTION && r <= ACCEL_WARNING).length;
+            const cautionCount = results.filter(r => r >= ACCEL_NORMAL && r < ACCEL_CAUTION).length;
+            const normalCount = results.filter(r => r < ACCEL_NORMAL).length;
             
             document.getElementById('maxAccel').textContent = max.toFixed(3) + ' g';
             document.getElementById('avgAccel').textContent = avg.toFixed(3) + ' g';
-            document.getElementById('exceedCount').textContent = exceedCount + ' 회';
+            document.getElementById('exceedCount').textContent = dangerCount + ' 회';
             
-            // 종합 평가
+            // 종합 평가 (3단계 기준)
             const finalStatus = document.getElementById('finalStatus');
             const resultAlert = document.getElementById('resultAlert');
             
-            if (exceedCount === 0) {
-                finalStatus.className = 'stat-card success';
-                finalStatus.querySelector('.stat-value').textContent = '적합';
+            if (dangerCount > 0) {
+                finalStatus.className = 'stat-card danger';
+                finalStatus.querySelector('.stat-value').textContent = '위험';
                 resultAlert.innerHTML = `
-                    <div class="alert alert-success">
-                        <strong>✅ 측정 결과 적합</strong><br>
-                        모든 측정값이 허용 범위(±${ACCEL_THRESHOLD}g) 이내입니다.
+                    <div class="alert alert-danger">
+                        <strong>❌ 위험 수준</strong><br>
+                        ${dangerCount}개 측정값이 위험 기준(0.40G)을 초과했습니다. 즉시 조치가 필요합니다.
+                    </div>
+                `;
+            } else if (warningCount > 0) {
+                finalStatus.className = 'stat-card';
+                finalStatus.style.backgroundColor = '#f97316';
+                finalStatus.style.color = 'white';
+                finalStatus.querySelector('.stat-value').textContent = '경고';
+                resultAlert.innerHTML = `
+                    <div class="alert" style="background-color: #fff7ed; border-color: #f97316; color: #9a3412;">
+                        <strong>⚠️ 경고 수준</strong><br>
+                        ${warningCount}개 측정값이 경고 범위(0.30~0.40G)입니다. 주의 깊은 모니터링이 필요합니다.
+                    </div>
+                `;
+            } else if (cautionCount > 0) {
+                finalStatus.className = 'stat-card warning';
+                finalStatus.querySelector('.stat-value').textContent = '주의';
+                resultAlert.innerHTML = `
+                    <div class="alert alert-warning">
+                        <strong>⚠ 주의 필요</strong><br>
+                        ${cautionCount}개 측정값이 주의 범위(0.20~0.30G)입니다. 지속적인 관찰이 권장됩니다.
                     </div>
                 `;
             } else {
-                finalStatus.className = 'stat-card danger';
-                finalStatus.querySelector('.stat-value').textContent = '부적합';
+                finalStatus.className = 'stat-card success';
+                finalStatus.querySelector('.stat-value').textContent = '정상';
                 resultAlert.innerHTML = `
-                    <div class="alert alert-danger">
-                        <strong>❌ 측정 결과 부적합</strong><br>
-                        ${exceedCount}개 측정값이 허용 범위를 초과했습니다. 즉시 확인이 필요합니다.
+                    <div class="alert alert-success">
+                        <strong>✅ 정상 범위</strong><br>
+                        모든 측정값이 정상 범위(0.3g 미만)입니다.
                     </div>
                 `;
             }
@@ -323,10 +337,10 @@
 
         // 그래프 업데이트
         function updateChart() {
-            const labels = ['측정 1', '측정 2', '측정 3', '측정 4', '측정 5'];
+            const labels = ['측정 1', '측정 2'];
             const values = [];
             
-            for (let i = 1; i <= 5; i++) {
+            for (let i = 1; i <= 2; i++) {
                 const resultText = document.getElementById(`result${i}`).textContent;
                 if (resultText !== '-') {
                     values.push(parseFloat(resultText));
@@ -339,8 +353,10 @@
                 labels: labels,
                 values: values,
                 thresholds: {
-                    upper: ACCEL_THRESHOLD,
-                    lower: -ACCEL_THRESHOLD
+                    upper: ACCEL_WARNING,
+                    lower: -ACCEL_WARNING,
+                    caution: ACCEL_NORMAL,
+                    warning: ACCEL_CAUTION
                 },
                 title: '가속도 측정 결과',
                 yLabel: '가속도 (g)'
@@ -364,7 +380,7 @@
             }
             
             // 측정 데이터
-            for (let i = 1; i <= 5; i++) {
+            for (let i = 1; i <= 2; i++) {
                 const x = parseFloat(document.querySelector(`input[name="x${i}"]`).value) || 0;
                 const y = parseFloat(document.querySelector(`input[name="y${i}"]`).value) || 0;
                 const z = parseFloat(document.querySelector(`input[name="z${i}"]`).value) || 0;
@@ -391,7 +407,7 @@
                 data.info[key] = value;
             }
             
-            for (let i = 1; i <= 5; i++) {
+            for (let i = 1; i <= 2; i++) {
                 const x = parseFloat(document.querySelector(`input[name="x${i}"]`).value) || 0;
                 const y = parseFloat(document.querySelector(`input[name="y${i}"]`).value) || 0;
                 const z = parseFloat(document.querySelector(`input[name="z${i}"]`).value) || 0;
@@ -434,6 +450,113 @@
                 
                 updateChart();
             }
+        }
+
+        // 전체 가속도 그래프 이미지 업로드 처리
+        function handleAccelGraphImageUpload(input) {
+            console.log('🎯 handleAccelGraphImageUpload 함수 호출됨');
+            
+            const file = input.files[0];
+            if (!file) {
+                console.log('❌ 파일이 선택되지 않았습니다');
+                return;
+            }
+            
+            console.log('=== 전체 가속도 그래프 이미지 업로드 시작 ===');
+            console.log('파일명:', file.name);
+            console.log('파일 크기:', (file.size / 1024).toFixed(2), 'KB');
+            console.log('파일 타입:', file.type);
+            
+            // 이미지 파일인지 확인
+            if (!file.type.startsWith('image/')) {
+                alert('이미지 파일만 업로드할 수 있습니다.');
+                return;
+            }
+            
+            // resizeAndCompressImage 함수 존재 확인
+            if (typeof resizeAndCompressImage === 'undefined') {
+                console.error('❌ resizeAndCompressImage 함수가 정의되지 않았습니다!');
+                alert('이미지 처리 함수를 찾을 수 없습니다. 페이지를 새로고침해주세요.');
+                return;
+            }
+            
+            console.log('✅ resizeAndCompressImage 함수 찾음, 압축 시작');
+            
+            // 이미지 압축 및 저장
+            resizeAndCompressImage(
+                file,
+                110, // 목표 크기 (KB)
+                0.9, // 초기 품질
+                function(compressedDataUrl) {
+                    console.log('✅ 압축 성공, 미리보기 표시');
+                    
+                    // 미리보기 표시
+                    const preview = document.getElementById('accelGraphPreview');
+                    preview.innerHTML = `
+                        <input type="file" id="accelGraphInput" accept="image/*" style="display: none;" onchange="handleAccelGraphImageUpload(this)">
+                        <img src="${compressedDataUrl}" alt="전체 가속도 그래프" style="max-width: 100%; height: auto; display: block;">
+                    `;
+                    preview.classList.add('has-image');
+                    preview.onclick = null; // 이미지가 표시되면 클릭 이벤트 제거
+                    
+                    // LocalStorage에 저장
+                    saveToStorage(STORAGE_KEYS.ACCEL_GRAPH_IMAGE, compressedDataUrl);
+                    
+                    console.log('💾 전체 가속도 그래프 이미지 저장 완료');
+                    alert('✅ 이미지가 성공적으로 업로드되었습니다!');
+                },
+                function(error) {
+                    console.error('❌ 이미지 압축 실패:', error);
+                    alert('이미지 처리 중 오류가 발생했습니다: ' + error.message);
+                }
+            );
+        }
+
+        // 전체 가속도 그래프 이미지 로드
+        function loadAccelGraphImage() {
+            console.log('📂 전체 가속도 그래프 이미지 로드 시도');
+            const imageData = getFromStorage(STORAGE_KEYS.ACCEL_GRAPH_IMAGE);
+            
+            if (imageData) {
+                console.log('✅ 저장된 이미지 발견, 크기:', (imageData.length / 1024).toFixed(2), 'KB');
+                const preview = document.getElementById('accelGraphPreview');
+                if (preview) {
+                    preview.innerHTML = `
+                        <input type="file" id="accelGraphInput" accept="image/*" style="display: none;" onchange="handleAccelGraphImageUpload(this)">
+                        <img src="${imageData}" alt="전체 가속도 그래프" style="max-width: 100%; height: auto; display: block;">
+                    `;
+                    preview.classList.add('has-image');
+                    preview.onclick = null; // 이미지가 있으면 클릭 이벤트 제거
+                    console.log('✅ 전체 가속도 그래프 이미지 표시 완료');
+                } else {
+                    console.error('❌ accelGraphPreview 요소를 찾을 수 없습니다');
+                }
+            } else {
+                console.log('ℹ️ 저장된 전체 가속도 그래프 이미지 없음');
+            }
+        }
+
+        // 전체 가속도 그래프 이미지 삭제
+        function clearAccelGraph() {
+            if (!confirm('전체 가속도 그래프 이미지를 삭제하시겠습니까?')) {
+                return;
+            }
+            
+            console.log('🗑️ 전체 가속도 그래프 이미지 삭제 시작');
+            
+            const preview = document.getElementById('accelGraphPreview');
+            preview.innerHTML = `
+                <input type="file" id="accelGraphInput" accept="image/*" style="display: none;" onchange="handleAccelGraphImageUpload(this)">
+                <span class="placeholder">📊 클릭하여 그래프 이미지 업로드</span>
+            `;
+            preview.classList.remove('has-image');
+            preview.onclick = function() { document.getElementById('accelGraphInput').click(); };
+            
+            // LocalStorage에서 삭제
+            localStorage.removeItem(getStorageKey('ACCEL_GRAPH_IMAGE'));
+            
+            console.log('✅ 전체 가속도 그래프 이미지 삭제 완료');
+            alert('✅ 이미지가 삭제되었습니다.');
         }
     </script>
 </body>

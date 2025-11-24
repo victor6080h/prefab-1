@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>품질관리 시스템 - 부재 제작 오차</title>
     <link rel="stylesheet" href="assets/css/style.css">
-    <script defer src="assets/js/script.js"></script>
+    <script src="assets/js/script.js?v=20231123-2"></script>
 </head>
 <body>
     <header class="header">
@@ -17,9 +17,12 @@
 
     <nav class="page-nav">
         <div class="container">
+            <button onclick="window.location.href='index.html'" style="float: right; background: #667eea; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; margin-top: 10px;">
+                📋 보고서 목록
+            </button>
             <ul>
-                <li><a href="index.html">1. 종합 요약</a></li>
-                <li><a href="page2.html">2. 품질관리자 설문</a></li>
+                <li><a href="report.html">1. 종합 요약</a></li>
+                <li><a href="page2.html">2. 운송결과 리포트</a></li>
                 <li><a href="page3.html">3. 가속도 데이터</a></li>
                 <li><a href="page4.html">4. 기울기 데이터</a></li>
                 <li><a href="page5.html">5. 변형률 데이터</a></li>
@@ -33,70 +36,57 @@
         <div class="alert alert-info">
             <strong>📐 제작 오차 측정 안내</strong>
             <p style="margin-top: 0.5rem;">
-                Prefab 부재의 설계치와 실제 측정치를 비교하여 제작 오차를 파악합니다. 
-                허용 범위: <strong>±5mm</strong>
+                Prefab 부재의 설계치와 실제 측정치를 비교하여 제작 오차를 파악합니다.
             </p>
-        </div>
-
-        <div class="card">
-            <div class="card-header">
-                <h2 class="card-title">측정 정보</h2>
-            </div>
-            <div class="card-body">
-                <form id="errorInfoForm">
-                    <div class="info-grid">
-                        <div class="info-item">
-                            <label class="info-label" for="errorDate">측정 일시</label>
-                            <input type="datetime-local" id="errorDate" name="errorDate" class="info-value" required>
-                        </div>
-                        <div class="info-item">
-                            <label class="info-label" for="errorDevice">측정 장비</label>
-                            <input type="text" id="errorDevice" name="errorDevice" class="info-value" 
-                                   placeholder="예: 레이저 거리 측정기" required>
-                        </div>
-                        <div class="info-item">
-                            <label class="info-label" for="errorOperator">측정자</label>
-                            <input type="text" id="errorOperator" name="errorOperator" class="info-value" 
-                                   placeholder="측정자명" required>
-                        </div>
-                        <div class="info-item">
-                            <label class="info-label" for="errorWeather">측정 환경</label>
-                            <select id="errorWeather" name="errorWeather" class="info-value" required>
-                                <option value="">선택하세요</option>
-                                <option value="실내">실내</option>
-                                <option value="실외-맑음">실외 (맑음)</option>
-                                <option value="실외-흐림">실외 (흐림)</option>
-                                <option value="실외-우천">실외 (우천)</option>
-                            </select>
-                        </div>
-                    </div>
-                </form>
+            <div style="margin-top: 1rem; padding: 0.75rem; background-color: #f0f9ff; border-radius: 0.375rem;">
+                <strong style="color: #1e40af;">KCS 24 11 25 : 2025 전단면 프리캐스트 바닥판공 (국토교통부)</strong>
+                <table style="width: 100%; margin-top: 0.5rem; font-size: 0.875rem;">
+                    <tr style="background-color: transparent;">
+                        <td style="padding: 0.25rem; border: none;"><strong>패널 길이:</strong></td>
+                        <td style="padding: 0.25rem; border: none;">설계치수의 ±1% 또는 ±30mm 중 작은 값</td>
+                    </tr>
+                    <tr style="background-color: transparent;">
+                        <td style="padding: 0.25rem; border: none;"><strong>패널 폭:</strong></td>
+                        <td style="padding: 0.25rem; border: none;">설계치수의 ±1% 또는 ±30mm 중 작은 값</td>
+                    </tr>
+                    <tr style="background-color: transparent;">
+                        <td style="padding: 0.25rem; border: none;"><strong>패널 두께:</strong></td>
+                        <td style="padding: 0.25rem; border: none;">+10mm ~ -5mm</td>
+                    </tr>
+                </table>
             </div>
         </div>
 
         <div class="card">
             <div class="card-header">
                 <h2 class="card-title">부재 사진</h2>
-                <p class="card-description">측정 대상 부재의 전체 사진을 업로드하세요</p>
             </div>
             <div class="card-body">
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 1.5rem;">
-                    <div>
-                        <h3 class="mb-2">부재 전면</h3>
-                        <div class="photo-upload" style="min-height: 300px;">
-                            <img id="errorPhoto1" style="display:none;">
-                            <input type="file" accept="image/*" onchange="previewImage(this, 'errorPhoto1')">
-                            <span class="placeholder">📷 사진 업로드</span>
-                        </div>
-                    </div>
-                    <div>
-                        <h3 class="mb-2">부재 측면</h3>
-                        <div class="photo-upload" style="min-height: 300px;">
-                            <img id="errorPhoto2" style="display:none;">
-                            <input type="file" accept="image/*" onchange="previewImage(this, 'errorPhoto2')">
-                            <span class="placeholder">📷 사진 업로드</span>
-                        </div>
-                    </div>
+                <!-- 부재 측면 (가로로 길게) -->
+                <div class="mb-3">
+                    <h3 class="mb-2">부재 측면</h3>
+                    <label for="errorFileInput1" class="photo-upload" style="min-height: 150px; width: 100%; margin: 0; cursor: pointer;">
+                        <input type="file" id="errorFileInput1" accept="image/*" style="display: none;">
+                        <img id="errorPhoto1" class="preview" style="display:none;">
+                        <span class="placeholder">📷 사진 업로드 (클릭하여 업로드)</span>
+                    </label>
+                </div>
+                
+                <!-- 부재 정면 -->
+                <div>
+                    <h3 class="mb-2">부재 정면</h3>
+                    <label for="errorFileInput2" class="photo-upload" style="min-height: 500px; margin: 0; cursor: pointer;">
+                        <input type="file" id="errorFileInput2" accept="image/*" style="display: none;">
+                        <img id="errorPhoto2" class="preview" style="display:none;">
+                        <span class="placeholder">📷 사진 업로드 (클릭하여 업로드)</span>
+                    </label>
+                </div>
+                
+                <!-- 사진 데이터 확인 버튼 -->
+                <div style="margin-top: 1rem;">
+                    <button type="button" class="btn btn-secondary" onclick="checkPhotoData()">
+                        🔍 사진 데이터 확인
+                    </button>
                 </div>
             </div>
         </div>
@@ -112,6 +102,7 @@
                         <tr>
                             <th>측정 항목</th>
                             <th>설계치 (mm)</th>
+                            <th>허용오차</th>
                             <th>측정치 (mm)</th>
                             <th>오차 (mm)</th>
                             <th>상태</th>
@@ -119,53 +110,28 @@
                     </thead>
                     <tbody>
                         <tr>
-                            <td>전체 길이</td>
+                            <td>패널 길이</td>
                             <td><input type="number" step="0.1" name="design1" class="error-input" value="3000" onchange="calculateError(1)"></td>
+                            <td id="tolerance1" style="font-size: 0.875rem; color: #6b7280;">±30mm</td>
                             <td><input type="number" step="0.1" name="measured1" class="error-input" onchange="calculateError(1)"></td>
                             <td id="error1">-</td>
                             <td id="errorStatus1">-</td>
                         </tr>
                         <tr>
-                            <td>전체 폭</td>
-                            <td><input type="number" step="0.1" name="design2" class="error-input" value="300" onchange="calculateError(2)"></td>
+                            <td>패널 폭</td>
+                            <td><input type="number" step="0.1" name="design2" class="error-input" value="1200" onchange="calculateError(2)"></td>
+                            <td id="tolerance2" style="font-size: 0.875rem; color: #6b7280;">±12mm</td>
                             <td><input type="number" step="0.1" name="measured2" class="error-input" onchange="calculateError(2)"></td>
                             <td id="error2">-</td>
                             <td id="errorStatus2">-</td>
                         </tr>
                         <tr>
-                            <td>전체 높이</td>
-                            <td><input type="number" step="0.1" name="design3" class="error-input" value="400" onchange="calculateError(3)"></td>
+                            <td>패널 두께</td>
+                            <td><input type="number" step="0.1" name="design3" class="error-input" value="200" onchange="calculateError(3)"></td>
+                            <td style="font-size: 0.875rem; color: #6b7280;">+10 ~ -5mm</td>
                             <td><input type="number" step="0.1" name="measured3" class="error-input" onchange="calculateError(3)"></td>
                             <td id="error3">-</td>
                             <td id="errorStatus3">-</td>
-                        </tr>
-                        <tr>
-                            <td>상단 치수</td>
-                            <td><input type="number" step="0.1" name="design4" class="error-input" value="250" onchange="calculateError(4)"></td>
-                            <td><input type="number" step="0.1" name="measured4" class="error-input" onchange="calculateError(4)"></td>
-                            <td id="error4">-</td>
-                            <td id="errorStatus4">-</td>
-                        </tr>
-                        <tr>
-                            <td>하단 치수</td>
-                            <td><input type="number" step="0.1" name="design5" class="error-input" value="250" onchange="calculateError(5)"></td>
-                            <td><input type="number" step="0.1" name="measured5" class="error-input" onchange="calculateError(5)"></td>
-                            <td id="error5">-</td>
-                            <td id="errorStatus5">-</td>
-                        </tr>
-                        <tr>
-                            <td>대각선 길이 1</td>
-                            <td><input type="number" step="0.1" name="design6" class="error-input" value="3020" onchange="calculateError(6)"></td>
-                            <td><input type="number" step="0.1" name="measured6" class="error-input" onchange="calculateError(6)"></td>
-                            <td id="error6">-</td>
-                            <td id="errorStatus6">-</td>
-                        </tr>
-                        <tr>
-                            <td>대각선 길이 2</td>
-                            <td><input type="number" step="0.1" name="design7" class="error-input" value="3020" onchange="calculateError(7)"></td>
-                            <td><input type="number" step="0.1" name="measured7" class="error-input" onchange="calculateError(7)"></td>
-                            <td id="error7">-</td>
-                            <td id="errorStatus7">-</td>
                         </tr>
                     </tbody>
                 </table>
@@ -177,8 +143,8 @@
                 <h2 class="card-title">제작 오차 분포 그래프</h2>
             </div>
             <div class="card-body">
-                <div class="chart-container">
-                    <canvas id="errorChart"></canvas>
+                <div class="chart-container" style="height: 600px; width: 100%; max-width: 100%;">
+                    <canvas id="errorChart" style="width: 100%; height: 100%;"></canvas>
                 </div>
                 <div class="mt-3">
                     <button class="btn btn-primary" onclick="updateErrorChart()">📈 그래프 업데이트</button>
@@ -213,40 +179,7 @@
             </div>
         </div>
 
-        <div class="card">
-            <div class="card-header">
-                <h2 class="card-title">측정 상세 사진</h2>
-                <p class="card-description">주요 측정 부위의 상세 사진을 업로드하세요</p>
-            </div>
-            <div class="card-body">
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;">
-                    <div>
-                        <h3 class="mb-2">측정 부위 1</h3>
-                        <div class="photo-upload">
-                            <img id="errorPhoto3" style="display:none;">
-                            <input type="file" accept="image/*" onchange="previewImage(this, 'errorPhoto3')">
-                            <span class="placeholder">📷 사진 업로드</span>
-                        </div>
-                    </div>
-                    <div>
-                        <h3 class="mb-2">측정 부위 2</h3>
-                        <div class="photo-upload">
-                            <img id="errorPhoto4" style="display:none;">
-                            <input type="file" accept="image/*" onchange="previewImage(this, 'errorPhoto4')">
-                            <span class="placeholder">📷 사진 업로드</span>
-                        </div>
-                    </div>
-                    <div>
-                        <h3 class="mb-2">측정 장비</h3>
-                        <div class="photo-upload">
-                            <img id="errorPhoto5" style="display:none;">
-                            <input type="file" accept="image/*" onchange="previewImage(this, 'errorPhoto5')">
-                            <span class="placeholder">📷 사진 업로드</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+
 
         <div class="card">
             <div class="card-header">
@@ -267,18 +200,100 @@
     </main>
 
     <script>
-        const ERROR_THRESHOLD = 5.0; // mm
+        // KCS 기준 허용오차 계산 함수
+        function getAllowableTolerance(index, design) {
+            if (index === 1) {
+                // 패널 길이: ±1% 또는 ±30mm 중 작은 값
+                const onePct = design * 0.01;
+                const tolerance = Math.min(onePct, 30);
+                // 허용오차 표시 업데이트
+                document.getElementById('tolerance1').textContent = `±${tolerance.toFixed(1)}mm`;
+                return tolerance;
+            } else if (index === 2) {
+                // 패널 폭: ±1% 또는 ±30mm 중 작은 값
+                const onePct = design * 0.01;
+                const tolerance = Math.min(onePct, 30);
+                // 허용오차 표시 업데이트
+                document.getElementById('tolerance2').textContent = `±${tolerance.toFixed(1)}mm`;
+                return tolerance;
+            } else if (index === 3) {
+                // 패널 두께: +10mm ~ -5mm (비대칭)
+                return { upper: 10, lower: 5 };
+            }
+            return 5; // 기본값
+        }
+        
+        // 사진 클릭 핸들러
+        function handleErrorPhotoClick(inputId) {
+            console.log('=== handleErrorPhotoClick 호출 ===');
+            console.log('inputId:', inputId);
+            
+            const input = document.getElementById(inputId);
+            console.log('input 요소:', input);
+            
+            if (input) {
+                console.log('input.click() 실행');
+                input.click();
+            } else {
+                console.error('❌ input 요소를 찾을 수 없습니다:', inputId);
+                alert('파일 입력 요소를 찾을 수 없습니다. 페이지를 새로고침해주세요.');
+            }
+        }
+        
+        // 사진 데이터 확인 함수
+        function checkPhotoData() {
+            console.log('=== 사진 데이터 확인 ===');
+            const photos = getFromStorage(STORAGE_KEYS.PHOTOS);
+            
+            if (!photos) {
+                alert('저장된 사진이 없습니다.');
+                console.log('저장된 사진 없음');
+                return;
+            }
+            
+            console.log('전체 저장된 사진:', photos);
+            console.log('저장된 사진 ID 목록:', Object.keys(photos));
+            
+            const photo1 = photos['errorPhoto1'];
+            const photo2 = photos['errorPhoto2'];
+            
+            let message = '📸 저장된 사진 확인:\n\n';
+            
+            if (photo1) {
+                message += '✓ 부재 측면: 저장됨 (' + (photo1.length / 1024).toFixed(0) + 'KB)\n';
+                console.log('errorPhoto1 크기:', (photo1.length / 1024).toFixed(0), 'KB');
+            } else {
+                message += '✗ 부재 측면: 저장 안됨\n';
+                console.log('errorPhoto1: 없음');
+            }
+            
+            if (photo2) {
+                message += '✓ 부재 정면: 저장됨 (' + (photo2.length / 1024).toFixed(0) + 'KB)\n';
+                console.log('errorPhoto2 크기:', (photo2.length / 1024).toFixed(0), 'KB');
+            } else {
+                message += '✗ 부재 정면: 저장 안됨\n';
+                console.log('errorPhoto2: 없음');
+            }
+            
+            alert(message);
+        }
 
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('부재 제작 오차 페이지 로드 시작');
+            
             loadErrorData();
             
-            for (let i = 1; i <= 5; i++) {
-                loadSavedImage(`errorPhoto${i}`);
-            }
-
-            const now = new Date();
-            now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
-            document.getElementById('errorDate').value = now.toISOString().slice(0, 16);
+            // 저장된 이미지 로드 (DOM이 완전히 로드된 후)
+            console.log('이미지 로드 시작...');
+            const savedPhotos = getFromStorage(STORAGE_KEYS.PHOTOS);
+            console.log('저장된 사진 데이터:', savedPhotos);
+            
+            setTimeout(function() {
+                console.log('이미지 로드 실행 (100ms 후)');
+                loadSavedImage('errorPhoto1');
+                loadSavedImage('errorPhoto2');
+                console.log('이미지 로드 완료');
+            }, 100);
 
             document.querySelectorAll('.error-input').forEach(input => {
                 input.addEventListener('change', autoSaveErrorData);
@@ -286,7 +301,21 @@
             
             document.getElementById('errorNotes').addEventListener('change', autoSaveErrorData);
             
-            autoSaveForm('errorInfoForm', STORAGE_KEYS.FABRICATION_ERROR);
+            // 초기 허용오차 계산
+            calculateError(1);
+            calculateError(2);
+            
+            // 사진 업로드 이벤트 리스너 등록
+            console.log('사진 업로드 이벤트 리스너 등록 시작');
+            document.getElementById('errorFileInput1').addEventListener('change', function() {
+                console.log('errorFileInput1 change 이벤트 발생');
+                previewImage(this, 'errorPhoto1');
+            });
+            document.getElementById('errorFileInput2').addEventListener('change', function() {
+                console.log('errorFileInput2 change 이벤트 발생');
+                previewImage(this, 'errorPhoto2');
+            });
+            console.log('사진 업로드 이벤트 리스너 등록 완료');
         });
 
         function calculateError(index) {
@@ -299,8 +328,25 @@
             
             document.getElementById(`error${index}`).textContent = error.toFixed(1) + ' mm';
             
+            // KCS 기준에 따른 허용오차 가져오기
+            const tolerance = getAllowableTolerance(index, design);
+            
             const statusCell = document.getElementById(`errorStatus${index}`);
-            if (Math.abs(error) > ERROR_THRESHOLD) {
+            let isExceeded = false;
+            
+            if (index === 3) {
+                // 패널 두께는 비대칭 허용오차
+                if (error > tolerance.upper || error < -tolerance.lower) {
+                    isExceeded = true;
+                }
+            } else {
+                // 패널 길이/세로는 대칭 허용오차
+                if (Math.abs(error) > tolerance) {
+                    isExceeded = true;
+                }
+            }
+            
+            if (isExceeded) {
                 statusCell.innerHTML = '<span class="badge badge-danger">초과</span>';
             } else if (measured > 0) {
                 statusCell.innerHTML = '<span class="badge badge-success">정상</span>';
@@ -313,10 +359,18 @@
 
         function updateErrorStatistics() {
             const errors = [];
-            for (let i = 1; i <= 7; i++) {
+            let exceedCount = 0;
+            
+            for (let i = 1; i <= 3; i++) {
                 const errorText = document.getElementById(`error${i}`).textContent;
                 if (errorText !== '-') {
                     errors.push(Math.abs(parseFloat(errorText)));
+                    
+                    // 각 항목의 초과 여부 확인
+                    const statusCell = document.getElementById(`errorStatus${i}`);
+                    if (statusCell.innerHTML.includes('초과')) {
+                        exceedCount++;
+                    }
                 }
             }
             
@@ -324,7 +378,6 @@
             
             const max = Math.max(...errors);
             const avg = errors.reduce((a, b) => a + b, 0) / errors.length;
-            const exceedCount = errors.filter(e => e > ERROR_THRESHOLD).length;
             
             document.getElementById('maxError').textContent = max.toFixed(1) + ' mm';
             document.getElementById('avgError').textContent = avg.toFixed(1) + ' mm';
@@ -338,8 +391,8 @@
                 finalStatus.querySelector('.stat-value').textContent = '적합';
                 resultAlert.innerHTML = `
                     <div class="alert alert-success">
-                        <strong>✅ 제작 오차 적합</strong><br>
-                        모든 측정 항목의 오차가 허용 범위(±${ERROR_THRESHOLD}mm) 이내입니다.
+                        <strong>✅ 제작 오차 적합 (KCS 24 11 25 : 2025)</strong><br>
+                        모든 측정 항목이 KCS 기준 허용 범위 이내입니다.
                     </div>
                 `;
             } else {
@@ -347,24 +400,27 @@
                 finalStatus.querySelector('.stat-value').textContent = '부적합';
                 resultAlert.innerHTML = `
                     <div class="alert alert-danger">
-                        <strong>❌ 제작 오차 부적합</strong><br>
-                        ${exceedCount}개 항목의 오차가 허용 범위를 초과했습니다. 재가공 또는 보강이 필요합니다.
+                        <strong>❌ 제작 오차 부적합 (KCS 24 11 25 : 2025)</strong><br>
+                        ${exceedCount}개 항목이 KCS 기준을 초과했습니다. 재가공 또는 보강이 필요합니다.
                     </div>
                 `;
             }
         }
 
         function updateErrorChart() {
-            const labels = ['전체 길이', '전체 폭', '전체 높이', '상단', '하단', '대각선1', '대각선2'];
+            const labels = ['패널 길이', '패널 폭', '패널 두께'];
             const values = [];
             const colors = [];
             
-            for (let i = 1; i <= 7; i++) {
+            for (let i = 1; i <= 3; i++) {
                 const errorText = document.getElementById(`error${i}`).textContent;
+                const statusCell = document.getElementById(`errorStatus${i}`);
+                
                 if (errorText !== '-') {
                     const value = Math.abs(parseFloat(errorText));
                     values.push(value);
-                    colors.push(value > ERROR_THRESHOLD ? '#ef4444' : '#3b82f6');
+                    // 상태 셀의 초과 여부로 색상 결정
+                    colors.push(statusCell.innerHTML.includes('초과') ? '#ef4444' : '#3b82f6');
                 } else {
                     values.push(0);
                     colors.push('#9ca3af');
@@ -382,18 +438,11 @@
 
         function saveErrorData() {
             const data = {
-                info: {},
                 measurements: [],
                 notes: document.getElementById('errorNotes').value
             };
             
-            const infoForm = document.getElementById('errorInfoForm');
-            const infoData = new FormData(infoForm);
-            for (let [key, value] of infoData.entries()) {
-                data.info[key] = value;
-            }
-            
-            for (let i = 1; i <= 7; i++) {
+            for (let i = 1; i <= 3; i++) {
                 const design = parseFloat(document.querySelector(`input[name="design${i}"]`).value) || 0;
                 const measured = parseFloat(document.querySelector(`input[name="measured${i}"]`).value) || 0;
                 const errorText = document.getElementById(`error${i}`).textContent;
@@ -408,18 +457,11 @@
 
         function autoSaveErrorData() {
             const data = {
-                info: {},
                 measurements: [],
                 notes: document.getElementById('errorNotes').value
             };
             
-            const infoForm = document.getElementById('errorInfoForm');
-            const infoData = new FormData(infoForm);
-            for (let [key, value] of infoData.entries()) {
-                data.info[key] = value;
-            }
-            
-            for (let i = 1; i <= 7; i++) {
+            for (let i = 1; i <= 3; i++) {
                 const design = parseFloat(document.querySelector(`input[name="design${i}"]`).value) || 0;
                 const measured = parseFloat(document.querySelector(`input[name="measured${i}"]`).value) || 0;
                 const errorText = document.getElementById(`error${i}`).textContent;
@@ -434,13 +476,6 @@
         function loadErrorData() {
             const data = getFromStorage(STORAGE_KEYS.FABRICATION_ERROR);
             if (!data) return;
-            
-            if (data.info) {
-                Object.keys(data.info).forEach(key => {
-                    const input = document.getElementById(key);
-                    if (input) input.value = data.info[key];
-                });
-            }
             
             if (data.measurements) {
                 data.measurements.forEach((m, i) => {

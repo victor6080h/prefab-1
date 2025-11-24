@@ -17,9 +17,12 @@
 
     <nav class="page-nav">
         <div class="container">
+            <button onclick="window.location.href='index.html'" style="float: right; background: #667eea; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; margin-top: 10px;">
+                📋 보고서 목록
+            </button>
             <ul>
-                <li><a href="index.html">1. 종합 요약</a></li>
-                <li><a href="page2.html">2. 품질관리자 설문</a></li>
+                <li><a href="report.html">1. 종합 요약</a></li>
+                <li><a href="page2.html">2. 운송결과 리포트</a></li>
                 <li><a href="page3.html">3. 가속도 데이터</a></li>
                 <li><a href="page4.html">4. 기울기 데이터</a></li>
                 <li><a href="page5.html">5. 변형률 데이터</a></li>
@@ -73,7 +76,7 @@
             <div class="card-body">
                 <div class="stats-grid">
                     <div class="stat-card" id="surveyCard">
-                        <div class="stat-label">품질관리자 설문</div>
+                        <div class="stat-label">운송결과 리포트</div>
                         <div class="stat-value">대기중</div>
                         <button class="btn btn-primary mt-2" onclick="location.href='page2.html'" style="font-size: 0.875rem; padding: 0.5rem 1rem;">상세보기</button>
                     </div>
@@ -130,11 +133,32 @@
                             <td id="surveyNote1">-</td>
                         </tr>
                         <tr>
-                            <td>시험성적서 첨부</td>
+                            <td>슬래브 손상/균열</td>
                             <td id="surveyResult2">-</td>
-                            <td>첨부 필수</td>
+                            <td>없음</td>
                             <td id="surveyStatus2">-</td>
                             <td id="surveyNote2">-</td>
+                        </tr>
+                        <tr>
+                            <td>스펀지 재료 부착상태</td>
+                            <td id="surveyResult3">-</td>
+                            <td>양호</td>
+                            <td id="surveyStatus3">-</td>
+                            <td id="surveyNote3">-</td>
+                        </tr>
+                        <tr>
+                            <td>와이어/슬링벨트 결함</td>
+                            <td id="surveyResult4">-</td>
+                            <td>없음</td>
+                            <td id="surveyStatus4">-</td>
+                            <td id="surveyNote4">-</td>
+                        </tr>
+                        <tr>
+                            <td>슬래브 적치</td>
+                            <td id="surveyResult5">-</td>
+                            <td>적치됨</td>
+                            <td id="surveyStatus5">-</td>
+                            <td id="surveyNote5">-</td>
                         </tr>
                         <tr>
                             <td>가속도 최대값</td>
@@ -153,14 +177,14 @@
                         <tr>
                             <td>변형률 최대값</td>
                             <td id="strainMaxResult">-</td>
-                            <td>±100με</td>
+                            <td>±130με</td>
                             <td id="strainStatus">-</td>
                             <td id="strainNote">-</td>
                         </tr>
                         <tr>
-                            <td>제작 오차 최대값</td>
+                            <td>제작 오차</td>
                             <td id="errorMaxResult">-</td>
-                            <td>±5mm</td>
+                            <td id="errorTolerance">항목별 상이</td>
                             <td id="errorStatus">-</td>
                             <td id="errorNote">-</td>
                         </tr>
@@ -226,8 +250,24 @@
                 <h2 class="card-title">보고서 관리</h2>
             </div>
             <div class="card-body">
+                <div class="alert alert-info mb-3">
+                    <strong>📄 전체 보고서 인쇄 안내</strong>
+                    <p style="margin-top: 0.5rem;">
+                        모든 페이지의 데이터를 통합하여 인쇄할 수 있습니다. 
+                        인쇄 설정에서 <strong>"배경 그래픽 인쇄"</strong> 옵션을 활성화하면 색상이 출력됩니다.
+                    </p>
+                    <ul style="margin-top: 0.5rem; padding-left: 1.5rem;">
+                        <li>1. 종합 요약</li>
+                        <li>2. 운송결과 리포트 (사진 포함)</li>
+                        <li>3. 가속도 데이터 (그래프 포함)</li>
+                        <li>4. 기울기 데이터 (그래프 포함)</li>
+                        <li>5. 변형률 데이터 (그래프 포함)</li>
+                        <li>6. 부재 제작 오차 (사진, 그래프 포함)</li>
+                        <li>7. 종합 대시보드 (종합 평가 포함)</li>
+                    </ul>
+                </div>
                 <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
-                    <button class="btn btn-primary" onclick="window.print()">🖨️ 보고서 인쇄</button>
+                    <a href="print-report.html" class="btn btn-primary" style="text-decoration: none;">🖨️ 전체 보고서 인쇄 페이지로 이동</a>
                     <button class="btn btn-success" onclick="exportData()">📥 데이터 내보내기</button>
                     <button class="btn btn-warning" onclick="location.href='index.html'">🏠 처음으로</button>
                 </div>
@@ -258,31 +298,65 @@
             let completedCount = 0;
             const issues = [];
 
-            // 품질관리자 설문 평가
+            // 운송결과 리포트 평가
             const surveyData = getFromStorage(STORAGE_KEYS.SURVEY_DATA);
             if (surveyData) {
                 completedCount++;
                 const surveyCard = document.getElementById('surveyCard');
                 
-                // 설문 결과 분석
+                // 점검 결과 분석
                 let failCount = 0;
                 if (surveyData.q1 === '미수령') failCount++;
-                if (surveyData.q2 === '미첨부') failCount++;
-                if (surveyData.q5 === '주요균열') failCount++;
+                if (surveyData.q2 === '손상있음' || surveyData.q2 === '균열있음') failCount++;
+                if (surveyData.q3 === '불량') failCount++;
+                if (surveyData.q4 === '결함있음' || surveyData.q4 === '파손있음') failCount++;
+                if (surveyData.q5 === '미적치') failCount++;
                 
                 if (failCount === 0) {
                     surveyCard.className = 'stat-card success';
                     surveyCard.querySelector('.stat-value').textContent = '적합';
                     document.getElementById('surveyResult1').textContent = surveyData.q1 || '-';
                     document.getElementById('surveyResult2').textContent = surveyData.q2 || '-';
+                    document.getElementById('surveyResult3').textContent = surveyData.q3 || '-';
+                    document.getElementById('surveyResult4').textContent = surveyData.q4 || '-';
+                    document.getElementById('surveyResult5').textContent = surveyData.q5 || '-';
                     document.getElementById('surveyStatus1').innerHTML = '<span class="badge badge-success">적합</span>';
                     document.getElementById('surveyStatus2').innerHTML = '<span class="badge badge-success">적합</span>';
+                    document.getElementById('surveyStatus3').innerHTML = '<span class="badge badge-success">적합</span>';
+                    document.getElementById('surveyStatus4').innerHTML = '<span class="badge badge-success">적합</span>';
+                    document.getElementById('surveyStatus5').innerHTML = '<span class="badge badge-success">적합</span>';
                 } else {
                     surveyCard.className = 'stat-card danger';
                     surveyCard.querySelector('.stat-value').textContent = '부적합';
-                    issues.push('품질관리자 설문에서 부적합 항목이 발견되었습니다.');
-                    document.getElementById('surveyStatus1').innerHTML = '<span class="badge badge-danger">부적합</span>';
-                    document.getElementById('surveyStatus2').innerHTML = '<span class="badge badge-danger">부적합</span>';
+                    issues.push('운송결과 리포트에서 부적합 항목이 발견되었습니다.');
+                    
+                    // 각 항목 결과 표시
+                    document.getElementById('surveyResult1').textContent = surveyData.q1 || '-';
+                    document.getElementById('surveyResult2').textContent = surveyData.q2 || '-';
+                    document.getElementById('surveyResult3').textContent = surveyData.q3 || '-';
+                    document.getElementById('surveyResult4').textContent = surveyData.q4 || '-';
+                    document.getElementById('surveyResult5').textContent = surveyData.q5 || '-';
+                    
+                    // 각 항목 개별 평가
+                    document.getElementById('surveyStatus1').innerHTML = surveyData.q1 === '미수령' ? 
+                        '<span class="badge badge-danger">부적합</span>' : 
+                        '<span class="badge badge-success">적합</span>';
+                    
+                    document.getElementById('surveyStatus2').innerHTML = (surveyData.q2 === '손상있음' || surveyData.q2 === '균열있음') ? 
+                        '<span class="badge badge-danger">부적합</span>' : 
+                        '<span class="badge badge-success">적합</span>';
+                    
+                    document.getElementById('surveyStatus3').innerHTML = surveyData.q3 === '불량' ? 
+                        '<span class="badge badge-danger">부적합</span>' : 
+                        '<span class="badge badge-success">적합</span>';
+                    
+                    document.getElementById('surveyStatus4').innerHTML = (surveyData.q4 === '결함있음' || surveyData.q4 === '파손있음') ? 
+                        '<span class="badge badge-danger">부적합</span>' : 
+                        '<span class="badge badge-success">적합</span>';
+                    
+                    document.getElementById('surveyStatus5').innerHTML = surveyData.q5 === '미적치' ? 
+                        '<span class="badge badge-danger">부적합</span>' : 
+                        '<span class="badge badge-success">적합</span>';
                 }
             }
 
@@ -295,7 +369,7 @@
                 
                 document.getElementById('accelMaxResult').textContent = maxAccel.toFixed(3) + ' g';
                 
-                if (maxAccel <= 0.5) {
+                if (maxAccel <= 0.40) {
                     accelCard.className = 'stat-card success';
                     accelCard.querySelector('.stat-value').textContent = '적합';
                     document.getElementById('accelStatus').innerHTML = '<span class="badge badge-success">적합</span>';
@@ -305,7 +379,7 @@
                     accelCard.querySelector('.stat-value').textContent = '부적합';
                     document.getElementById('accelStatus').innerHTML = '<span class="badge badge-danger">초과</span>';
                     document.getElementById('accelNote').textContent = '허용치 초과';
-                    issues.push(`가속도 최대값(${maxAccel.toFixed(3)}g)이 허용 범위를 초과했습니다.`);
+                    issues.push(`가속도 최대값(${maxAccel.toFixed(3)}G)이 허용 범위를 초과했습니다.`);
                 }
             }
 
@@ -318,7 +392,7 @@
                 
                 document.getElementById('tiltMaxResult').textContent = maxTilt.toFixed(2) + '°';
                 
-                if (maxTilt <= 2.0) {
+                if (maxTilt <= 10.0) {
                     tiltCard.className = 'stat-card success';
                     tiltCard.querySelector('.stat-value').textContent = '적합';
                     document.getElementById('tiltStatus').innerHTML = '<span class="badge badge-success">적합</span>';
@@ -341,7 +415,7 @@
                 
                 document.getElementById('strainMaxResult').textContent = maxStrain.toFixed(0) + ' με';
                 
-                if (maxStrain <= 100) {
+                if (maxStrain <= 130) {
                     strainCard.className = 'stat-card success';
                     strainCard.querySelector('.stat-value').textContent = '적합';
                     document.getElementById('strainStatus').innerHTML = '<span class="badge badge-success">적합</span>';
@@ -360,21 +434,96 @@
             if (errorData && errorData.measurements) {
                 completedCount++;
                 const errorCard = document.getElementById('errorCard');
-                const maxError = Math.max(...errorData.measurements.map(m => Math.abs(m.error || 0)));
                 
-                document.getElementById('errorMaxResult').textContent = maxError.toFixed(1) + ' mm';
+                // KCS 기준 허용오차 계산 함수
+                function getAllowableTolerance(index, design) {
+                    if (index === 0) {
+                        // 패널 길이: ±1% 또는 ±30mm 중 작은 값
+                        const onePct = design * 0.01;
+                        return Math.min(onePct, 30);
+                    } else if (index === 1) {
+                        // 패널 폭: ±1% 또는 ±30mm 중 작은 값
+                        const onePct = design * 0.01;
+                        return Math.min(onePct, 30);
+                    } else if (index === 2) {
+                        // 패널 두께: +10mm ~ -5mm (비대칭)
+                        return { upper: 10, lower: 5 };
+                    }
+                    return 5; // 기본값
+                }
                 
-                if (maxError <= 5.0) {
+                // 각 항목별 허용오차 초과 여부 확인
+                let hasExceeded = false;
+                const labels = ['패널 길이', '패널 폭', '패널 두께'];
+                let resultDetails = [];
+                let exceededItems = [];
+                
+                errorData.measurements.forEach((m, index) => {
+                    const design = parseFloat(m.design) || 0;
+                    const measured = parseFloat(m.measured) || 0;
+                    const error = parseFloat(m.error) || 0;
+                    
+                    if (measured > 0) {
+                        const tolerance = getAllowableTolerance(index, design);
+                        let isExceeded = false;
+                        let toleranceText = '';
+                        
+                        if (index === 2) {
+                            // 패널 두께는 비대칭 허용오차
+                            toleranceText = `+${tolerance.upper}/-${tolerance.lower}mm`;
+                            if (error > tolerance.upper || error < -tolerance.lower) {
+                                isExceeded = true;
+                            }
+                        } else {
+                            // 패널 길이/폭은 대칭 허용오차
+                            toleranceText = `±${tolerance.toFixed(1)}mm`;
+                            if (Math.abs(error) > tolerance) {
+                                isExceeded = true;
+                            }
+                        }
+                        
+                        resultDetails.push({
+                            label: labels[index],
+                            error: error,
+                            tolerance: toleranceText,
+                            exceeded: isExceeded
+                        });
+                        
+                        if (isExceeded) {
+                            hasExceeded = true;
+                            exceededItems.push(`${labels[index]} ${error > 0 ? '+' : ''}${error.toFixed(1)}mm (허용: ${toleranceText})`);
+                        }
+                    }
+                });
+                
+                // 결과 표시 - 각 항목별 상세 정보
+                let resultText = '';
+                if (resultDetails.length > 0) {
+                    resultText = resultDetails.map(item => {
+                        const errorSign = item.error > 0 ? '+' : '';
+                        const status = item.exceeded ? '⚠️' : '✓';
+                        return `${status} ${item.label}: ${errorSign}${item.error.toFixed(1)}mm (허용: ${item.tolerance})`;
+                    }).join('<br>');
+                } else {
+                    resultText = '-';
+                }
+                
+                document.getElementById('errorMaxResult').innerHTML = resultText;
+                document.getElementById('errorTolerance').innerHTML = 'KCS 기준<br>(항목별 상이)';
+                
+                if (!hasExceeded) {
                     errorCard.className = 'stat-card success';
                     errorCard.querySelector('.stat-value').textContent = '적합';
                     document.getElementById('errorStatus').innerHTML = '<span class="badge badge-success">적합</span>';
-                    document.getElementById('errorNote').textContent = '정상 범위';
+                    document.getElementById('errorNote').textContent = '모든 항목 정상';
                 } else {
                     errorCard.className = 'stat-card danger';
                     errorCard.querySelector('.stat-value').textContent = '부적합';
                     document.getElementById('errorStatus').innerHTML = '<span class="badge badge-danger">초과</span>';
-                    document.getElementById('errorNote').textContent = '허용치 초과';
-                    issues.push(`제작 오차 최대값(${maxError.toFixed(1)}mm)이 허용 범위를 초과했습니다.`);
+                    document.getElementById('errorNote').textContent = `${exceededItems.length}개 항목 초과`;
+                    exceededItems.forEach(item => {
+                        issues.push(`제작 오차: ${item}`);
+                    });
                 }
             }
 
@@ -436,6 +585,37 @@
                     document.getElementById('finalJudgmentCard').className = 'card';
                     document.getElementById('finalJudgmentCard').style.borderLeft = '8px solid var(--danger-color)';
                 }
+            }
+        }
+        
+        // 인쇄 함수
+        function printDashboard() {
+            // 인쇄 전 확인 메시지
+            const printConfirm = confirm(
+                '📄 전체 보고서를 인쇄하시겠습니까?\n\n' +
+                '인쇄 팁:\n' +
+                '1. 인쇄 설정에서 "배경 그래픽" 옵션을 활성화하세요\n' +
+                '2. 용지 방향: 세로 (Portrait)\n' +
+                '3. 용지 크기: A4\n' +
+                '4. 여백: 보통\n\n' +
+                '모든 데이터, 그래프, 이미지가 포함됩니다.'
+            );
+            
+            if (printConfirm) {
+                // 인쇄 전 페이지 제목 변경
+                const originalTitle = document.title;
+                const projectInfo = getFromStorage(STORAGE_KEYS.PROJECT_INFO);
+                if (projectInfo && projectInfo.projectName) {
+                    document.title = `품질관리보고서_${projectInfo.projectName}_${getCurrentDate()}`;
+                }
+                
+                // 인쇄 실행
+                window.print();
+                
+                // 제목 복원
+                setTimeout(() => {
+                    document.title = originalTitle;
+                }, 100);
             }
         }
     </script>

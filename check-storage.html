@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LocalStorage 확인</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .info {
+            background: #f0f0f0;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .item {
+            margin: 10px 0;
+            padding: 10px;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+        }
+        .key {
+            font-weight: bold;
+            color: #333;
+        }
+        .size {
+            color: #666;
+            font-size: 0.9em;
+        }
+        .large {
+            background: #fff3cd;
+            border-color: #ffc107;
+        }
+        .compressed {
+            background: #d4edda;
+            border-color: #28a745;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            background: #007bff;
+            color: white;
+            font-size: 16px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .danger {
+            background: #dc3545;
+        }
+        .danger:hover {
+            background: #c82333;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔍 LocalStorage 데이터 확인</h1>
+    
+    <div class="info">
+        <h3>전체 통계</h3>
+        <div id="totalStats"></div>
+    </div>
+    
+    <button onclick="loadData()">🔄 새로고침</button>
+    <button onclick="clearAll()" class="danger">🗑️ 모든 데이터 삭제</button>
+    
+    <h2>📦 저장된 항목</h2>
+    <div id="items"></div>
+    
+    <script>
+        function formatBytes(bytes) {
+            if (bytes < 1024) return bytes + ' B';
+            if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(2) + ' KB';
+            return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
+        }
+        
+        function loadData() {
+            const itemsDiv = document.getElementById('items');
+            const statsDiv = document.getElementById('totalStats');
+            itemsDiv.innerHTML = '';
+            
+            let totalSize = 0;
+            let photoCount = 0;
+            let totalPhotoSize = 0;
+            let items = [];
+            
+            // LocalStorage의 모든 항목 조회
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                const value = localStorage.getItem(key);
+                const size = new Blob([value]).size;
+                totalSize += size;
+                
+                items.push({ key, value, size });
+                
+                // 사진 데이터 확인
+                if (key.includes('photo') || key.includes('Photo')) {
+                    try {
+                        const data = JSON.parse(value);
+                        if (typeof data === 'object') {
+                            // 객체 내의 모든 사진 확인
+                            for (const photoKey in data) {
+                                if (typeof data[photoKey] === 'string' && data[photoKey].startsWith('data:image')) {
+                                    photoCount++;
+                                    const photoSize = new Blob([data[photoKey]]).size;
+                                    totalPhotoSize += photoSize;
+                                    
+                                    console.log(`사진 발견: ${key}.${photoKey} - ${formatBytes(photoSize)}`);
+                                }
+                            }
+                        } else if (typeof data === 'string' && data.startsWith('data:image')) {
+                            photoCount++;
+                            totalPhotoSize += size;
+                        }
+                    } catch (e) {
+                        // JSON이 아닌 경우, 직접 문자열 확인
+                        if (value.startsWith('data:image')) {
+                            photoCount++;
+                            totalPhotoSize += size;
+                        }
+                    }
+                }
+            }
+            
+            // 통계 표시
+            statsDiv.innerHTML = `
+                <p><strong>전체 항목:</strong> ${localStorage.length}개</p>
+                <p><strong>전체 크기:</strong> ${formatBytes(totalSize)}</p>
+                <p><strong>사진 개수:</strong> ${photoCount}개</p>
+                <p><strong>사진 전체 크기:</strong> ${formatBytes(totalPhotoSize)}</p>
+                <p><strong>평균 사진 크기:</strong> ${photoCount > 0 ? formatBytes(totalPhotoSize / photoCount) : '0 B'}</p>
+            `;
+            
+            // 크기순으로 정렬
+            items.sort((a, b) => b.size - a.size);
+            
+            // 항목 표시
+            items.forEach(item => {
+                const div = document.createElement('div');
+                const isLarge = item.size > 200 * 1024; // 200KB 이상
+                const isCompressed = item.size < 120 * 1024 && item.value.startsWith('data:image'); // 120KB 이하 이미지
+                
+                div.className = 'item ' + (isLarge ? 'large' : isCompressed ? 'compressed' : '');
+                
+                let preview = '';
+                if (item.value.startsWith('data:image')) {
+                    preview = `<img src="${item.value}" style="max-width: 200px; max-height: 150px; margin: 10px 0; display: block;">`;
+                }
+                
+                const valuePreview = item.value.length > 100 ? item.value.substring(0, 100) + '...' : item.value;
+                
+                div.innerHTML = `
+                    <div class="key">${item.key}</div>
+                    <div class="size">크기: ${formatBytes(item.size)} ${isLarge ? '⚠️ 큼' : isCompressed ? '✅ 압축됨' : ''}</div>
+                    ${preview}
+                    ${!item.value.startsWith('data:image') ? `<div style="color: #666; font-size: 0.85em; margin-top: 5px;">${valuePreview}</div>` : ''}
+                    <button onclick="deleteItem('${item.key}')" style="background: #dc3545; padding: 5px 10px; font-size: 12px; margin-top: 5px;">삭제</button>
+                `;
+                
+                itemsDiv.appendChild(div);
+            });
+        }
+        
+        function deleteItem(key) {
+            if (confirm(`"${key}" 항목을 삭제하시겠습니까?`)) {
+                localStorage.removeItem(key);
+                loadData();
+            }
+        }
+        
+        function clearAll() {
+            if (confirm('모든 LocalStorage 데이터를 삭제하시겠습니까?')) {
+                localStorage.clear();
+                loadData();
+            }
+        }
+        
+        // 페이지 로드 시 자동 실행
+        loadData();
+    </script>
+</body>
+</html>
