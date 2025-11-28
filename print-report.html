@@ -680,21 +680,29 @@
             
             const surveyData = getFromStorage(STORAGE_KEYS.SURVEY_DATA) || {};
             
+            const photoLabels = ['부재 측면', '부재 정면', '부재 상부', '부재 하부'];
             let photosHTML = '';
             for (let i = 1; i <= 4; i++) {
                 const photoKey = `photo${i}Preview`;
                 const photoData = getFromStorage(STORAGE_KEYS.PHOTOS)?.[photoKey];
+                const label = photoLabels[i - 1];
                 
                 if (photoData) {
                     photosHTML += `
-                        <div class="photo-upload has-image">
-                            <img src="${photoData}">
+                        <div>
+                            <h4 style="margin: 0 0 0.5rem 0; font-size: 0.9rem; font-weight: 600; color: #333;">📷 ${label}</h4>
+                            <div class="photo-upload has-image">
+                                <img src="${photoData}">
+                            </div>
                         </div>
                     `;
                 } else {
                     photosHTML += `
-                        <div class="photo-upload">
-                            <span class="placeholder">사진 ${i} (없음)</span>
+                        <div>
+                            <h4 style="margin: 0 0 0.5rem 0; font-size: 0.9rem; font-weight: 600; color: #333;">📷 ${label}</h4>
+                            <div class="photo-upload">
+                                <span class="placeholder">(사진 없음)</span>
+                            </div>
                         </div>
                     `;
                 }
