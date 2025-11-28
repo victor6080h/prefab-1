@@ -341,9 +341,18 @@
             <div class="search-box">
                 <input type="text" id="searchInput" placeholder="🔍 보고서 검색 (공사명, 날짜)">
             </div>
-            <button class="btn-new-report" onclick="openNewReportModal()">
-                ➕ 새 보고서 작성
-            </button>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <button class="btn-new-report" onclick="backupAllData()" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);" title="모든 보고서 데이터를 파일로 저장">
+                    💾 전체 백업
+                </button>
+                <button class="btn-new-report" onclick="document.getElementById('restoreFile').click()" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);" title="백업 파일에서 데이터 복원">
+                    📂 백업 복원
+                </button>
+                <input type="file" id="restoreFile" accept=".json" style="display: none;" onchange="restoreFromFile(this)">
+                <button class="btn-new-report" onclick="openNewReportModal()">
+                    ➕ 새 보고서 작성
+                </button>
+            </div>
         </div>
         
         <div id="reportsContainer" class="reports-grid">
@@ -696,6 +705,84 @@
                 closeNewReportModal();
             }
         });
+        
+        // Backup all data to JSON file
+        function backupAllData() {
+            const allData = {};
+            
+            // Get all localStorage data
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                const value = localStorage.getItem(key);
+                allData[key] = value;
+            }
+            
+            // Create JSON file
+            const dataStr = JSON.stringify(allData, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            
+            // Create download link
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            
+            // File name with current date
+            const now = new Date();
+            const dateStr = now.toISOString().split('T')[0]; // YYYY-MM-DD
+            link.download = `prefab_backup_${dateStr}.json`;
+            
+            // Trigger download
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+            
+            alert(`✅ 백업 완료!\n\n파일명: prefab_backup_${dateStr}.json\n총 ${Object.keys(allData).length}개 항목이 백업되었습니다.\n\n이 파일을 안전한 곳에 보관하세요!`);
+        }
+        
+        // Restore data from JSON file
+        function restoreFromFile(input) {
+            const file = input.files[0];
+            if (!file) return;
+            
+            if (!confirm('⚠️ 경고!\n\n백업을 복원하면 현재 저장된 모든 데이터가 백업 파일의 데이터로 대체됩니다.\n\n계속하시겠습니까?')) {
+                input.value = ''; // Reset file input
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const backupData = JSON.parse(e.target.result);
+                    
+                    // Clear existing localStorage
+                    localStorage.clear();
+                    
+                    // Restore all data
+                    let restoredCount = 0;
+                    for (const [key, value] of Object.entries(backupData)) {
+                        localStorage.setItem(key, value);
+                        restoredCount++;
+                    }
+                    
+                    alert(`✅ 복원 완료!\n\n${restoredCount}개 항목이 복원되었습니다.\n\n페이지를 새로고침합니다.`);
+                    
+                    // Reload page to show restored data
+                    window.location.reload();
+                } catch (error) {
+                    alert(`❌ 복원 실패!\n\n파일 형식이 올바르지 않습니다.\n\n오류: ${error.message}`);
+                }
+                
+                input.value = ''; // Reset file input
+            };
+            
+            reader.onerror = function() {
+                alert('❌ 파일 읽기 실패!\n\n파일을 다시 선택해주세요.');
+                input.value = ''; // Reset file input
+            };
+            
+            reader.readAsText(file);
+        }
     </script>
 </body>
 </html>
