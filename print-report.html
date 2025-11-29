@@ -147,6 +147,37 @@
                 display: block !important;
                 margin: 0 auto !important;
             }
+            
+            /* 부재 제작 오차 섹션 최적화 - KCS 기준, 측정 데이터, 그래프를 한 페이지에 */
+            .report-section .alert strong {
+                font-size: 0.9rem !important;
+            }
+            
+            .report-section .alert div {
+                margin-top: 0.3rem !important;
+                line-height: 1.5 !important;
+                font-size: 0.8rem !important;
+            }
+            
+            /* 제작 오차 분포 그래프 크기 제한 */
+            #errorChartImage img {
+                max-height: 320px !important;
+                width: auto !important;
+                max-width: 100% !important;
+                object-fit: contain !important;
+                display: block !important;
+                margin: 0 auto !important;
+            }
+            
+            /* 부재 제작 오차 테이블 최적화 */
+            #errorTable {
+                font-size: 9pt !important;
+            }
+            
+            #errorTable th,
+            #errorTable td {
+                padding: 0.3rem !important;
+            }
         }
         
         /* 화면 표시용 스타일 */
@@ -535,23 +566,23 @@
         </div>
 
         <!-- 6. 부재 제작 오차 -->
-        <div class="report-section page-break">
-            <h2 class="section-title">6. 부재 제작 오차</h2>
+        <div class="report-section page-break" style="margin-bottom: 0;">
+            <h2 class="section-title" style="margin-top: 0; margin-bottom: 0.6rem; font-size: 1.5rem;">6. 부재 제작 오차</h2>
             
-            <div class="alert alert-info" style="margin-bottom: 1rem; padding: 1rem;">
-                <strong style="font-size: 1.05rem;">📐 KCS 24 11 25 : 2025 전단면 프리캐스트 바닥판공 (국토교통부)</strong><br>
-                <div style="margin-top: 0.8rem; line-height: 1.8;">
+            <div class="alert alert-info" style="margin-bottom: 0.6rem; padding: 0.6rem 0.8rem;">
+                <strong style="font-size: 0.95rem;">📐 KCS 24 11 25 : 2025 전단면 프리캐스트 바닥판공 (국토교통부)</strong><br>
+                <div style="margin-top: 0.4rem; line-height: 1.6; font-size: 0.85rem;">
                     <strong>• 패널 길이:</strong> 설계치수의 ±1% 또는 ±30mm 중 작은 값<br>
                     <strong>• 패널 폭:</strong> 설계치수의 ±1% 또는 ±30mm 중 작은 값<br>
                     <strong>• 패널 두께:</strong> +10mm ~ -5mm
                 </div>
             </div>
             
-            <div class="card">
-                <div class="card-header">
-                    <h3 class="card-title">측정 데이터</h3>
+            <div class="card" style="margin-bottom: 0.6rem;">
+                <div class="card-header" style="padding: 0.5rem 0.8rem;">
+                    <h3 class="card-title" style="font-size: 1rem; margin: 0;">측정 데이터</h3>
                 </div>
-                <div class="card-body">
+                <div class="card-body" style="padding: 0.6rem 0.8rem;">
                     <table>
                         <thead>
                             <tr>
@@ -570,18 +601,21 @@
                 </div>
             </div>
             
-            <div class="card" style="margin-top: 1rem;" id="errorChartCard">
-                <div class="card-header">
-                    <h3 class="card-title">제작 오차 분포 그래프</h3>
+            <div class="card" style="margin-bottom: 0;" id="errorChartCard">
+                <div class="card-header" style="padding: 0.5rem 0.8rem;">
+                    <h3 class="card-title" style="font-size: 1rem; margin: 0;">제작 오차 분포 그래프</h3>
                 </div>
-                <div class="card-body">
+                <div class="card-body" style="padding: 0.6rem 0.8rem;">
                     <div id="errorChartImage" style="text-align: center;">
                         <p style="color: #6b7280;">그래프가 없습니다.</p>
                     </div>
                 </div>
             </div>
-            
-            <div class="card" style="margin-top: 1rem;" id="errorPhotosCard">
+        </div>
+
+        <!-- 6-2. 부재 제작 오차 - 부재 사진 -->
+        <div class="report-section page-break">
+            <div class="card" style="margin-bottom: 0;" id="errorPhotosCard">
                 <div class="card-header">
                     <h3 class="card-title">부재 사진</h3>
                 </div>
