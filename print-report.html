@@ -78,6 +78,12 @@
                 break-after: page !important;
             }
             
+            /* 마지막 사진 후에는 페이지 나누기 없음 */
+            .transport-photo-grid > div:nth-child(4) {
+                page-break-after: avoid !important;
+                break-after: avoid !important;
+            }
+            
             .transport-photo-grid .photo-upload {
                 height: 100mm !important;
                 display: flex !important;
@@ -790,7 +796,7 @@
                     </div>
                 </div>
 
-                <div class="card page-break" style="margin-top: 1rem;">
+                <div class="card" style="margin-top: 1rem;">
                     <div class="card-header">
                         <h3 class="card-title">현장 사진</h3>
                     </div>
