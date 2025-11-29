@@ -72,18 +72,6 @@
                 break-inside: avoid !important;
             }
             
-            /* 첫 2장과 나머지 2장 사이에 페이지 나누기 */
-            .transport-photo-grid > div:nth-child(2) {
-                page-break-after: always !important;
-                break-after: page !important;
-            }
-            
-            /* 마지막 사진 후에는 페이지 나누기 없음 */
-            .transport-photo-grid > div:nth-child(4) {
-                page-break-after: avoid !important;
-                break-after: avoid !important;
-            }
-            
             .transport-photo-grid .photo-upload {
                 height: 100mm !important;
                 display: flex !important;
@@ -705,14 +693,15 @@
             
             const surveyData = getFromStorage(STORAGE_KEYS.SURVEY_DATA) || {};
             
-            let photosHTML = '';
-            for (let i = 1; i <= 4; i++) {
+            // 사진 1-2 (첫 번째 페이지)
+            let photosHTML1 = '';
+            for (let i = 1; i <= 2; i++) {
                 const photoKey = `photo${i}Preview`;
                 const photoData = getFromStorage(STORAGE_KEYS.PHOTOS)?.[photoKey];
                 const label = `현장사진 ${i}`;
                 
                 if (photoData) {
-                    photosHTML += `
+                    photosHTML1 += `
                         <div>
                             <h4 style="margin: 0 0 0.5rem 0; font-size: 0.9rem; font-weight: 600; color: #333;">📷 ${label}</h4>
                             <div class="photo-upload has-image">
@@ -721,7 +710,35 @@
                         </div>
                     `;
                 } else {
-                    photosHTML += `
+                    photosHTML1 += `
+                        <div>
+                            <h4 style="margin: 0 0 0.5rem 0; font-size: 0.9rem; font-weight: 600; color: #333;">📷 ${label}</h4>
+                            <div class="photo-upload">
+                                <span class="placeholder">(사진 없음)</span>
+                            </div>
+                        </div>
+                    `;
+                }
+            }
+            
+            // 사진 3-4 (두 번째 페이지)
+            let photosHTML2 = '';
+            for (let i = 3; i <= 4; i++) {
+                const photoKey = `photo${i}Preview`;
+                const photoData = getFromStorage(STORAGE_KEYS.PHOTOS)?.[photoKey];
+                const label = `현장사진 ${i}`;
+                
+                if (photoData) {
+                    photosHTML2 += `
+                        <div>
+                            <h4 style="margin: 0 0 0.5rem 0; font-size: 0.9rem; font-weight: 600; color: #333;">📷 ${label}</h4>
+                            <div class="photo-upload has-image">
+                                <img src="${photoData}">
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    photosHTML2 += `
                         <div>
                             <h4 style="margin: 0 0 0.5rem 0; font-size: 0.9rem; font-weight: 600; color: #333;">📷 ${label}</h4>
                             <div class="photo-upload">
@@ -798,11 +815,22 @@
 
                 <div class="card" style="margin-top: 1rem;">
                     <div class="card-header">
-                        <h3 class="card-title">현장 사진</h3>
+                        <h3 class="card-title">현장 사진 (1/2)</h3>
                     </div>
                     <div class="card-body">
                         <div class="transport-photo-grid">
-                            ${photosHTML}
+                            ${photosHTML1}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card page-break" style="margin-top: 1rem;">
+                    <div class="card-header">
+                        <h3 class="card-title">현장 사진 (2/2)</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="transport-photo-grid">
+                            ${photosHTML2}
                         </div>
                     </div>
                 </div>
