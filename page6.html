@@ -411,10 +411,22 @@
             const labels = ['패널 길이', '패널 폭', '패널 두께'];
             const values = [];
             const colors = [];
+            const tolerances = []; // 각 항목별 허용 오차 기준
             
             for (let i = 1; i <= 3; i++) {
                 const errorText = document.getElementById(`error${i}`).textContent;
                 const statusCell = document.getElementById(`errorStatus${i}`);
+                
+                // 설계치 가져오기
+                const design = parseFloat(document.querySelector(`input[name="design${i}"]`).value) || 0;
+                const tolerance = getAllowableTolerance(i, design);
+                
+                // 허용 오차 값 저장 (패널 두께는 상한값 사용)
+                if (i === 3) {
+                    tolerances.push(tolerance.upper); // 두께는 +10mm
+                } else {
+                    tolerances.push(tolerance); // 길이/폭은 대칭
+                }
                 
                 if (errorText !== '-') {
                     const value = Math.abs(parseFloat(errorText));
@@ -432,7 +444,12 @@
                 values: values,
                 colors: colors,
                 title: '항목별 제작 오차',
-                yLabel: '오차 (mm)'
+                yLabel: '오차 (mm)',
+                thresholds: {
+                    values: tolerances, // 각 항목별 허용 오차 기준선
+                    label: 'KCS 허용 기준',
+                    color: '#f59e0b'  // 주황색 기준선
+                }
             });
         }
 

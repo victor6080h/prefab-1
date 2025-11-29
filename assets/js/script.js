@@ -831,49 +831,85 @@ function drawBarChart(canvasId, data) {
         ctx.lineWidth = 2;
         ctx.setLineDash([5, 5]);
         
-        // 위험 기준선
-        if (thresholds.upper) {
-            const y = padding + height - (thresholds.upper / maxValue) * height;
-            ctx.strokeStyle = '#ef4444';
-            ctx.beginPath();
-            ctx.moveTo(padding, y);
-            ctx.lineTo(padding + width, y);
-            ctx.stroke();
+        // 각 항목별 기준선 (배열로 제공된 경우)
+        if (thresholds.values && Array.isArray(thresholds.values)) {
+            const barWidth = width / values.length * 0.7;
+            const barGap = width / values.length * 0.3;
+            const color = thresholds.color || '#f59e0b';
+            const label = thresholds.label || '기준';
             
-            ctx.fillStyle = '#ef4444';
-            ctx.font = 'bold 11px sans-serif';
-            ctx.textAlign = 'left';
-            ctx.fillText(`위험: ${thresholds.upper}`, padding + width + 5, y + 4);
-        }
-        
-        // 경고 기준선
-        if (thresholds.warning) {
-            const y = padding + height - (thresholds.warning / maxValue) * height;
-            ctx.strokeStyle = '#f97316';
-            ctx.beginPath();
-            ctx.moveTo(padding, y);
-            ctx.lineTo(padding + width, y);
-            ctx.stroke();
+            ctx.strokeStyle = color;
+            ctx.fillStyle = color;
+            ctx.font = 'bold 10px sans-serif';
             
-            ctx.fillStyle = '#f97316';
-            ctx.font = 'bold 11px sans-serif';
-            ctx.textAlign = 'left';
-            ctx.fillText(`경고: ${thresholds.warning}`, padding + width + 5, y + 4);
-        }
-        
-        // 주의 기준선
-        if (thresholds.caution) {
-            const y = padding + height - (thresholds.caution / maxValue) * height;
-            ctx.strokeStyle = '#f59e0b';
-            ctx.beginPath();
-            ctx.moveTo(padding, y);
-            ctx.lineTo(padding + width, y);
-            ctx.stroke();
+            thresholds.values.forEach((thresholdValue, index) => {
+                if (thresholdValue > 0) {
+                    const x = padding + (width / values.length) * index + barGap / 2;
+                    const y = padding + height - (thresholdValue / maxValue) * height;
+                    
+                    // 해당 막대 위치에만 기준선 그리기
+                    ctx.beginPath();
+                    ctx.moveTo(x, y);
+                    ctx.lineTo(x + barWidth, y);
+                    ctx.stroke();
+                    
+                    // 값 표시 (막대 오른쪽)
+                    ctx.textAlign = 'left';
+                    ctx.fillText(`±${thresholdValue.toFixed(1)}`, x + barWidth + 3, y + 4);
+                }
+            });
             
-            ctx.fillStyle = '#f59e0b';
-            ctx.font = 'bold 11px sans-serif';
-            ctx.textAlign = 'left';
-            ctx.fillText(`주의: ${thresholds.caution}`, padding + width + 5, y + 4);
+            // 범례 표시 (우측 상단)
+            ctx.textAlign = 'right';
+            ctx.fillText(`━━ ${label}`, padding + width - 10, padding + 15);
+            
+        } else {
+            // 기존 방식: 전체 기준선 (단일 값)
+            
+            // 위험 기준선
+            if (thresholds.upper) {
+                const y = padding + height - (thresholds.upper / maxValue) * height;
+                ctx.strokeStyle = '#ef4444';
+                ctx.beginPath();
+                ctx.moveTo(padding, y);
+                ctx.lineTo(padding + width, y);
+                ctx.stroke();
+                
+                ctx.fillStyle = '#ef4444';
+                ctx.font = 'bold 11px sans-serif';
+                ctx.textAlign = 'left';
+                ctx.fillText(`위험: ${thresholds.upper}`, padding + width + 5, y + 4);
+            }
+            
+            // 경고 기준선
+            if (thresholds.warning) {
+                const y = padding + height - (thresholds.warning / maxValue) * height;
+                ctx.strokeStyle = '#f97316';
+                ctx.beginPath();
+                ctx.moveTo(padding, y);
+                ctx.lineTo(padding + width, y);
+                ctx.stroke();
+                
+                ctx.fillStyle = '#f97316';
+                ctx.font = 'bold 11px sans-serif';
+                ctx.textAlign = 'left';
+                ctx.fillText(`경고: ${thresholds.warning}`, padding + width + 5, y + 4);
+            }
+            
+            // 주의 기준선
+            if (thresholds.caution) {
+                const y = padding + height - (thresholds.caution / maxValue) * height;
+                ctx.strokeStyle = '#f59e0b';
+                ctx.beginPath();
+                ctx.moveTo(padding, y);
+                ctx.lineTo(padding + width, y);
+                ctx.stroke();
+                
+                ctx.fillStyle = '#f59e0b';
+                ctx.font = 'bold 11px sans-serif';
+                ctx.textAlign = 'left';
+                ctx.fillText(`주의: ${thresholds.caution}`, padding + width + 5, y + 4);
+            }
         }
         
         ctx.setLineDash([]);
