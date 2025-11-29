@@ -310,11 +310,11 @@
             document.getElementById('avgTilt').textContent = avgTilt.toFixed(1) + '°';
             
             // 이벤트 발생 횟수 표시
-            document.getElementById('exceedCount').textContent = eventCount + ' 회';
+            document.getElementById('tiltExceedCount').textContent = eventCount + ' 개';
             
             // 종합 평가
-            const finalStatus = document.getElementById('finalStatus');
-            const resultAlert = document.getElementById('resultAlert');
+            const finalStatus = document.getElementById('tiltFinalStatus');
+            const resultAlert = document.getElementById('tiltResultAlert');
             
             if (maxTilt > TILT_WARNING) {
                 finalStatus.className = 'stat-card danger';
