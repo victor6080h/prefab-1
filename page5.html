@@ -76,67 +76,60 @@
                         </div>
                         <div class="info-item">
                             <label class="info-label" for="strainDevice">측정 장비</label>
-                            <input type="text" id="strainDevice" name="strainDevice" class="info-value" 
-                                   placeholder="예: 디지털 경사계" required>
+                            <select id="strainDevice" name="strainDevice" class="info-value" required>
+                                <option value="">선택하세요</option>
+                                <option value="JANET PRO 3축 디지털 가속도계 (변형률계)">JANET PRO 3축 디지털 가속도계 (변형률계)</option>
+                                <option value="기타">기타 (직접 입력)</option>
+                            </select>
+                            <input type="text" id="strainDeviceOther" name="strainDeviceOther" class="info-value" 
+                                   placeholder="장비명을 입력하세요" style="display: none; margin-top: 0.5rem;">
                         </div>
                     </div>
                 </form>
             </div>
         </div>
 
+        <!-- 변형률 등급 평가 (Deformation Report) -->
         <div class="card">
             <div class="card-header">
-                <h2 class="card-title">변형률 측정 데이터</h2>
-                <p class="card-description">각 센서 위치의 변형률을 입력하세요 (단위: με)</p>
+                <h2 class="card-title">변형률 등급 평가 (Deformation Report)</h2>
+                <p class="card-description">최대 변형률 측정치를 입력하고 평가 이미지를 업로드하세요</p>
             </div>
             <div class="card-body">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>센서 위치</th>
-                            <th>초기값 (με)</th>
-                            <th>측정값 (με)</th>
-                            <th>변화량 (με)</th>
-                            <th>상태</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>측점1</td>
-                            <td><input type="number" step="1" name="strainInit1" class="strain-input" onchange="calculateStrainChange(1)"></td>
-                            <td><input type="number" step="1" name="strainMeas1" class="strain-input" onchange="calculateStrainChange(1)"></td>
-                            <td id="strainChange1">-</td>
-                            <td id="strainStatus1">-</td>
-                        </tr>
-                        <tr>
-                            <td>측점2</td>
-                            <td><input type="number" step="1" name="strainInit2" class="strain-input" onchange="calculateStrainChange(2)"></td>
-                            <td><input type="number" step="1" name="strainMeas2" class="strain-input" onchange="calculateStrainChange(2)"></td>
-                            <td id="strainChange2">-</td>
-                            <td id="strainStatus2">-</td>
-                        </tr>
-                        <tr>
-                            <td>측점3</td>
-                            <td><input type="number" step="1" name="strainInit3" class="strain-input" onchange="calculateStrainChange(3)"></td>
-                            <td><input type="number" step="1" name="strainMeas3" class="strain-input" onchange="calculateStrainChange(3)"></td>
-                            <td id="strainChange3">-</td>
-                            <td id="strainStatus3">-</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <div class="card">
-            <div class="card-header">
-                <h2 class="card-title">변형률 분포 그래프</h2>
-            </div>
-            <div class="card-body">
-                <div class="chart-container">
-                    <canvas id="strainChart"></canvas>
+                <!-- 변형률 측정 데이터 입력 -->
+                <div class="info-grid" style="margin-bottom: 2rem;">
+                    <div class="info-item">
+                        <label class="info-label" for="maxStrain">최대 변형률 측정치 (με)</label>
+                        <input type="number" id="maxStrain" name="maxStrain" step="1" class="info-value" 
+                               placeholder="예: 120" onchange="saveStrainData()" style="font-size: 1.1rem; font-weight: 600;">
+                    </div>
+                    <div class="info-item">
+                        <label class="info-label" for="avgStrain">평균 변형률 측정치 (με)</label>
+                        <input type="number" id="avgStrain" name="avgStrain" step="1" class="info-value" 
+                               placeholder="예: 75" onchange="saveStrainData()" style="font-size: 1.1rem; font-weight: 600;">
+                    </div>
+                    <div class="info-item">
+                        <label class="info-label" for="strainEventCount">이벤트 발생 횟수</label>
+                        <input type="number" id="strainEventCount" name="strainEventCount" step="1" class="info-value" 
+                               placeholder="예: 2" onchange="saveStrainData()" style="font-size: 1.1rem; font-weight: 600;">
+                    </div>
                 </div>
-                <div class="mt-3">
-                    <button class="btn btn-primary" onclick="updateStrainChart()">📈 그래프 업데이트</button>
+                
+                <!-- 상태 표시 -->
+                <div id="strainStatus" style="margin-bottom: 2rem; padding: 0.75rem; border-radius: 0.375rem; font-weight: 600; text-align: center; border: 2px solid transparent; font-size: 1.1rem;"></div>
+                
+                <!-- 변형률 평가 이미지 업로드 -->
+                <div>
+                    <label class="info-label">변형률 등급 평가 이미지</label>
+                    <div class="photo-upload-container">
+                        <div class="photo-upload" id="strainReportPreview" onclick="console.log('📊 업로드 영역 클릭됨'); document.getElementById('strainReportInput').click();" style="cursor: pointer; min-height: 400px;">
+                            <input type="file" id="strainReportInput" accept="image/*" style="display: none;" onchange="console.log('📁 파일 선택됨:', this.files[0]?.name); handleStrainReportImageUpload(this);">
+                            <span class="placeholder">📊 클릭하여 변형률 등급 평가 이미지 업로드</span>
+                        </div>
+                    </div>
+                    <div class="mt-3" style="text-align: center;">
+                        <button class="btn btn-secondary" onclick="clearStrainReportImage()" style="margin-right: 10px;">🗑️ 이미지 삭제</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -168,11 +161,11 @@
                 <div class="stats-grid">
                     <div class="stat-card">
                         <div class="stat-label">최대 변형률</div>
-                        <div class="stat-value" id="maxStrain">0 με</div>
+                        <div class="stat-value" id="maxStrainDisplay">0 με</div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-label">평균 변형률</div>
-                        <div class="stat-value" id="avgStrain">0 με</div>
+                        <div class="stat-value" id="avgStrainDisplay">0 με</div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-label">초과 센서</div>
@@ -205,231 +198,297 @@
         // 130 초과는 위험
 
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 페이지 로드 완료');
+            
+            // 저장된 데이터 로드
             loadStrainData();
-
-            // 전체 변형률 그래프 이미지 로드
+            loadStrainReportImage();
             loadStrainGraphImage();
-
-            const now = new Date();
-            now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
-            document.getElementById('strainDate').value = now.toISOString().slice(0, 16);
-
-            document.querySelectorAll('.strain-input').forEach(input => {
-                input.addEventListener('change', autoSaveStrainData);
-            });
             
             autoSaveForm('strainInfoForm', STORAGE_KEYS.STRAIN_DATA);
+            
+            // 측정 장비 선택 이벤트
+            const deviceSelect = document.getElementById('strainDevice');
+            const deviceOtherInput = document.getElementById('strainDeviceOther');
+            
+            deviceSelect.addEventListener('change', function() {
+                if (this.value === '기타') {
+                    deviceOtherInput.style.display = 'block';
+                    deviceOtherInput.required = true;
+                } else {
+                    deviceOtherInput.style.display = 'none';
+                    deviceOtherInput.required = false;
+                    deviceOtherInput.value = '';
+                }
+            });
+            
+            console.log('✅ 이벤트 리스너 등록 완료');
         });
 
-        function calculateStrainChange(index) {
-            const initInput = document.querySelector(`input[name="strainInit${index}"]`);
-            const measInput = document.querySelector(`input[name="strainMeas${index}"]`);
+        // 변형률 데이터 저장 및 요약 업데이트
+        function saveStrainData() {
+            console.log('🎯 saveStrainData 함수 호출됨');
             
-            const init = parseFloat(initInput.value) || 0;
-            const meas = parseFloat(measInput.value) || 0;
-            const change = meas - init;
+            const maxStrain = parseInt(document.getElementById('maxStrain').value) || 0;
+            const avgStrain = parseInt(document.getElementById('avgStrain').value) || 0;
+            const eventCount = parseInt(document.getElementById('strainEventCount').value) || 0;
             
-            document.getElementById(`strainChange${index}`).textContent = change.toFixed(0) + ' με';
+            console.log('📊 입력값:', { maxStrain, avgStrain, eventCount });
             
-            const statusCell = document.getElementById(`strainStatus${index}`);
-            const absChange = Math.abs(change);
-            if (absChange > STRAIN_WARNING) {
-                statusCell.innerHTML = '<span class="badge badge-danger">위험</span>';
-            } else if (absChange >= STRAIN_CAUTION) {
-                statusCell.innerHTML = '<span class="badge" style="background-color: #f97316; color: white;">경고</span>';
-            } else if (absChange >= STRAIN_NORMAL) {
-                statusCell.innerHTML = '<span class="badge badge-warning">주의</span>';
-            } else if (change !== 0) {
-                statusCell.innerHTML = '<span class="badge badge-success">정상</span>';
-            } else {
-                statusCell.textContent = '-';
-            }
+            // LocalStorage에 저장
+            const data = getFromStorage(STORAGE_KEYS.STRAIN_DATA) || {};
+            data.maxStrain = maxStrain;
+            data.avgStrain = avgStrain;
+            data.eventCount = eventCount;
+            saveToStorage(STORAGE_KEYS.STRAIN_DATA, data);
             
-            updateStrainStatistics();
+            // 상태 표시 업데이트
+            console.log('🔄 updateStrainStatus 호출 - 값:', maxStrain);
+            updateStrainStatus(maxStrain);
+            
+            // 측정 결과 요약 업데이트
+            console.log('🔄 updateStrainSummary 호출');
+            updateStrainSummary(maxStrain, avgStrain, eventCount);
+            
+            console.log('💾 변형률 데이터 저장 완료:', { maxStrain, avgStrain, eventCount });
         }
-
-        function updateStrainStatistics() {
-            const changes = [];
-            for (let i = 1; i <= 3; i++) {
-                const changeText = document.getElementById(`strainChange${i}`).textContent;
-                if (changeText !== '-') {
-                    changes.push(Math.abs(parseFloat(changeText)));
-                }
+        
+        // 변형률 상태 표시 업데이트
+        function updateStrainStatus(value) {
+            console.log('🎨 updateStrainStatus 함수 실행 - 값:', value);
+            console.log('📏 기준값:', { STRAIN_NORMAL, STRAIN_CAUTION, STRAIN_WARNING });
+            
+            const statusDiv = document.getElementById('strainStatus');
+            if (!statusDiv) {
+                console.error('❌ strainStatus 요소를 찾을 수 없습니다!');
+                return;
             }
             
-            if (changes.length === 0) return;
+            if (value > STRAIN_WARNING) {
+                console.log('🔴 위험 등급 (> 130με)');
+                statusDiv.style.backgroundColor = '#fee2e2';
+                statusDiv.style.borderColor = '#ef4444';
+                statusDiv.style.color = '#991b1b';
+                statusDiv.innerHTML = '❌ 위험: ' + value + 'με (130με 초과)';
+            } else if (value >= STRAIN_CAUTION) {
+                console.log('🟠 경고 등급 (80~130με)');
+                statusDiv.style.backgroundColor = '#fff7ed';
+                statusDiv.style.borderColor = '#f97316';
+                statusDiv.style.color = '#9a3412';
+                statusDiv.innerHTML = '⚠️ 경고: ' + value + 'με (80~130με)';
+            } else if (value >= STRAIN_NORMAL) {
+                console.log('🟡 주의 등급 (60~80με)');
+                statusDiv.style.backgroundColor = '#fef3c7';
+                statusDiv.style.borderColor = '#f59e0b';
+                statusDiv.style.color = '#78350f';
+                statusDiv.innerHTML = '⚠ 주의: ' + value + 'με (60~80με)';
+            } else if (value > 0) {
+                console.log('🟢 정상 등급 (< 60με)');
+                statusDiv.style.backgroundColor = '#d1fae5';
+                statusDiv.style.borderColor = '#10b981';
+                statusDiv.style.color = '#065f46';
+                statusDiv.innerHTML = '✅ 정상: ' + value + 'με (60με 미만)';
+            } else {
+                statusDiv.style.backgroundColor = '#f3f4f6';
+                statusDiv.style.borderColor = '#d1d5db';
+                statusDiv.style.color = '#6b7280';
+                statusDiv.innerHTML = '최대 변형률을 입력하면 자동으로 등급이 평가됩니다';
+            }
+        }
+        
+        // 측정 결과 요약 업데이트
+        function updateStrainSummary(maxStrain, avgStrain, eventCount) {
+            // 최대 변형률 표시
+            document.getElementById('maxStrainDisplay').textContent = maxStrain + ' με';
             
-            const max = Math.max(...changes);
-            const avg = changes.reduce((a, b) => a + b, 0) / changes.length;
+            // 평균 변형률 표시
+            document.getElementById('avgStrainDisplay').textContent = avgStrain + ' με';
             
-            // 3단계 평가 카운트
-            const dangerCount = changes.filter(c => c > STRAIN_WARNING).length;
-            const warningCount = changes.filter(c => c >= STRAIN_CAUTION && c <= STRAIN_WARNING).length;
-            const cautionCount = changes.filter(c => c >= STRAIN_NORMAL && c < STRAIN_CAUTION).length;
-            const normalCount = changes.filter(c => c < STRAIN_NORMAL).length;
+            // 이벤트 발생 횟수 표시
+            document.getElementById('strainExceedCount').textContent = eventCount + ' 개';
             
-            document.getElementById('maxStrain').textContent = max.toFixed(0) + ' με';
-            document.getElementById('avgStrain').textContent = avg.toFixed(0) + ' με';
-            document.getElementById('strainExceedCount').textContent = dangerCount + ' 개';
-            
+            // 종합 평가
             const finalStatus = document.getElementById('strainFinalStatus');
             const resultAlert = document.getElementById('strainResultAlert');
             
-            if (dangerCount > 0) {
+            if (maxStrain > STRAIN_WARNING) {
                 finalStatus.className = 'stat-card danger';
+                finalStatus.style.backgroundColor = '#fee2e2';
+                finalStatus.style.borderColor = '#ef4444';
+                finalStatus.style.color = '#991b1b';
                 finalStatus.querySelector('.stat-value').textContent = '위험';
                 resultAlert.innerHTML = `
                     <div class="alert alert-danger">
                         <strong>❌ 위험 수준</strong><br>
-                        ${dangerCount}개 센서가 위험 기준(130με)을 초과했습니다. 즉시 점검이 필요합니다.
+                        최대 변형률이 위험 기준(130με)을 초과했습니다. 즉시 조치가 필요합니다.
                     </div>
                 `;
-            } else if (warningCount > 0) {
+            } else if (maxStrain >= STRAIN_CAUTION) {
                 finalStatus.className = 'stat-card';
-                finalStatus.style.backgroundColor = '#f97316';
-                finalStatus.style.color = 'white';
+                finalStatus.style.backgroundColor = '#fff7ed';
+                finalStatus.style.borderColor = '#f97316';
+                finalStatus.style.color = '#9a3412';
                 finalStatus.querySelector('.stat-value').textContent = '경고';
                 resultAlert.innerHTML = `
-                    <div class="alert" style="background-color: #fff7ed; border-color: #f97316; color: #9a3412;">
+                    <div class="alert" style="background-color: #fff7ed; border: 1px solid #f97316; color: #9a3412; padding: 1rem; border-radius: 0.375rem;">
                         <strong>⚠️ 경고 수준</strong><br>
-                        ${warningCount}개 센서가 경고 범위(80~130με)입니다. 면밀한 모니터링이 필요합니다.
+                        최대 변형률이 경고 범위(80~130με)입니다. 주의 깊은 모니터링이 필요합니다.
                     </div>
                 `;
-            } else if (cautionCount > 0) {
+            } else if (maxStrain >= STRAIN_NORMAL) {
                 finalStatus.className = 'stat-card warning';
+                finalStatus.style.backgroundColor = '#fef3c7';
+                finalStatus.style.borderColor = '#f59e0b';
+                finalStatus.style.color = '#78350f';
                 finalStatus.querySelector('.stat-value').textContent = '주의';
                 resultAlert.innerHTML = `
                     <div class="alert alert-warning">
                         <strong>⚠ 주의 필요</strong><br>
-                        ${cautionCount}개 센서가 주의 범위(60~80με)입니다. 지속적인 관찰이 필요합니다.
+                        최대 변형률이 주의 범위(60~80με)입니다. 지속적인 관찰이 권장됩니다.
                     </div>
                 `;
-            } else {
+            } else if (maxStrain > 0) {
                 finalStatus.className = 'stat-card success';
+                finalStatus.style.backgroundColor = '#d1fae5';
+                finalStatus.style.borderColor = '#10b981';
+                finalStatus.style.color = '#065f46';
                 finalStatus.querySelector('.stat-value').textContent = '정상';
                 resultAlert.innerHTML = `
                     <div class="alert alert-success">
                         <strong>✅ 정상 범위</strong><br>
-                        모든 센서의 변형률이 정상 범위(60με 미만)입니다.
+                        최대 변형률이 정상 범위(60με 미만)입니다.
                     </div>
                 `;
+            } else {
+                finalStatus.className = 'stat-card';
+                finalStatus.style.backgroundColor = '';
+                finalStatus.style.borderColor = '';
+                finalStatus.style.color = '';
+                finalStatus.querySelector('.stat-value').textContent = '대기중';
+                resultAlert.innerHTML = '';
             }
         }
-
-        function updateStrainChart() {
-            const labels = ['측점1', '측점2', '측점3'];
-            const values = [];
-            const colors = [];
+        
+        // 변형률 등급 평가 이미지 업로드
+        function handleStrainReportImageUpload(input) {
+            console.log('🎯 handleStrainReportImageUpload 함수 호출됨');
             
-            for (let i = 1; i <= 3; i++) {
-                const changeText = document.getElementById(`strainChange${i}`).textContent;
-                if (changeText !== '-') {
-                    const value = Math.abs(parseFloat(changeText));
-                    values.push(value);
-                    // 3단계 평가 색상
-                    if (value > STRAIN_WARNING) {
-                        colors.push('#ef4444'); // 위험
-                    } else if (value >= STRAIN_CAUTION) {
-                        colors.push('#f97316'); // 경고
-                    } else if (value >= STRAIN_NORMAL) {
-                        colors.push('#f59e0b'); // 주의
-                    } else {
-                        colors.push('#10b981'); // 정상
-                    }
-                } else {
-                    values.push(0);
-                    colors.push('#9ca3af');
-                }
+            const file = input.files[0];
+            if (!file) {
+                console.log('❌ 파일이 선택되지 않았습니다');
+                return;
             }
             
-            drawBarChart('strainChart', {
-                labels: labels,
-                values: values,
-                colors: colors,
-                thresholds: {
-                    upper: STRAIN_WARNING,
-                    warning: STRAIN_CAUTION,
-                    caution: STRAIN_NORMAL
+            console.log('=== 변형률 등급 평가 이미지 업로드 시작 ===');
+            console.log('파일명:', file.name);
+            console.log('파일 크기:', (file.size / 1024).toFixed(2), 'KB');
+            
+            if (!file.type.startsWith('image/')) {
+                alert('이미지 파일만 업로드할 수 있습니다.');
+                return;
+            }
+            
+            if (typeof resizeAndCompressImage === 'undefined') {
+                console.error('❌ resizeAndCompressImage 함수가 정의되지 않았습니다!');
+                alert('이미지 처리 함수를 찾을 수 없습니다. 페이지를 새로고침해주세요.');
+                return;
+            }
+            
+            resizeAndCompressImage(
+                file,
+                110,
+                0.9,
+                function(compressedDataUrl) {
+                    console.log('✅ 압축 성공, 미리보기 표시');
+                    
+                    const preview = document.getElementById('strainReportPreview');
+                    preview.innerHTML = `
+                        <input type="file" id="strainReportInput" accept="image/*" style="display: none;" onchange="handleStrainReportImageUpload(this)">
+                        <img src="${compressedDataUrl}" alt="변형률 등급 평가" style="max-width: 100%; height: auto; display: block;">
+                    `;
+                    preview.classList.add('has-image');
+                    preview.onclick = null;
+                    
+                    // LocalStorage에 저장
+                    const data = getFromStorage(STORAGE_KEYS.STRAIN_DATA) || {};
+                    data.strainReportImage = compressedDataUrl;
+                    saveToStorage(STORAGE_KEYS.STRAIN_DATA, data);
+                    
+                    console.log('💾 변형률 등급 평가 이미지 저장 완료');
+                    alert('✅ 이미지가 성공적으로 업로드되었습니다!');
                 },
-                title: '센서별 변형률 측정 결과',
-                yLabel: '변형률 (με)'
-            });
+                function(error) {
+                    console.error('❌ 이미지 압축 실패:', error);
+                    alert('이미지 처리 중 오류가 발생했습니다: ' + error.message);
+                }
+            );
         }
-
-        function saveStrainData() {
-            const data = {
-                info: {},
-                measurements: []
-            };
+        
+        // 변형률 등급 평가 이미지 삭제
+        function clearStrainReportImage() {
+            if (!confirm('이미지를 삭제하시겠습니까?')) return;
             
-            const infoForm = document.getElementById('strainInfoForm');
-            const infoData = new FormData(infoForm);
-            for (let [key, value] of infoData.entries()) {
-                data.info[key] = value;
-            }
+            const preview = document.getElementById('strainReportPreview');
+            preview.innerHTML = `
+                <input type="file" id="strainReportInput" accept="image/*" style="display: none;" onchange="handleStrainReportImageUpload(this);">
+                <span class="placeholder">📊 클릭하여 변형률 등급 평가 이미지 업로드</span>
+            `;
+            preview.classList.remove('has-image');
+            preview.onclick = function() { document.getElementById('strainReportInput').click(); };
             
-            for (let i = 1; i <= 3; i++) {
-                const init = parseFloat(document.querySelector(`input[name="strainInit${i}"]`).value) || 0;
-                const meas = parseFloat(document.querySelector(`input[name="strainMeas${i}"]`).value) || 0;
-                const changeText = document.getElementById(`strainChange${i}`).textContent;
-                const change = changeText !== '-' ? parseFloat(changeText) : 0;
-                
-                data.measurements.push({ init, meas, change });
-            }
-            
+            // LocalStorage에서 삭제
+            const data = getFromStorage(STORAGE_KEYS.STRAIN_DATA) || {};
+            delete data.strainReportImage;
             saveToStorage(STORAGE_KEYS.STRAIN_DATA, data);
-            alert('변형률 데이터가 저장되었습니다!');
+            
+            console.log('🗑️ 변형률 등급 평가 이미지 삭제됨');
+            alert('이미지가 삭제되었습니다.');
         }
+        
+        // 변형률 등급 평가 이미지 로드
+        function loadStrainReportImage() {
+            const data = getFromStorage(STORAGE_KEYS.STRAIN_DATA);
+            if (data && data.strainReportImage) {
+                const preview = document.getElementById('strainReportPreview');
+                preview.innerHTML = `
+                    <input type="file" id="strainReportInput" accept="image/*" style="display: none;" onchange="handleStrainReportImageUpload(this)">
+                    <img src="${data.strainReportImage}" alt="변형률 등급 평가" style="max-width: 100%; height: auto; display: block;">
+                `;
+                preview.classList.add('has-image');
+                preview.onclick = null;
+                console.log('📖 변형률 등급 평가 이미지 로드됨');
+            }
+        }
+        
 
-        function autoSaveStrainData() {
-            const data = {
-                info: {},
-                measurements: []
-            };
-            
-            const infoForm = document.getElementById('strainInfoForm');
-            const infoData = new FormData(infoForm);
-            for (let [key, value] of infoData.entries()) {
-                data.info[key] = value;
-            }
-            
-            for (let i = 1; i <= 3; i++) {
-                const init = parseFloat(document.querySelector(`input[name="strainInit${i}"]`).value) || 0;
-                const meas = parseFloat(document.querySelector(`input[name="strainMeas${i}"]`).value) || 0;
-                const changeText = document.getElementById(`strainChange${i}`).textContent;
-                const change = changeText !== '-' ? parseFloat(changeText) : 0;
-                
-                data.measurements.push({ init, meas, change });
-            }
-            
-            saveToStorage(STORAGE_KEYS.STRAIN_DATA, data);
-        }
 
         function loadStrainData() {
             const data = getFromStorage(STORAGE_KEYS.STRAIN_DATA);
-            if (!data) return;
             
-            if (data.info) {
-                Object.keys(data.info).forEach(key => {
-                    const input = document.getElementById(key);
-                    if (input) input.value = data.info[key];
-                });
-            }
+            let maxStrain = 0;
+            let avgStrain = 0;
+            let eventCount = 0;
             
-            if (data.measurements) {
-                data.measurements.forEach((m, i) => {
-                    const index = i + 1;
-                    const initInput = document.querySelector(`input[name="strainInit${index}"]`);
-                    const measInput = document.querySelector(`input[name="strainMeas${index}"]`);
-                    
-                    if (initInput) initInput.value = m.init;
-                    if (measInput) measInput.value = m.meas;
-                    
-                    calculateStrainChange(index);
-                });
+            if (data) {
+                if (data.maxStrain !== undefined) {
+                    document.getElementById('maxStrain').value = data.maxStrain;
+                    maxStrain = data.maxStrain;
+                }
+                if (data.avgStrain !== undefined) {
+                    document.getElementById('avgStrain').value = data.avgStrain;
+                    avgStrain = data.avgStrain;
+                }
+                if (data.eventCount !== undefined) {
+                    document.getElementById('strainEventCount').value = data.eventCount;
+                    eventCount = data.eventCount;
+                }
                 
-                updateStrainChart();
+                console.log('📖 변형률 데이터 로드:', { maxStrain, avgStrain, eventCount });
             }
+            
+            // 상태 및 요약 업데이트 (데이터 있든 없든 항상 실행)
+            updateStrainStatus(maxStrain);
+            updateStrainSummary(maxStrain, avgStrain, eventCount);
         }
 
         // 전체 변형률 그래프 이미지 업로드 처리
