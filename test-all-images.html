@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>전체 보고서 이미지 통합 테스트</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f3f4f6;
+        }
+        h1 {
+            color: #1f2937;
+            border-bottom: 4px solid #3b82f6;
+            padding-bottom: 15px;
+            margin-bottom: 30px;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border: 2px solid #e5e7eb;
+        }
+        .card h2 {
+            margin: 0 0 15px 0;
+            color: #374151;
+            font-size: 1.25rem;
+            border-bottom: 2px solid #e5e7eb;
+            padding-bottom: 10px;
+        }
+        .status {
+            padding: 12px;
+            border-radius: 6px;
+            margin: 10px 0;
+            font-size: 0.95rem;
+        }
+        .status.success { background: #d1fae5; color: #065f46; border-left: 4px solid #10b981; }
+        .status.error { background: #fee2e2; color: #991b1b; border-left: 4px solid #ef4444; }
+        .status.warning { background: #fef3c7; color: #78350f; border-left: 4px solid #f59e0b; }
+        button {
+            padding: 10px 20px;
+            margin: 5px 5px 5px 0;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+        }
+        button:hover { transform: translateY(-2px); box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .btn-primary { background: #3b82f6; color: white; }
+        .btn-success { background: #10b981; color: white; }
+        .btn-danger { background: #ef4444; color: white; }
+        .btn-warning { background: #f59e0b; color: white; }
+        .action-bar {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .summary-item {
+            background: #f9fafb;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #3b82f6;
+        }
+        .summary-item strong { display: block; color: #6b7280; font-size: 0.85rem; margin-bottom: 5px; }
+        .summary-item span { font-size: 1.5rem; font-weight: bold; color: #1f2937; }
+    </style>
+</head>
+<body>
+    <h1>🧪 전체 보고서 이미지 통합 테스트</h1>
+
+    <div class="action-bar">
+        <h2 style="margin-top: 0;">⚡ 빠른 작업</h2>
+        <button class="btn-success" onclick="saveAllTestData()">💾 모든 테스트 데이터 저장</button>
+        <button class="btn-primary" onclick="checkAllData()">🔍 전체 데이터 확인</button>
+        <button class="btn-warning" onclick="window.open('print-report.html', '_blank')">📄 전체 보고서 열기</button>
+        <button class="btn-danger" onclick="clearAllData()">🗑️ 모든 데이터 삭제</button>
+        <button class="btn-primary" onclick="location.reload()">🔄 새로고침</button>
+    </div>
+
+    <div class="summary" id="summary"></div>
+
+    <div class="grid">
+        <div class="card">
+            <h2>📊 가속도 등급 평가 이미지</h2>
+            <div id="accelStatus"></div>
+            <button class="btn-success" onclick="saveAccelData()">저장</button>
+            <button class="btn-primary" onclick="window.open('page3.html', '_blank')">페이지 열기</button>
+        </div>
+
+        <div class="card">
+            <h2>📐 기울기 등급 평가 이미지</h2>
+            <div id="tiltStatus"></div>
+            <button class="btn-success" onclick="saveTiltData()">저장</button>
+            <button class="btn-primary" onclick="window.open('page4.html', '_blank')">페이지 열기</button>
+        </div>
+
+        <div class="card">
+            <h2>📏 변형률 등급 평가 이미지</h2>
+            <div id="strainStatus"></div>
+            <button class="btn-success" onclick="saveStrainData()">저장</button>
+            <button class="btn-primary" onclick="window.open('page5.html', '_blank')">페이지 열기</button>
+        </div>
+    </div>
+
+    <script>
+        const STORAGE_KEYS = {
+            ACCELERATION_DATA: 'qms_acceleration_data',
+            TILT_DATA: 'qms_tilt_data',
+            STRAIN_DATA: 'qms_strain_data'
+        };
+
+        function getFromStorage(key) {
+            try {
+                const data = localStorage.getItem(key);
+                return data ? JSON.parse(data) : null;
+            } catch (e) {
+                return null;
+            }
+        }
+
+        function saveToStorage(key, data) {
+            try {
+                localStorage.setItem(key, JSON.stringify(data));
+                return true;
+            } catch (e) {
+                alert('저장 실패: ' + e.message);
+                return false;
+            }
+        }
+
+        function saveAccelData() {
+            const testImage = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAFUlEQVR42mP8z8BQz0AEYBxVSF+FABJADveWkH6oAAAAAElFTkSuQmCC';
+            const data = {
+                maxAcceleration: 0.35,
+                avgAcceleration: 0.25,
+                eventCount: 5,
+                accelReportImage: testImage
+            };
+            if (saveToStorage(STORAGE_KEYS.ACCELERATION_DATA, data)) {
+                alert('✅ 가속도 데이터 저장 완료!');
+                checkAllData();
+            }
+        }
+
+        function saveTiltData() {
+            const testImage = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAFUlEQVR42mNk+M9Qz0AEYBxVSF+FABJADveWkH6oAAAAAElFTkSuQmCC';
+            const data = {
+                maxTilt: 8.5,
+                avgTilt: 5.2,
+                eventCount: 3,
+                tiltReportImage: testImage
+            };
+            if (saveToStorage(STORAGE_KEYS.TILT_DATA, data)) {
+                alert('✅ 기울기 데이터 저장 완료!');
+                checkAllData();
+            }
+        }
+
+        function saveStrainData() {
+            const testImage = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAUklEQVR42mNgQAL/GdAEMDEgC/j7+/9nYGD4z4AMMDAwMPz//x8ZYFNIUFxYWPg/AwMDMoeuEBkgKyQoxKaQoAKCCvEqxKsQrwK8CgkqBADdURcQj2hsuwAAAABJRU5ErkJggg==';
+            const data = {
+                maxStrain: 120,
+                avgStrain: 75,
+                eventCount: 2,
+                strainReportImage: testImage
+            };
+            if (saveToStorage(STORAGE_KEYS.STRAIN_DATA, data)) {
+                alert('✅ 변형률 데이터 저장 완료!');
+                checkAllData();
+            }
+        }
+
+        function saveAllTestData() {
+            saveAccelData();
+            saveTiltData();
+            saveStrainData();
+        }
+
+        function checkAllData() {
+            const accelData = getFromStorage(STORAGE_KEYS.ACCELERATION_DATA);
+            const tiltData = getFromStorage(STORAGE_KEYS.TILT_DATA);
+            const strainData = getFromStorage(STORAGE_KEYS.STRAIN_DATA);
+
+            // 가속도
+            if (accelData?.accelReportImage) {
+                document.getElementById('accelStatus').innerHTML = `
+                    <div class="status success">✅ 이미지 저장됨<br>크기: ${accelData.accelReportImage.length} bytes</div>
+                `;
+            } else {
+                document.getElementById('accelStatus').innerHTML = `
+                    <div class="status error">❌ 이미지 없음</div>
+                `;
+            }
+
+            // 기울기
+            if (tiltData?.tiltReportImage) {
+                document.getElementById('tiltStatus').innerHTML = `
+                    <div class="status success">✅ 이미지 저장됨<br>크기: ${tiltData.tiltReportImage.length} bytes</div>
+                `;
+            } else {
+                document.getElementById('tiltStatus').innerHTML = `
+                    <div class="status error">❌ 이미지 없음</div>
+                `;
+            }
+
+            // 변형률
+            if (strainData?.strainReportImage) {
+                document.getElementById('strainStatus').innerHTML = `
+                    <div class="status success">✅ 이미지 저장됨<br>크기: ${strainData.strainReportImage.length} bytes</div>
+                `;
+            } else {
+                document.getElementById('strainStatus').innerHTML = `
+                    <div class="status error">❌ 이미지 없음</div>
+                `;
+            }
+
+            // 요약
+            const total = 3;
+            const saved = (accelData?.accelReportImage ? 1 : 0) + 
+                         (tiltData?.tiltReportImage ? 1 : 0) + 
+                         (strainData?.strainReportImage ? 1 : 0);
+
+            document.getElementById('summary').innerHTML = `
+                <div class="summary-item">
+                    <strong>전체 이미지</strong>
+                    <span>${total}개</span>
+                </div>
+                <div class="summary-item">
+                    <strong>저장된 이미지</strong>
+                    <span style="color: #10b981;">${saved}개</span>
+                </div>
+                <div class="summary-item">
+                    <strong>누락된 이미지</strong>
+                    <span style="color: #ef4444;">${total - saved}개</span>
+                </div>
+                <div class="summary-item">
+                    <strong>완료율</strong>
+                    <span style="color: ${saved === total ? '#10b981' : '#f59e0b'};">${Math.round(saved/total*100)}%</span>
+                </div>
+            `;
+        }
+
+        function clearAllData() {
+            if (confirm('정말 모든 데이터를 삭제하시겠습니까?')) {
+                localStorage.removeItem(STORAGE_KEYS.ACCELERATION_DATA);
+                localStorage.removeItem(STORAGE_KEYS.TILT_DATA);
+                localStorage.removeItem(STORAGE_KEYS.STRAIN_DATA);
+                alert('✅ 모든 데이터가 삭제되었습니다.');
+                checkAllData();
+            }
+        }
+
+        // 페이지 로드 시 자동 확인
+        window.addEventListener('DOMContentLoaded', checkAllData);
+    </script>
+</body>
+</html>

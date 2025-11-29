@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>변형률 등급 평가 이미지 테스트</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f9fafb;
+        }
+        h1 {
+            color: #1f2937;
+            border-bottom: 3px solid #3b82f6;
+            padding-bottom: 10px;
+        }
+        .section {
+            margin: 20px 0;
+            padding: 20px;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .section h2 {
+            color: #374151;
+            margin-top: 0;
+        }
+        button {
+            padding: 12px 24px;
+            margin: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .success { background: #10b981; color: white; }
+        .info { background: #3b82f6; color: white; }
+        .danger { background: #ef4444; color: white; }
+        .warning { background: #f59e0b; color: white; }
+        pre {
+            background: #f3f4f6;
+            padding: 15px;
+            border-radius: 6px;
+            overflow-x: auto;
+            border-left: 4px solid #3b82f6;
+        }
+        img {
+            max-width: 100%;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+        .status {
+            padding: 10px;
+            border-radius: 6px;
+            margin: 10px 0;
+        }
+        .status.success { background: #d1fae5; color: #065f46; border: 1px solid #10b981; }
+        .status.error { background: #fee2e2; color: #991b1b; border: 1px solid #ef4444; }
+        .status.info { background: #dbeafe; color: #1e40af; border: 1px solid #3b82f6; }
+    </style>
+</head>
+<body>
+    <h1>🧪 변형률 등급 평가 이미지 저장/로드 테스트</h1>
+
+    <div class="section">
+        <h2>📊 현재 상태</h2>
+        <div id="currentStatus"></div>
+    </div>
+
+    <div class="section">
+        <h2>1. 테스트 이미지 저장</h2>
+        <p>샘플 변형률 데이터와 이미지를 LocalStorage에 저장합니다.</p>
+        <button class="success" onclick="saveTestStrainImage()">💾 테스트 변형률 이미지 저장</button>
+        <div id="saveResult"></div>
+    </div>
+
+    <div class="section">
+        <h2>2. 저장된 데이터 확인</h2>
+        <p>LocalStorage에 저장된 변형률 데이터 구조를 확인합니다.</p>
+        <button class="info" onclick="checkStrainData()">🔍 LocalStorage 데이터 확인</button>
+        <div id="dataResult"></div>
+    </div>
+
+    <div class="section">
+        <h2>3. 이미지 표시 테스트</h2>
+        <p>저장된 이미지를 전체 보고서와 같은 방식으로 표시합니다.</p>
+        <button class="info" onclick="displayStrainImage()">🖼️ 이미지 표시 (전체 보고서 방식)</button>
+        <div id="imageDisplay"></div>
+    </div>
+
+    <div class="section">
+        <h2>4. 전체 보고서 링크</h2>
+        <button class="warning" onclick="window.open('print-report.html', '_blank')">📄 전체 보고서 열기</button>
+        <button class="warning" onclick="window.open('page5.html', '_blank')">📏 변형률 데이터 페이지 열기</button>
+    </div>
+
+    <div class="section">
+        <h2>5. 데이터 관리</h2>
+        <button class="danger" onclick="clearStrainData()">🗑️ 변형률 데이터 삭제</button>
+        <button class="info" onclick="location.reload()">🔄 페이지 새로고침</button>
+    </div>
+
+    <script>
+        const STORAGE_KEYS = {
+            STRAIN_DATA: 'qms_strain_data',
+            STRAIN_GRAPH_IMAGE: 'qms_strain_graph_image'
+        };
+
+        function getFromStorage(key) {
+            try {
+                const data = localStorage.getItem(key);
+                return data ? JSON.parse(data) : null;
+            } catch (e) {
+                console.error('저장소 읽기 오류:', e);
+                return null;
+            }
+        }
+
+        function saveToStorage(key, data) {
+            try {
+                localStorage.setItem(key, JSON.stringify(data));
+                return true;
+            } catch (e) {
+                console.error('저장소 쓰기 오류:', e);
+                alert('저장 실패: ' + e.message);
+                return false;
+            }
+        }
+
+        function saveTestStrainImage() {
+            // 테스트용 10x10 빨간색-파란색 그라데이션 PNG 이미지
+            const testImageData = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAUklEQVR42mNgQAL/GdAEMDEgC/j7+/9nYGD4z4AMMDAwMPz//x8ZYFNIUFxYWPg/AwMDMoeuEBkgKyQoxKaQoAKCCvEqxKsQrwK8CgkqBADdURcQj2hsuwAAAABJRU5ErkJggg==';
+            
+            const strainData = {
+                maxStrain: 120,
+                avgStrain: 75,
+                eventCount: 2,
+                strainReportImage: testImageData,
+                timestamp: new Date().toISOString(),
+                device: 'JANET PRO 3축 디지털 가속도계 (변형률계)'
+            };
+            
+            console.log('💾 변형률 데이터 저장 시도:', strainData);
+            const result = saveToStorage(STORAGE_KEYS.STRAIN_DATA, strainData);
+            
+            if (result) {
+                document.getElementById('saveResult').innerHTML = `
+                    <div class="status success">
+                        <strong>✅ 테스트 데이터 저장 완료!</strong>
+                        <ul style="margin: 10px 0; padding-left: 20px;">
+                            <li>최대 변형률: ${strainData.maxStrain}με</li>
+                            <li>평균 변형률: ${strainData.avgStrain}με</li>
+                            <li>이벤트 횟수: ${strainData.eventCount}회</li>
+                            <li>이미지 크기: ${testImageData.length} bytes</li>
+                            <li>저장 시간: ${strainData.timestamp}</li>
+                        </ul>
+                        <p><strong>🎉 이제 전체 보고서에서 이 이미지를 볼 수 있습니다!</strong></p>
+                    </div>
+                `;
+                updateCurrentStatus();
+            } else {
+                document.getElementById('saveResult').innerHTML = '<div class="status error"><strong>❌ 저장 실패</strong></div>';
+            }
+        }
+
+        function checkStrainData() {
+            const data = getFromStorage(STORAGE_KEYS.STRAIN_DATA);
+            
+            if (data) {
+                let html = '<div class="status success"><strong>✅ 데이터 존재</strong></div>';
+                html += '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
+                
+                if (data.strainReportImage) {
+                    html += `
+                        <div class="status success">
+                            <strong>✅ strainReportImage 속성 존재</strong>
+                            <ul style="margin: 10px 0; padding-left: 20px;">
+                                <li>이미지 데이터 크기: ${data.strainReportImage.length.toLocaleString()} bytes</li>
+                                <li>이미지 타입: ${data.strainReportImage.substring(0, 30)}...</li>
+                                <li>Base64 인코딩: ${data.strainReportImage.includes('base64') ? '✅ 예' : '❌ 아니오'}</li>
+                            </ul>
+                        </div>
+                    `;
+                } else {
+                    html += '<div class="status error"><strong>❌ strainReportImage 속성 없음</strong></div>';
+                }
+                
+                document.getElementById('dataResult').innerHTML = html;
+            } else {
+                document.getElementById('dataResult').innerHTML = '<div class="status error"><strong>❌ 저장된 데이터 없음</strong><p>먼저 "테스트 변형률 이미지 저장" 버튼을 클릭하세요.</p></div>';
+            }
+        }
+
+        function displayStrainImage() {
+            const strainData = getFromStorage(STORAGE_KEYS.STRAIN_DATA);
+            
+            console.log('🖼️ 변형률 데이터:', strainData);
+            
+            if (strainData?.strainReportImage) {
+                console.log('✅ 변형률 등급 평가 이미지 발견');
+                document.getElementById('imageDisplay').innerHTML = `
+                    <div class="status success">
+                        <strong>✅ 이미지 표시 성공</strong>
+                        <p>아래 이미지는 전체 보고서(print-report.html)에서 표시되는 것과 동일한 방식입니다.</p>
+                    </div>
+                    <img src="${strainData.strainReportImage}" alt="변형률 등급 평가" style="max-width: 100%; height: auto; border: 1px solid #e5e7eb; border-radius: 0.375rem;">
+                    <div class="status info" style="margin-top: 10px;">
+                        <strong>💡 전체 보고서 확인</strong>
+                        <p>이제 <a href="print-report.html" target="_blank" style="color: #3b82f6; text-decoration: underline;">전체 보고서</a>를 열어서 "5. 변형률 데이터" 섹션의 "등급 평가 리포트" 카드를 확인하세요!</p>
+                    </div>
+                `;
+            } else {
+                console.log('❌ 변형률 등급 평가 이미지 없음');
+                document.getElementById('imageDisplay').innerHTML = `
+                    <div class="status error">
+                        <strong>❌ 이미지 데이터 없음</strong>
+                        <p>먼저 "테스트 변형률 이미지 저장" 버튼을 클릭하거나, <a href="page5.html" target="_blank" style="color: #ef4444; text-decoration: underline;">변형률 데이터 페이지</a>에서 실제 이미지를 업로드하세요.</p>
+                    </div>
+                `;
+            }
+        }
+
+        function clearStrainData() {
+            if (confirm('정말 변형률 데이터를 삭제하시겠습니까?')) {
+                localStorage.removeItem(STORAGE_KEYS.STRAIN_DATA);
+                alert('✅ 변형률 데이터가 삭제되었습니다.');
+                document.getElementById('saveResult').innerHTML = '';
+                document.getElementById('dataResult').innerHTML = '';
+                document.getElementById('imageDisplay').innerHTML = '';
+                updateCurrentStatus();
+            }
+        }
+
+        function updateCurrentStatus() {
+            const data = getFromStorage(STORAGE_KEYS.STRAIN_DATA);
+            
+            if (data) {
+                let statusHTML = '<div class="status success"><strong>✅ 변형률 데이터 저장됨</strong></div>';
+                statusHTML += '<ul style="margin: 10px 0; padding-left: 20px;">';
+                statusHTML += `<li>최대 변형률: ${data.maxStrain || '미설정'}με</li>`;
+                statusHTML += `<li>평균 변형률: ${data.avgStrain || '미설정'}με</li>`;
+                statusHTML += `<li>이벤트 횟수: ${data.eventCount || '0'}회</li>`;
+                statusHTML += `<li>등급 평가 이미지: ${data.strainReportImage ? '✅ 있음' : '❌ 없음'}</li>`;
+                if (data.timestamp) {
+                    statusHTML += `<li>저장 시간: ${new Date(data.timestamp).toLocaleString('ko-KR')}</li>`;
+                }
+                statusHTML += '</ul>';
+                document.getElementById('currentStatus').innerHTML = statusHTML;
+            } else {
+                document.getElementById('currentStatus').innerHTML = '<div class="status info"><strong>ℹ️ 저장된 변형률 데이터 없음</strong><p>테스트 데이터를 저장하거나 변형률 데이터 페이지에서 실제 데이터를 입력하세요.</p></div>';
+            }
+        }
+
+        // 페이지 로드 시 자동 실행
+        window.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 테스트 페이지 로드 완료');
+            updateCurrentStatus();
+            checkStrainData();
+        });
+    </script>
+</body>
+</html>
