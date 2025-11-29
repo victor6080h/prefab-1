@@ -163,21 +163,21 @@
                         <tr>
                             <td>가속도 최대값</td>
                             <td id="accelMaxResult">-</td>
-                            <td>±0.5g</td>
+                            <td>0.40g 이하<br><small>(정상: &lt;0.20g, 주의: 0.20~0.30g, 경고: 0.30~0.40g)</small></td>
                             <td id="accelStatus">-</td>
                             <td id="accelNote">-</td>
                         </tr>
                         <tr>
                             <td>기울기 최대값</td>
                             <td id="tiltMaxResult">-</td>
-                            <td>±2°</td>
+                            <td>10° 이하<br><small>(정상: &lt;3°, 주의: 3~5°, 경고: 5~10°)</small></td>
                             <td id="tiltStatus">-</td>
                             <td id="tiltNote">-</td>
                         </tr>
                         <tr>
                             <td>변형률 최대값</td>
                             <td id="strainMaxResult">-</td>
-                            <td>±130με</td>
+                            <td>130με 이하<br><small>(정상: &lt;60με, 주의: 60~80με, 경고: 80~130με)</small></td>
                             <td id="strainStatus">-</td>
                             <td id="strainNote">-</td>
                         </tr>
@@ -282,12 +282,16 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 대시보드 로드 시작');
             loadDashboardData();
         });
 
         function loadDashboardData() {
+            console.log('📊 대시보드 데이터 로드 함수 실행');
+            
             // 프로젝트 정보 로드
             const projectInfo = getFromStorage(STORAGE_KEYS.PROJECT_INFO);
+            console.log('프로젝트 정보:', projectInfo);
             if (projectInfo) {
                 document.getElementById('dashProjectName').textContent = projectInfo.projectName || '-';
                 document.getElementById('dashInspectionDate').textContent = projectInfo.inspectionDate || '-';
@@ -362,69 +366,96 @@
 
             // 가속도 평가
             const accelData = getFromStorage(STORAGE_KEYS.ACCELERATION_DATA);
-            if (accelData && accelData.measurements) {
+            if (accelData && accelData.maxAcceleration !== undefined) {
                 completedCount++;
                 const accelCard = document.getElementById('accelCard');
-                const maxAccel = Math.max(...accelData.measurements.map(m => m.result || 0));
+                const maxAccel = parseFloat(accelData.maxAcceleration) || 0;
                 
-                document.getElementById('accelMaxResult').textContent = maxAccel.toFixed(3) + ' g';
+                document.getElementById('accelMaxResult').textContent = maxAccel.toFixed(2) + ' g';
                 
+                // KCS 기준: 0.40g 이하
                 if (maxAccel <= 0.40) {
                     accelCard.className = 'stat-card success';
-                    accelCard.querySelector('.stat-value').textContent = '적합';
-                    document.getElementById('accelStatus').innerHTML = '<span class="badge badge-success">적합</span>';
-                    document.getElementById('accelNote').textContent = '정상 범위';
+                    accelCard.querySelector('.stat-value').textContent = '정상';
+                    document.getElementById('accelStatus').innerHTML = '<span class="badge badge-success">정상</span>';
+                    if (maxAccel < 0.20) {
+                        document.getElementById('accelNote').textContent = '정상 (0.20g 미만)';
+                    } else if (maxAccel < 0.30) {
+                        document.getElementById('accelNote').textContent = '주의 (0.20~0.30g)';
+                    } else if (maxAccel < 0.40) {
+                        document.getElementById('accelNote').textContent = '경고 (0.30~0.40g)';
+                    } else {
+                        document.getElementById('accelNote').textContent = '정상 범위';
+                    }
                 } else {
                     accelCard.className = 'stat-card danger';
-                    accelCard.querySelector('.stat-value').textContent = '부적합';
-                    document.getElementById('accelStatus').innerHTML = '<span class="badge badge-danger">초과</span>';
-                    document.getElementById('accelNote').textContent = '허용치 초과';
-                    issues.push(`가속도 최대값(${maxAccel.toFixed(3)}G)이 허용 범위를 초과했습니다.`);
+                    accelCard.querySelector('.stat-value').textContent = '위험';
+                    document.getElementById('accelStatus').innerHTML = '<span class="badge badge-danger">위험</span>';
+                    document.getElementById('accelNote').textContent = '위험 (0.40g 초과)';
+                    issues.push(`가속도 최대값(${maxAccel.toFixed(2)}g)이 허용 범위를 초과했습니다.`);
                 }
             }
 
             // 기울기 평가
             const tiltData = getFromStorage(STORAGE_KEYS.TILT_DATA);
-            if (tiltData && tiltData.measurements) {
+            if (tiltData && tiltData.maxTilt !== undefined) {
                 completedCount++;
                 const tiltCard = document.getElementById('tiltCard');
-                const maxTilt = Math.max(...tiltData.measurements.map(m => m.result || 0));
+                const maxTilt = parseFloat(tiltData.maxTilt) || 0;
                 
-                document.getElementById('tiltMaxResult').textContent = maxTilt.toFixed(2) + '°';
+                document.getElementById('tiltMaxResult').textContent = maxTilt.toFixed(1) + '°';
                 
+                // KCS 기준: 10° 이하
                 if (maxTilt <= 10.0) {
                     tiltCard.className = 'stat-card success';
-                    tiltCard.querySelector('.stat-value').textContent = '적합';
-                    document.getElementById('tiltStatus').innerHTML = '<span class="badge badge-success">적합</span>';
-                    document.getElementById('tiltNote').textContent = '정상 범위';
+                    tiltCard.querySelector('.stat-value').textContent = '정상';
+                    document.getElementById('tiltStatus').innerHTML = '<span class="badge badge-success">정상</span>';
+                    if (maxTilt < 3.0) {
+                        document.getElementById('tiltNote').textContent = '정상 (3° 미만)';
+                    } else if (maxTilt < 5.0) {
+                        document.getElementById('tiltNote').textContent = '주의 (3~5°)';
+                    } else if (maxTilt < 10.0) {
+                        document.getElementById('tiltNote').textContent = '경고 (5~10°)';
+                    } else {
+                        document.getElementById('tiltNote').textContent = '정상 범위';
+                    }
                 } else {
                     tiltCard.className = 'stat-card danger';
-                    tiltCard.querySelector('.stat-value').textContent = '부적합';
-                    document.getElementById('tiltStatus').innerHTML = '<span class="badge badge-danger">초과</span>';
-                    document.getElementById('tiltNote').textContent = '허용치 초과';
-                    issues.push(`기울기 최대값(${maxTilt.toFixed(2)}°)이 허용 범위를 초과했습니다.`);
+                    tiltCard.querySelector('.stat-value').textContent = '위험';
+                    document.getElementById('tiltStatus').innerHTML = '<span class="badge badge-danger">위험</span>';
+                    document.getElementById('tiltNote').textContent = '위험 (10° 초과)';
+                    issues.push(`기울기 최대값(${maxTilt.toFixed(1)}°)이 허용 범위를 초과했습니다.`);
                 }
             }
 
             // 변형률 평가
             const strainData = getFromStorage(STORAGE_KEYS.STRAIN_DATA);
-            if (strainData && strainData.measurements) {
+            if (strainData && strainData.maxStrain !== undefined) {
                 completedCount++;
                 const strainCard = document.getElementById('strainCard');
-                const maxStrain = Math.max(...strainData.measurements.map(m => Math.abs(m.change || 0)));
+                const maxStrain = parseFloat(strainData.maxStrain) || 0;
                 
                 document.getElementById('strainMaxResult').textContent = maxStrain.toFixed(0) + ' με';
                 
+                // KCS 기준: 130με 이하
                 if (maxStrain <= 130) {
                     strainCard.className = 'stat-card success';
-                    strainCard.querySelector('.stat-value').textContent = '적합';
-                    document.getElementById('strainStatus').innerHTML = '<span class="badge badge-success">적합</span>';
-                    document.getElementById('strainNote').textContent = '정상 범위';
+                    strainCard.querySelector('.stat-value').textContent = '정상';
+                    document.getElementById('strainStatus').innerHTML = '<span class="badge badge-success">정상</span>';
+                    if (maxStrain < 60) {
+                        document.getElementById('strainNote').textContent = '정상 (60με 미만)';
+                    } else if (maxStrain < 80) {
+                        document.getElementById('strainNote').textContent = '주의 (60~80με)';
+                    } else if (maxStrain < 130) {
+                        document.getElementById('strainNote').textContent = '경고 (80~130με)';
+                    } else {
+                        document.getElementById('strainNote').textContent = '정상 범위';
+                    }
                 } else {
                     strainCard.className = 'stat-card danger';
-                    strainCard.querySelector('.stat-value').textContent = '부적합';
-                    document.getElementById('strainStatus').innerHTML = '<span class="badge badge-danger">초과</span>';
-                    document.getElementById('strainNote').textContent = '허용치 초과';
+                    strainCard.querySelector('.stat-value').textContent = '위험';
+                    document.getElementById('strainStatus').innerHTML = '<span class="badge badge-danger">위험</span>';
+                    document.getElementById('strainNote').textContent = '위험 (130με 초과)';
                     issues.push(`변형률 최대값(${maxStrain.toFixed(0)}με)이 허용 범위를 초과했습니다.`);
                 }
             }
