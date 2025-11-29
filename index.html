@@ -580,12 +580,12 @@
             window.location.href = 'report.html';
         });
         
-        // Initialize report data structure
+        // Initialize report data structure (script.js의 STORAGE_KEYS와 동일한 키 사용)
         function initializeReportData(reportId, basicInfo) {
             const prefix = `REPORT_${reportId}_`;
             
             // Initialize basic project info
-            localStorage.setItem(prefix + 'PROJECT_INFO', JSON.stringify({
+            localStorage.setItem(prefix + 'qms_project_info', JSON.stringify({
                 projectName: basicInfo.projectName,
                 inspectionDate: basicInfo.date,
                 prefabType: basicInfo.prefabType,
@@ -596,14 +596,13 @@
                 temperature: ''
             }));
             
-            // Initialize empty data for other sections
-            localStorage.setItem(prefix + 'CHECKLIST_DATA', JSON.stringify([]));
-            localStorage.setItem(prefix + 'TRANSPORT_DATA', JSON.stringify({}));
-            localStorage.setItem(prefix + 'ACCELERATION_DATA', JSON.stringify({ measurements: [] }));
-            localStorage.setItem(prefix + 'TILT_DATA', JSON.stringify({ measurements: [] }));
-            localStorage.setItem(prefix + 'STRAIN_DATA', JSON.stringify({ measurements: [] }));
-            localStorage.setItem(prefix + 'ERROR_DATA', JSON.stringify({ measurements: [] }));
-            localStorage.setItem(prefix + 'IMPROVEMENT_DATA', JSON.stringify([]));
+            // Initialize empty data for other sections (script.js의 STORAGE_KEYS와 일치)
+            localStorage.setItem(prefix + 'qms_survey_data', JSON.stringify({}));
+            localStorage.setItem(prefix + 'qms_acceleration_data', JSON.stringify({}));
+            localStorage.setItem(prefix + 'qms_tilt_data', JSON.stringify({}));
+            localStorage.setItem(prefix + 'qms_strain_data', JSON.stringify({}));
+            localStorage.setItem(prefix + 'qms_fabrication_error', JSON.stringify({}));
+            localStorage.setItem(prefix + 'qms_photos', JSON.stringify({}));
         }
         
         // Open report
