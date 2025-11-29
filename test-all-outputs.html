@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>전체 보고서 출력 테스트</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <style>
+        .test-section {
+            margin: 2rem 0;
+            padding: 1.5rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        .test-result {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #f3f4f6;
+            border-radius: 4px;
+        }
+        .success { color: #10b981; }
+        .error { color: #ef4444; }
+        .info { color: #3b82f6; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📊 전체 보고서 출력 테스트</h1>
+        <p style="color: #6b7280;">
+            이 페이지는 전체 보고서에서 모든 이미지와 데이터가 정상적으로 출력되는지 확인합니다.
+        </p>
+
+        <div class="test-section">
+            <h2>✅ 테스트 항목</h2>
+            <div id="testResults"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>📝 LocalStorage 데이터 확인</h2>
+            <div id="storageData"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>🔍 누락된 항목</h2>
+            <div id="missingItems"></div>
+        </div>
+
+        <div style="margin-top: 2rem;">
+            <a href="print-report.html" class="btn btn-primary">📄 전체 보고서 보기</a>
+        </div>
+    </div>
+
+    <script src="assets/js/script.js"></script>
+    <script>
+        // 테스트할 항목 목록
+        const testItems = [
+            { key: 'ACCELERATION_DATA.accelReportImage', name: '가속도 등급 평가 이미지' },
+            { key: 'ACCEL_GRAPH_IMAGE', name: '전체 가속도 그래프' },
+            { key: 'TILT_DATA.tiltReportImage', name: '기울기 등급 평가 이미지' },
+            { key: 'TILT_GRAPH_IMAGE', name: '전체 기울기 그래프' },
+            { key: 'STRAIN_DATA.strainReportImage', name: '변형률 등급 평가 이미지' },
+            { key: 'STRAIN_GRAPH_IMAGE', name: '전체 변형률 그래프' },
+            { key: 'FABRICATION_ERROR.measurements', name: '치수 측정 데이터' },
+            { key: 'ERROR_CHART_IMAGE', name: '제작 오차 분포 그래프' },
+            { key: 'PHOTOS.errorPhoto1', name: '부재 사진 1' },
+            { key: 'PHOTOS.errorPhoto2', name: '부재 사진 2' }
+        ];
+
+        function checkData() {
+            const results = [];
+            const missing = [];
+            let storageHTML = '<table style="width: 100%; border-collapse: collapse;">';
+            storageHTML += '<tr><th style="border: 1px solid #ddd; padding: 8px;">Storage Key</th><th style="border: 1px solid #ddd; padding: 8px;">상태</th><th style="border: 1px solid #ddd; padding: 8px;">크기</th></tr>';
+
+            testItems.forEach(item => {
+                let value = null;
+                let status = '❌ 없음';
+                let size = '-';
+
+                if (item.key.includes('.')) {
+                    const [storageKey, subKey] = item.key.split('.');
+                    const data = getFromStorage(STORAGE_KEYS[storageKey]);
+                    if (data && data[subKey]) {
+                        value = data[subKey];
+                        if (Array.isArray(value)) {
+                            status = `✅ 있음 (${value.length}개)`;
+                            size = JSON.stringify(value).length + ' bytes';
+                        } else if (typeof value === 'string' && value.startsWith('data:image')) {
+                            status = '✅ 있음 (이미지)';
+                            size = (value.length / 1024).toFixed(1) + ' KB';
+                        } else {
+                            status = '✅ 있음';
+                            size = JSON.stringify(value).length + ' bytes';
+                        }
+                    } else {
+                        missing.push(item.name);
+                    }
+                } else {
+                    value = getFromStorage(STORAGE_KEYS[item.key]);
+                    if (value) {
+                        if (typeof value === 'string' && value.startsWith('data:image')) {
+                            status = '✅ 있음 (이미지)';
+                            size = (value.length / 1024).toFixed(1) + ' KB';
+                        } else {
+                            status = '✅ 있음';
+                            size = JSON.stringify(value).length + ' bytes';
+                        }
+                    } else {
+                        missing.push(item.name);
+                    }
+                }
+
+                results.push({ name: item.name, status, size });
+                storageHTML += `<tr>
+                    <td style="border: 1px solid #ddd; padding: 8px;">${item.name}</td>
+                    <td style="border: 1px solid #ddd; padding: 8px;">${status}</td>
+                    <td style="border: 1px solid #ddd; padding: 8px;">${size}</td>
+                </tr>`;
+            });
+
+            storageHTML += '</table>';
+
+            // 테스트 결과 표시
+            const testResultsDiv = document.getElementById('testResults');
+            let testHTML = '<ul>';
+            results.forEach(result => {
+                const className = result.status.includes('✅') ? 'success' : 'error';
+                testHTML += `<li class="${className}"><strong>${result.name}:</strong> ${result.status} (${result.size})</li>`;
+            });
+            testHTML += '</ul>';
+            testResultsDiv.innerHTML = testHTML;
+
+            // Storage 데이터 표시
+            document.getElementById('storageData').innerHTML = storageHTML;
+
+            // 누락된 항목 표시
+            const missingDiv = document.getElementById('missingItems');
+            if (missing.length === 0) {
+                missingDiv.innerHTML = '<p class="success">🎉 모든 항목이 정상적으로 저장되어 있습니다!</p>';
+            } else {
+                let missingHTML = '<p class="error">⚠️ 다음 항목이 누락되었습니다:</p><ul>';
+                missing.forEach(item => {
+                    missingHTML += `<li class="error">${item}</li>`;
+                });
+                missingHTML += '</ul>';
+                missingHTML += '<p class="info">📝 해당 페이지에서 데이터를 입력하거나 이미지를 업로드하세요:</p>';
+                missingHTML += '<ul>';
+                if (missing.some(m => m.includes('가속도'))) {
+                    missingHTML += '<li><a href="page3.html">page3.html - 가속도 데이터</a></li>';
+                }
+                if (missing.some(m => m.includes('기울기'))) {
+                    missingHTML += '<li><a href="page4.html">page4.html - 기울기 데이터</a></li>';
+                }
+                if (missing.some(m => m.includes('변형률'))) {
+                    missingHTML += '<li><a href="page5.html">page5.html - 변형률 데이터</a></li>';
+                }
+                if (missing.some(m => m.includes('치수') || m.includes('제작 오차') || m.includes('부재'))) {
+                    missingHTML += '<li><a href="page6.html">page6.html - 부재 제작 오차</a></li>';
+                }
+                missingHTML += '</ul>';
+                missingDiv.innerHTML = missingHTML;
+            }
+        }
+
+        // 페이지 로드 시 데이터 확인
+        window.addEventListener('DOMContentLoaded', checkData);
+    </script>
+</body>
+</html>
