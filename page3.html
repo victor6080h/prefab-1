@@ -213,6 +213,7 @@
             // 저장된 데이터 로드
             loadMaxAcceleration();
             loadAccelReportImage();
+            loadAccelGraphImage();  // 전체 가속도 그래프 이미지 로드 추가
             
             autoSaveForm('accelInfoForm', STORAGE_KEYS.ACCELERATION_DATA);
             
@@ -571,7 +572,7 @@
             preview.onclick = function() { document.getElementById('accelGraphInput').click(); };
             
             // LocalStorage에서 삭제
-            localStorage.removeItem(getStorageKey('ACCEL_GRAPH_IMAGE'));
+            removeFromStorage(STORAGE_KEYS.ACCEL_GRAPH_IMAGE);
             
             console.log('✅ 전체 가속도 그래프 이미지 삭제 완료');
             alert('✅ 이미지가 삭제되었습니다.');

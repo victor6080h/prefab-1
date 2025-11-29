@@ -603,7 +603,7 @@
             preview.onclick = function() { document.getElementById('tiltGraphInput').click(); };
             
             // LocalStorage에서 삭제
-            localStorage.removeItem(getStorageKey('TILT_GRAPH_IMAGE'));
+            removeFromStorage(STORAGE_KEYS.TILT_GRAPH_IMAGE);
             
             console.log('✅ 전체 기울기 그래프 이미지 삭제 완료');
             alert('✅ 이미지가 삭제되었습니다.');

@@ -592,7 +592,7 @@
             preview.onclick = function() { document.getElementById('strainGraphInput').click(); };
             
             // LocalStorage에서 삭제
-            localStorage.removeItem(getStorageKey('STRAIN_GRAPH_IMAGE'));
+            removeFromStorage(STORAGE_KEYS.STRAIN_GRAPH_IMAGE);
             
             console.log('✅ 전체 변형률 그래프 이미지 삭제 완료');
             alert('✅ 이미지가 삭제되었습니다.');
