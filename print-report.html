@@ -44,6 +44,17 @@
                 object-fit: contain !important;
             }
             
+            /* 부재 제작 오차 사진은 1열 2행으로 인쇄 */
+            #errorPhotos {
+                grid-template-columns: 1fr !important;
+                gap: 1.5rem !important;
+            }
+            
+            #errorPhotos img {
+                max-width: 100% !important;
+                height: auto !important;
+            }
+            
             table {
                 font-size: 10pt;
                 width: 100%;
@@ -182,11 +193,23 @@
             margin-top: 1rem;
         }
         
+        /* 부재 제작 오차 사진은 1열 2행으로 표시 */
+        #errorPhotos {
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+        
         .photo-grid img {
             width: 100%;
             height: auto;
             border: 1px solid #e5e7eb;
             border-radius: 0.375rem;
+        }
+        
+        /* 부재 사진 크기 최적화 */
+        #errorPhotos img {
+            max-width: 100%;
+            height: auto;
         }
     </style>
     <script src="assets/js/script.js"></script>
