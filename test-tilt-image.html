@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>기울기 등급 평가 이미지 테스트</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        .section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .success { background: #10b981; color: white; }
+        .info { background: #3b82f6; color: white; }
+        .danger { background: #ef4444; color: white; }
+        pre {
+            background: #f3f4f6;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+        img {
+            max-width: 100%;
+            border: 1px solid #ddd;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 기울기 등급 평가 이미지 저장/로드 테스트</h1>
+
+    <div class="section">
+        <h2>1. 테스트 이미지 저장</h2>
+        <button class="success" onclick="saveTestTiltImage()">💾 테스트 기울기 이미지 저장</button>
+        <p id="saveResult"></p>
+    </div>
+
+    <div class="section">
+        <h2>2. 저장된 데이터 확인</h2>
+        <button class="info" onclick="checkTiltData()">🔍 LocalStorage 데이터 확인</button>
+        <div id="dataResult"></div>
+    </div>
+
+    <div class="section">
+        <h2>3. 이미지 표시 테스트</h2>
+        <button class="info" onclick="displayTiltImage()">🖼️ 이미지 표시</button>
+        <div id="imageDisplay"></div>
+    </div>
+
+    <div class="section">
+        <h2>4. 데이터 삭제</h2>
+        <button class="danger" onclick="clearTiltData()">🗑️ 데이터 삭제</button>
+    </div>
+
+    <script>
+        const STORAGE_KEYS = {
+            TILT_DATA: 'qms_tilt_data'
+        };
+
+        function getFromStorage(key) {
+            try {
+                const data = localStorage.getItem(key);
+                return data ? JSON.parse(data) : null;
+            } catch (e) {
+                console.error('저장소 읽기 오류:', e);
+                return null;
+            }
+        }
+
+        function saveToStorage(key, data) {
+            try {
+                localStorage.setItem(key, JSON.stringify(data));
+                return true;
+            } catch (e) {
+                console.error('저장소 쓰기 오류:', e);
+                return false;
+            }
+        }
+
+        function saveTestTiltImage() {
+            // 1x1 빨간색 PNG 이미지 (Base64)
+            const testImageData = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAFUlEQVR42mP8z8BQz0AEYBxVSF+FABJADveWkH6oAAAAAElFTkSuQmCC';
+            
+            const tiltData = {
+                maxTilt: 8.5,
+                avgTilt: 5.2,
+                eventCount: 3,
+                tiltReportImage: testImageData,
+                timestamp: new Date().toISOString()
+            };
+            
+            const result = saveToStorage(STORAGE_KEYS.TILT_DATA, tiltData);
+            
+            if (result) {
+                document.getElementById('saveResult').innerHTML = `
+                    <p style="color: green;">✅ 테스트 데이터 저장 완료!</p>
+                    <p>최대 기울기: ${tiltData.maxTilt}°</p>
+                    <p>평균 기울기: ${tiltData.avgTilt}°</p>
+                    <p>이벤트 횟수: ${tiltData.eventCount}회</p>
+                    <p>이미지 크기: ${testImageData.length} bytes</p>
+                `;
+            } else {
+                document.getElementById('saveResult').innerHTML = '<p style="color: red;">❌ 저장 실패</p>';
+            }
+        }
+
+        function checkTiltData() {
+            const data = getFromStorage(STORAGE_KEYS.TILT_DATA);
+            
+            if (data) {
+                let html = '<h3 style="color: green;">✅ 데이터 존재</h3>';
+                html += '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
+                
+                if (data.tiltReportImage) {
+                    html += '<p style="color: green;"><strong>✅ tiltReportImage 속성 존재</strong></p>';
+                    html += '<p>이미지 데이터 크기: ' + data.tiltReportImage.length + ' bytes</p>';
+                    html += '<p>이미지 타입: ' + data.tiltReportImage.substring(0, 30) + '...</p>';
+                } else {
+                    html += '<p style="color: red;"><strong>❌ tiltReportImage 속성 없음</strong></p>';
+                }
+                
+                document.getElementById('dataResult').innerHTML = html;
+            } else {
+                document.getElementById('dataResult').innerHTML = '<p style="color: red;">❌ 저장된 데이터 없음</p>';
+            }
+        }
+
+        function displayTiltImage() {
+            const data = getFromStorage(STORAGE_KEYS.TILT_DATA);
+            
+            if (data && data.tiltReportImage) {
+                document.getElementById('imageDisplay').innerHTML = `
+                    <p style="color: green;">✅ 이미지 표시 성공</p>
+                    <img src="${data.tiltReportImage}" alt="기울기 등급 평가" style="max-width: 100%; height: auto; border: 1px solid #e5e7eb; border-radius: 0.375rem;">
+                `;
+            } else {
+                document.getElementById('imageDisplay').innerHTML = '<p style="color: red;">❌ 이미지 데이터 없음</p>';
+            }
+        }
+
+        function clearTiltData() {
+            if (confirm('정말 데이터를 삭제하시겠습니까?')) {
+                localStorage.removeItem(STORAGE_KEYS.TILT_DATA);
+                alert('✅ 데이터가 삭제되었습니다.');
+                document.getElementById('saveResult').innerHTML = '';
+                document.getElementById('dataResult').innerHTML = '';
+                document.getElementById('imageDisplay').innerHTML = '';
+            }
+        }
+
+        // 페이지 로드 시 자동으로 데이터 확인
+        window.addEventListener('DOMContentLoaded', function() {
+            checkTiltData();
+        });
+    </script>
+</body>
+</html>
