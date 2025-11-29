@@ -631,7 +631,34 @@
         <div class="report-section">
             <h2 class="section-title">7. 종합 대시보드</h2>
             
+            <!-- 프로젝트 정보 요약 -->
             <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">프로젝트 정보</h2>
+                </div>
+                <div class="card-body">
+                    <div class="info-grid" id="dashboardProjectSummary">
+                        <div class="info-item">
+                            <div class="info-label">공사명</div>
+                            <div class="info-value" id="dashProjectName">-</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">점검일</div>
+                            <div class="info-value" id="dashInspectionDate">-</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Prefab 종류</div>
+                            <div class="info-value" id="dashPrefabType">-</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">점검자</div>
+                            <div class="info-value" id="dashInspector">-</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card" style="margin-top: 1rem;">
                 <div class="card-header">
                     <h2 class="card-title">종합 품질 평가</h2>
                 </div>
@@ -738,6 +765,26 @@
                             </tr>
                         </tbody>
                     </table>
+                </div>
+            </div>
+            
+            <div class="card" style="margin-top: 1rem;">
+                <div class="card-header">
+                    <h2 class="card-title">품질관리 진행률</h2>
+                </div>
+                <div class="card-body">
+                    <div style="margin-bottom: 1rem;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                            <span style="font-weight: 600;">전체 진행률</span>
+                            <span id="overallProgressText" style="font-weight: 700; font-size: 1.25rem;">0%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="overallProgress" style="width: 0%;">0%</div>
+                        </div>
+                    </div>
+                    <div style="font-size: 0.875rem; color: var(--text-secondary);">
+                        <p>완료된 항목: <span id="completedCount" style="font-weight: 600; color: var(--success-color);">0</span> / 5</p>
+                    </div>
                 </div>
             </div>
             
@@ -1069,12 +1116,37 @@
         }
 
         function loadDashboard() {
+            // 프로젝트 정보 로드 (dashboard.html과 동일)
+            const projectData = getFromStorage(STORAGE_KEYS.PROJECT_INFO);
+            if (projectData) {
+                document.getElementById('dashProjectName').textContent = projectData.projectName || '-';
+                document.getElementById('dashInspectionDate').textContent = projectData.inspectionDate || '-';
+                document.getElementById('dashPrefabType').textContent = projectData.prefabType || '-';
+                document.getElementById('dashInspector').textContent = projectData.inspector || '-';
+            }
+            
             // 모든 데이터 수집
             const surveyData = getFromStorage(STORAGE_KEYS.SURVEY_DATA);
             const accelData = getFromStorage(STORAGE_KEYS.ACCELERATION_DATA);
             const tiltData = getFromStorage(STORAGE_KEYS.TILT_DATA);
             const strainData = getFromStorage(STORAGE_KEYS.STRAIN_DATA);
             const errorData = getFromStorage(STORAGE_KEYS.FABRICATION_ERROR);
+            
+            // 진행률 계산
+            let completedCount = 0;
+            if (surveyData) completedCount++;
+            if (accelData && accelData.maxAcceleration !== undefined) completedCount++;
+            if (tiltData && tiltData.maxTilt !== undefined) completedCount++;
+            if (strainData && strainData.maxStrain !== undefined) completedCount++;
+            if (errorData && errorData.panelLength !== undefined) completedCount++;
+            
+            const totalPages = 5;
+            const progressPercent = (completedCount / totalPages * 100).toFixed(0);
+            
+            document.getElementById('overallProgressText').textContent = progressPercent + '%';
+            document.getElementById('overallProgress').style.width = progressPercent + '%';
+            document.getElementById('overallProgress').textContent = progressPercent + '%';
+            document.getElementById('completedCount').textContent = completedCount;
             
             let totalItems = 0;
             let passedItems = 0;
