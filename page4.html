@@ -81,71 +81,60 @@
                         </div>
                         <div class="info-item">
                             <label class="info-label" for="tiltDevice">측정 장비</label>
-                            <input type="text" id="tiltDevice" name="tiltDevice" class="info-value" 
-                                   placeholder="예: 디지털 경사계" required>
+                            <select id="tiltDevice" name="tiltDevice" class="info-value" required>
+                                <option value="">선택하세요</option>
+                                <option value="JANET PRO 3축 디지털 가속도계 (경사계)">JANET PRO 3축 디지털 가속도계 (경사계)</option>
+                                <option value="기타">기타 (직접 입력)</option>
+                            </select>
+                            <input type="text" id="tiltDeviceOther" name="tiltDeviceOther" class="info-value" 
+                                   placeholder="장비명을 입력하세요" style="display: none; margin-top: 0.5rem;">
                         </div>
                     </div>
                 </form>
             </div>
         </div>
 
-        <!-- 기울기 데이터 입력 -->
+        <!-- 기울기 등급 평가 (Tilt Report) -->
         <div class="card">
             <div class="card-header">
-                <h2 class="card-title">기울기 측정 데이터</h2>
-                <p class="card-description">각 측정 지점의 기울기를 입력하세요 (단위: 도°)</p>
+                <h2 class="card-title">기울기 등급 평가 (Tilt Report)</h2>
+                <p class="card-description">최대 기울기 측정치를 입력하고 평가 이미지를 업로드하세요</p>
             </div>
             <div class="card-body">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>측정 지점</th>
-                            <th>X축 기울기 (°)</th>
-                            <th>Y축 기울기 (°)</th>
-                            <th>합성 기울기 (°)</th>
-                            <th>상태</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tiltDataTable">
-                        <tr>
-                            <td>상단 좌측</td>
-                            <td><input type="number" step="0.1" name="tiltX1" class="tilt-input" data-index="1"></td>
-                            <td><input type="number" step="0.1" name="tiltY1" class="tilt-input" data-index="1"></td>
-                            <td id="tiltResult1">-</td>
-                            <td id="tiltStatus1">-</td>
-                        </tr>
-                        <tr>
-                            <td>상단 우측</td>
-                            <td><input type="number" step="0.1" name="tiltX2" class="tilt-input" data-index="2"></td>
-                            <td><input type="number" step="0.1" name="tiltY2" class="tilt-input" data-index="2"></td>
-                            <td id="tiltResult2">-</td>
-                            <td id="tiltStatus2">-</td>
-                        </tr>
-                        <tr>
-                            <td>중앙</td>
-                            <td><input type="number" step="0.1" name="tiltX3" class="tilt-input" data-index="3"></td>
-                            <td><input type="number" step="0.1" name="tiltY3" class="tilt-input" data-index="3"></td>
-                            <td id="tiltResult3">-</td>
-                            <td id="tiltStatus3">-</td>
-                        </tr>
-
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- 기울기 그래프 -->
-        <div class="card">
-            <div class="card-header">
-                <h2 class="card-title">기울기 분포 그래프</h2>
-                <p class="card-description">각 지점의 합성 기울기를 시각화합니다</p>
-            </div>
-            <div class="card-body">
-                <div class="chart-container">
-                    <canvas id="tiltChart"></canvas>
+                <!-- 기울기 측정 데이터 입력 -->
+                <div class="info-grid" style="margin-bottom: 2rem;">
+                    <div class="info-item">
+                        <label class="info-label" for="maxTilt">최대 기울기 측정치 (°)</label>
+                        <input type="number" id="maxTilt" name="maxTilt" step="0.1" class="info-value" 
+                               placeholder="예: 8.5" onchange="saveTiltData()" style="font-size: 1.1rem; font-weight: 600;">
+                    </div>
+                    <div class="info-item">
+                        <label class="info-label" for="avgTilt">평균 기울기 측정치 (°)</label>
+                        <input type="number" id="avgTilt" name="avgTilt" step="0.1" class="info-value" 
+                               placeholder="예: 5.2" onchange="saveTiltData()" style="font-size: 1.1rem; font-weight: 600;">
+                    </div>
+                    <div class="info-item">
+                        <label class="info-label" for="tiltEventCount">이벤트 발생 횟수</label>
+                        <input type="number" id="tiltEventCount" name="tiltEventCount" step="1" class="info-value" 
+                               placeholder="예: 3" onchange="saveTiltData()" style="font-size: 1.1rem; font-weight: 600;">
+                    </div>
                 </div>
-                <div class="mt-3">
-                    <button id="updateChartBtn" class="btn btn-primary">📈 그래프 업데이트</button>
+                
+                <!-- 상태 표시 -->
+                <div id="tiltStatus" style="margin-bottom: 2rem; padding: 0.75rem; border-radius: 0.375rem; font-weight: 600; text-align: center;"></div>
+                
+                <!-- 기울기 평가 이미지 업로드 -->
+                <div>
+                    <label class="info-label">기울기 등급 평가 이미지</label>
+                    <div class="photo-upload-container">
+                        <div class="photo-upload" id="tiltReportPreview" onclick="document.getElementById('tiltReportInput').click();" style="cursor: pointer; min-height: 400px;">
+                            <input type="file" id="tiltReportInput" accept="image/*" style="display: none;" onchange="handleTiltReportImageUpload(this);">
+                            <span class="placeholder">📊 클릭하여 기울기 등급 평가 이미지 업로드</span>
+                        </div>
+                    </div>
+                    <div class="mt-3" style="text-align: center;">
+                        <button class="btn btn-secondary" onclick="clearTiltReportImage()" style="margin-right: 10px;">🗑️ 이미지 삭제</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -214,7 +203,7 @@
         <!-- 네비게이션 버튼 -->
         <div class="nav-buttons">
             <a href="page3.html" class="btn btn-secondary">← 이전: 가속도 데이터</a>
-            <button id="saveTiltBtn" class="btn btn-success">💾 저장하기</button>
+            <button class="btn btn-success" onclick="saveTiltData()">💾 저장하기</button>
             <a href="page5.html" class="btn btn-primary">다음: 변형률 데이터 →</a>
         </div>
     </main>
@@ -230,73 +219,275 @@
         // 10.0 초과는 위험
 
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('=== DOMContentLoaded 이벤트 발생 ===');
-            console.log('페이지 초기화 시작');
+            console.log('🚀 페이지 로드 완료');
             
             // 저장된 데이터 로드
             loadTiltData();
+            loadTiltReportImage();
             
-            // 입력 필드에 이벤트 리스너 등록
-            console.log('입력 필드에 이벤트 리스너 등록 중...');
-            document.querySelectorAll('.tilt-input').forEach(input => {
-                const index = input.dataset.index;
-                console.log(`입력 필드 등록: ${input.name}, index: ${index}`);
-                
-                // input 이벤트 (실시간 계산)
-                input.addEventListener('input', function() {
-                    console.log(`입력 이벤트 발생: ${input.name}, 값: ${input.value}`);
-                    calculateTiltResultant(parseInt(index));
-                });
-                
-                // change 이벤트 (자동 저장)
-                input.addEventListener('change', function() {
-                    console.log(`변경 이벤트 발생: ${input.name}, 값: ${input.value}`);
-                    calculateTiltResultant(parseInt(index));
-                    autoSaveTiltData();
-                });
-            });
-            
-            // 그래프 업데이트 버튼
-            const updateChartBtn = document.getElementById('updateChartBtn');
-            if (updateChartBtn) {
-                console.log('그래프 업데이트 버튼 이벤트 등록');
-                updateChartBtn.addEventListener('click', function() {
-                    console.log('그래프 업데이트 버튼 클릭됨');
-                    updateTiltChart();
-                });
-            } else {
-                console.error('그래프 업데이트 버튼을 찾을 수 없습니다!');
-            }
-            
-            // 저장 버튼
-            const saveTiltBtn = document.getElementById('saveTiltBtn');
-            if (saveTiltBtn) {
-                console.log('저장 버튼 이벤트 등록');
-                saveTiltBtn.addEventListener('click', function() {
-                    console.log('저장 버튼 클릭됨');
-                    saveTiltData();
-                });
-            } else {
-                console.error('저장 버튼을 찾을 수 없습니다!');
-            }
-            
-            // 조정 이력 자동 저장
-            const historyTextarea = document.getElementById('tiltAdjustmentHistory');
-            if (historyTextarea) {
-                historyTextarea.addEventListener('change', autoSaveTiltData);
-            }
-            
-            // 계측 정보 폼 자동 저장
             autoSaveForm('tiltInfoForm', STORAGE_KEYS.TILT_DATA);
             
-            // 전체 기울기 그래프 이미지 로드
-            loadTiltGraphImage();
+            // 측정 장비 선택 이벤트
+            const deviceSelect = document.getElementById('tiltDevice');
+            const deviceOtherInput = document.getElementById('tiltDeviceOther');
             
-            console.log('✅ 페이지 초기화 완료');
+            deviceSelect.addEventListener('change', function() {
+                if (this.value === '기타') {
+                    deviceOtherInput.style.display = 'block';
+                    deviceOtherInput.required = true;
+                } else {
+                    deviceOtherInput.style.display = 'none';
+                    deviceOtherInput.required = false;
+                    deviceOtherInput.value = '';
+                }
+            });
+            
         });
+        
+        // 기울기 임계값 (도) - 3단계 평가
+        const TILT_NORMAL = 3.0;    // 정상
+        const TILT_CAUTION = 5.0;   // 주의
+        const TILT_WARNING = 10.0;  // 경고
+        // 10° 초과는 위험
+        
+        // 기울기 데이터 저장 및 요약 업데이트
+        function saveTiltData() {
+            const maxTilt = parseFloat(document.getElementById('maxTilt').value) || 0;
+            const avgTilt = parseFloat(document.getElementById('avgTilt').value) || 0;
+            const eventCount = parseInt(document.getElementById('tiltEventCount').value) || 0;
+            
+            // LocalStorage에 저장
+            const data = getFromStorage(STORAGE_KEYS.TILT_DATA) || {};
+            data.maxTilt = maxTilt;
+            data.avgTilt = avgTilt;
+            data.eventCount = eventCount;
+            saveToStorage(STORAGE_KEYS.TILT_DATA, data);
+            
+            // 상태 표시 업데이트
+            updateTiltStatus(maxTilt);
+            
+            // 측정 결과 요약 업데이트
+            updateTiltSummary(maxTilt, avgTilt, eventCount);
+            
+            console.log('💾 기울기 데이터 저장:', { maxTilt, avgTilt, eventCount });
+        }
+        
+        // 기울기 상태 표시 업데이트
+        function updateTiltStatus(value) {
+            const statusDiv = document.getElementById('tiltStatus');
+            
+            if (value > TILT_WARNING) {
+                statusDiv.style.backgroundColor = '#fee2e2';
+                statusDiv.style.borderColor = '#ef4444';
+                statusDiv.style.color = '#991b1b';
+                statusDiv.innerHTML = '❌ 위험: ' + value.toFixed(1) + '° (10° 초과)';
+            } else if (value >= TILT_CAUTION) {
+                statusDiv.style.backgroundColor = '#fff7ed';
+                statusDiv.style.borderColor = '#f97316';
+                statusDiv.style.color = '#9a3412';
+                statusDiv.innerHTML = '⚠️ 경고: ' + value.toFixed(1) + '° (5~10°)';
+            } else if (value >= TILT_NORMAL) {
+                statusDiv.style.backgroundColor = '#fef3c7';
+                statusDiv.style.borderColor = '#f59e0b';
+                statusDiv.style.color = '#78350f';
+                statusDiv.innerHTML = '⚠ 주의: ' + value.toFixed(1) + '° (3~5°)';
+            } else if (value > 0) {
+                statusDiv.style.backgroundColor = '#d1fae5';
+                statusDiv.style.borderColor = '#10b981';
+                statusDiv.style.color = '#065f46';
+                statusDiv.innerHTML = '✅ 정상: ' + value.toFixed(1) + '° (3° 미만)';
+            } else {
+                statusDiv.innerHTML = '';
+            }
+        }
+        
+        // 측정 결과 요약 업데이트
+        function updateTiltSummary(maxTilt, avgTilt, eventCount) {
+            // 최대 기울기 표시
+            document.getElementById('maxTilt').textContent = maxTilt.toFixed(1) + '°';
+            
+            // 평균 기울기 표시
+            document.getElementById('avgTilt').textContent = avgTilt.toFixed(1) + '°';
+            
+            // 이벤트 발생 횟수 표시
+            document.getElementById('exceedCount').textContent = eventCount + ' 회';
+            
+            // 종합 평가
+            const finalStatus = document.getElementById('finalStatus');
+            const resultAlert = document.getElementById('resultAlert');
+            
+            if (maxTilt > TILT_WARNING) {
+                finalStatus.className = 'stat-card danger';
+                finalStatus.style.backgroundColor = '#fee2e2';
+                finalStatus.style.borderColor = '#ef4444';
+                finalStatus.style.color = '#991b1b';
+                finalStatus.querySelector('.stat-value').textContent = '위험';
+                resultAlert.innerHTML = `
+                    <div class="alert alert-danger">
+                        <strong>❌ 위험 수준</strong><br>
+                        최대 기울기가 위험 기준(10°)을 초과했습니다. 즉시 조치가 필요합니다.
+                    </div>
+                `;
+            } else if (maxTilt >= TILT_CAUTION) {
+                finalStatus.className = 'stat-card';
+                finalStatus.style.backgroundColor = '#fff7ed';
+                finalStatus.style.borderColor = '#f97316';
+                finalStatus.style.color = '#9a3412';
+                finalStatus.querySelector('.stat-value').textContent = '경고';
+                resultAlert.innerHTML = `
+                    <div class="alert" style="background-color: #fff7ed; border: 1px solid #f97316; color: #9a3412; padding: 1rem; border-radius: 0.375rem;">
+                        <strong>⚠️ 경고 수준</strong><br>
+                        최대 기울기가 경고 범위(5~10°)입니다. 주의 깊은 모니터링이 필요합니다.
+                    </div>
+                `;
+            } else if (maxTilt >= TILT_NORMAL) {
+                finalStatus.className = 'stat-card warning';
+                finalStatus.style.backgroundColor = '#fef3c7';
+                finalStatus.style.borderColor = '#f59e0b';
+                finalStatus.style.color = '#78350f';
+                finalStatus.querySelector('.stat-value').textContent = '주의';
+                resultAlert.innerHTML = `
+                    <div class="alert alert-warning">
+                        <strong>⚠ 주의 필요</strong><br>
+                        최대 기울기가 주의 범위(3~5°)입니다. 지속적인 관찰이 권장됩니다.
+                    </div>
+                `;
+            } else if (maxTilt > 0) {
+                finalStatus.className = 'stat-card success';
+                finalStatus.style.backgroundColor = '#d1fae5';
+                finalStatus.style.borderColor = '#10b981';
+                finalStatus.style.color = '#065f46';
+                finalStatus.querySelector('.stat-value').textContent = '정상';
+                resultAlert.innerHTML = `
+                    <div class="alert alert-success">
+                        <strong>✅ 정상 범위</strong><br>
+                        최대 기울기가 정상 범위(3° 미만)입니다.
+                    </div>
+                `;
+            } else {
+                finalStatus.className = 'stat-card';
+                finalStatus.style.backgroundColor = '';
+                finalStatus.style.borderColor = '';
+                finalStatus.style.color = '';
+                finalStatus.querySelector('.stat-value').textContent = '대기중';
+                resultAlert.innerHTML = '';
+            }
+        }
+        
+        // 기울기 등급 평가 이미지 업로드
+        function handleTiltReportImageUpload(input) {
+            const file = input.files[0];
+            if (!file) return;
+            
+            console.log('=== 기울기 등급 평가 이미지 업로드 시작 ===');
+            console.log('파일명:', file.name);
+            console.log('파일 크기:', (file.size / 1024).toFixed(2), 'KB');
+            
+            if (!file.type.startsWith('image/')) {
+                alert('이미지 파일만 업로드할 수 있습니다.');
+                return;
+            }
+            
+            if (typeof resizeAndCompressImage === 'undefined') {
+                console.error('❌ resizeAndCompressImage 함수가 정의되지 않았습니다!');
+                alert('이미지 처리 함수를 찾을 수 없습니다. 페이지를 새로고침해주세요.');
+                return;
+            }
+            
+            resizeAndCompressImage(
+                file,
+                110,
+                0.9,
+                function(compressedDataUrl) {
+                    console.log('✅ 압축 성공, 미리보기 표시');
+                    
+                    const preview = document.getElementById('tiltReportPreview');
+                    preview.innerHTML = `
+                        <input type="file" id="tiltReportInput" accept="image/*" style="display: none;" onchange="handleTiltReportImageUpload(this)">
+                        <img src="${compressedDataUrl}" alt="기울기 등급 평가" style="max-width: 100%; height: auto; display: block;">
+                    `;
+                    preview.classList.add('has-image');
+                    preview.onclick = null;
+                    
+                    // LocalStorage에 저장
+                    const data = getFromStorage(STORAGE_KEYS.TILT_DATA) || {};
+                    data.tiltReportImage = compressedDataUrl;
+                    saveToStorage(STORAGE_KEYS.TILT_DATA, data);
+                    
+                    console.log('💾 기울기 등급 평가 이미지 저장 완료');
+                    alert('✅ 이미지가 성공적으로 업로드되었습니다!');
+                },
+                function(error) {
+                    console.error('❌ 이미지 압축 실패:', error);
+                    alert('이미지 처리 중 오류가 발생했습니다: ' + error.message);
+                }
+            );
+        }
+        
+        // 기울기 등급 평가 이미지 삭제
+        function clearTiltReportImage() {
+            if (!confirm('이미지를 삭제하시겠습니까?')) return;
+            
+            const preview = document.getElementById('tiltReportPreview');
+            preview.innerHTML = `
+                <input type="file" id="tiltReportInput" accept="image/*" style="display: none;" onchange="handleTiltReportImageUpload(this);">
+                <span class="placeholder">📊 클릭하여 기울기 등급 평가 이미지 업로드</span>
+            `;
+            preview.classList.remove('has-image');
+            preview.onclick = function() { document.getElementById('tiltReportInput').click(); };
+            
+            // LocalStorage에서 삭제
+            const data = getFromStorage(STORAGE_KEYS.TILT_DATA) || {};
+            delete data.tiltReportImage;
+            saveToStorage(STORAGE_KEYS.TILT_DATA, data);
+            
+            console.log('🗑️ 기울기 등급 평가 이미지 삭제됨');
+            alert('이미지가 삭제되었습니다.');
+        }
+        
+        // 기울기 등급 평가 이미지 로드
+        function loadTiltReportImage() {
+            const data = getFromStorage(STORAGE_KEYS.TILT_DATA);
+            if (data && data.tiltReportImage) {
+                const preview = document.getElementById('tiltReportPreview');
+                preview.innerHTML = `
+                    <input type="file" id="tiltReportInput" accept="image/*" style="display: none;" onchange="handleTiltReportImageUpload(this)">
+                    <img src="${data.tiltReportImage}" alt="기울기 등급 평가" style="max-width: 100%; height: auto; display: block;">
+                `;
+                preview.classList.add('has-image');
+                preview.onclick = null;
+                console.log('📖 기울기 등급 평가 이미지 로드됨');
+            }
+        }
+        
+        // 기울기 데이터 로드
+        function loadTiltData() {
+            const data = getFromStorage(STORAGE_KEYS.TILT_DATA);
+            if (data) {
+                if (data.maxTilt !== undefined) {
+                    document.getElementById('maxTilt').value = data.maxTilt;
+                }
+                if (data.avgTilt !== undefined) {
+                    document.getElementById('avgTilt').value = data.avgTilt;
+                }
+                if (data.eventCount !== undefined) {
+                    document.getElementById('tiltEventCount').value = data.eventCount;
+                }
+                
+                // 상태 및 요약 업데이트
+                const maxTilt = data.maxTilt || 0;
+                const avgTilt = data.avgTilt || 0;
+                const eventCount = data.eventCount || 0;
+                
+                updateTiltStatus(maxTilt);
+                updateTiltSummary(maxTilt, avgTilt, eventCount);
+                
+                console.log('📖 기울기 데이터 로드:', { maxTilt, avgTilt, eventCount });
+            }
+        }
 
-        // 합성 기울기 계산
-        function calculateTiltResultant(index) {
+        // 전체 기울기 그래프 이미지 업로드 처리
+        function handleTiltGraphImageUpload(input) {
             console.log('=== calculateTiltResultant 호출 ===');
             console.log('index:', index);
             
