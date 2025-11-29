@@ -252,9 +252,13 @@
         
         // 기울기 데이터 저장 및 요약 업데이트
         function saveTiltData() {
+            console.log('🎯 saveTiltData 함수 호출됨');
+            
             const maxTilt = parseFloat(document.getElementById('maxTilt').value) || 0;
             const avgTilt = parseFloat(document.getElementById('avgTilt').value) || 0;
             const eventCount = parseInt(document.getElementById('tiltEventCount').value) || 0;
+            
+            console.log('📊 입력값:', { maxTilt, avgTilt, eventCount });
             
             // LocalStorage에 저장
             const data = getFromStorage(STORAGE_KEYS.TILT_DATA) || {};
@@ -264,19 +268,30 @@
             saveToStorage(STORAGE_KEYS.TILT_DATA, data);
             
             // 상태 표시 업데이트
+            console.log('🔄 updateTiltStatus 호출 - 값:', maxTilt);
             updateTiltStatus(maxTilt);
             
             // 측정 결과 요약 업데이트
+            console.log('🔄 updateTiltSummary 호출');
             updateTiltSummary(maxTilt, avgTilt, eventCount);
             
-            console.log('💾 기울기 데이터 저장:', { maxTilt, avgTilt, eventCount });
+            console.log('💾 기울기 데이터 저장 완료:', { maxTilt, avgTilt, eventCount });
         }
         
         // 기울기 상태 표시 업데이트
         function updateTiltStatus(value) {
+            console.log('🎨 updateTiltStatus 함수 실행 - 값:', value);
+            console.log('📏 기준값:', { TILT_NORMAL, TILT_CAUTION, TILT_WARNING });
+            
             const statusDiv = document.getElementById('tiltStatus');
+            if (!statusDiv) {
+                console.error('❌ tiltStatus 요소를 찾을 수 없습니다!');
+                return;
+            }
             
             if (value > TILT_WARNING) {
+                console.log('🔴 위험 등급 (> 10°)');
+
                 statusDiv.style.backgroundColor = '#fee2e2';
                 statusDiv.style.borderColor = '#ef4444';
                 statusDiv.style.color = '#991b1b';
