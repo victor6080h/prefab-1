@@ -1255,7 +1255,7 @@
                 document.getElementById('finalJudgment').innerHTML = '<strong>❌ 품질 기준 미달입니다.</strong><br>조치 후 재검사가 필요합니다.';
             }
             
-            // 상세 평가 결과 테이블 채우기 (dashboard.html 스타일)
+            // 상세 평가 결과 테이블 채우기 (dashboard.html과 100% 동일)
             // 1. 운송결과 (5개 항목)
             if (surveyData) {
                 const q1Pass = surveyData.q1 === '수령';
@@ -1265,51 +1265,106 @@
                 const q5Pass = surveyData.q5 === '적치됨' || surveyData.q5 === '적치완료';
                 
                 document.getElementById('surveyResult1').textContent = surveyData.q1 || '-';
-                document.getElementById('surveyStatus1').innerHTML = `<span class="badge ${q1Pass ? 'badge-success' : 'badge-danger'}">${q1Pass ? '✓' : '✗'}</span>`;
+                document.getElementById('surveyStatus1').innerHTML = q1Pass ? 
+                    '<span class="badge badge-success">합격</span>' : 
+                    '<span class="badge badge-danger">불합격</span>';
                 document.getElementById('surveyNote1').textContent = q1Pass ? '-' : '품질보증서 미수령';
                 
                 document.getElementById('surveyResult2').textContent = surveyData.q2 || '-';
-                document.getElementById('surveyStatus2').innerHTML = `<span class="badge ${q2Pass ? 'badge-success' : 'badge-danger'}">${q2Pass ? '✓' : '✗'}</span>`;
-                document.getElementById('surveyNote2').textContent = q2Pass ? '-' : '슬래브 손상/균열 발견';
+                document.getElementById('surveyStatus2').innerHTML = q2Pass ? 
+                    '<span class="badge badge-success">합격</span>' : 
+                    '<span class="badge badge-danger">불합격</span>';
+                document.getElementById('surveyNote2').textContent = q2Pass ? '-' : '슬래브에 손상 또는 균열 발견';
                 
                 document.getElementById('surveyResult3').textContent = surveyData.q3 || '-';
-                document.getElementById('surveyStatus3').innerHTML = `<span class="badge ${q3Pass ? 'badge-success' : 'badge-danger'}">${q3Pass ? '✓' : '✗'}</span>`;
+                document.getElementById('surveyStatus3').innerHTML = q3Pass ? 
+                    '<span class="badge badge-success">합격</span>' : 
+                    '<span class="badge badge-danger">불합격</span>';
                 document.getElementById('surveyNote3').textContent = q3Pass ? '-' : '스펀지 재료 부착 불량';
                 
                 document.getElementById('surveyResult4').textContent = surveyData.q4 || '-';
-                document.getElementById('surveyStatus4').innerHTML = `<span class="badge ${q4Pass ? 'badge-success' : 'badge-danger'}">${q4Pass ? '✓' : '✗'}</span>`;
-                document.getElementById('surveyNote4').textContent = q4Pass ? '-' : '와이어/슬링벨트 결함';
+                document.getElementById('surveyStatus4').innerHTML = q4Pass ? 
+                    '<span class="badge badge-success">합격</span>' : 
+                    '<span class="badge badge-danger">불합격</span>';
+                document.getElementById('surveyNote4').textContent = q4Pass ? '-' : '와이어 또는 슬링벨트에 결함 발견';
                 
                 document.getElementById('surveyResult5').textContent = surveyData.q5 || '-';
-                document.getElementById('surveyStatus5').innerHTML = `<span class="badge ${q5Pass ? 'badge-success' : 'badge-danger'}">${q5Pass ? '✓' : '✗'}</span>`;
+                document.getElementById('surveyStatus5').innerHTML = q5Pass ? 
+                    '<span class="badge badge-success">합격</span>' : 
+                    '<span class="badge badge-danger">불합격</span>';
                 document.getElementById('surveyNote5').textContent = q5Pass ? '-' : '슬래브 미적치';
             }
             
             // 2. 가속도
             if (accelData && accelData.maxAcceleration !== undefined) {
                 const maxAccel = parseFloat(accelData.maxAcceleration) || 0;
-                const accelPass = maxAccel <= 0.40;
-                document.getElementById('accelMaxResult').textContent = maxAccel.toFixed(2) + 'g';
-                document.getElementById('accelStatus').innerHTML = `<span class="badge ${accelPass ? 'badge-success' : 'badge-danger'}">${accelPass ? '✓' : '✗'}</span>`;
-                document.getElementById('accelNote').textContent = accelPass ? '-' : '위험 기준 초과';
+                
+                document.getElementById('accelMaxResult').textContent = maxAccel.toFixed(2) + ' g';
+                
+                // KCS 기준: 0.40g 이하
+                if (maxAccel <= 0.40) {
+                    document.getElementById('accelStatus').innerHTML = '<span class="badge badge-success">정상</span>';
+                    if (maxAccel < 0.20) {
+                        document.getElementById('accelNote').textContent = '정상 (0.20g 미만)';
+                    } else if (maxAccel < 0.30) {
+                        document.getElementById('accelNote').textContent = '주의 (0.20~0.30g)';
+                    } else if (maxAccel < 0.40) {
+                        document.getElementById('accelNote').textContent = '경고 (0.30~0.40g)';
+                    } else {
+                        document.getElementById('accelNote').textContent = '정상 범위';
+                    }
+                } else {
+                    document.getElementById('accelStatus').innerHTML = '<span class="badge badge-danger">위험</span>';
+                    document.getElementById('accelNote').textContent = '위험 (0.40g 초과)';
+                }
             }
             
             // 3. 기울기
             if (tiltData && tiltData.maxTilt !== undefined) {
                 const maxTilt = parseFloat(tiltData.maxTilt) || 0;
-                const tiltPass = maxTilt <= 10.0;
+                
                 document.getElementById('tiltMaxResult').textContent = maxTilt.toFixed(1) + '°';
-                document.getElementById('tiltStatus').innerHTML = `<span class="badge ${tiltPass ? 'badge-success' : 'badge-danger'}">${tiltPass ? '✓' : '✗'}</span>`;
-                document.getElementById('tiltNote').textContent = tiltPass ? '-' : '위험 기준 초과';
+                
+                // KCS 기준: 10° 이하
+                if (maxTilt <= 10.0) {
+                    document.getElementById('tiltStatus').innerHTML = '<span class="badge badge-success">정상</span>';
+                    if (maxTilt < 3.0) {
+                        document.getElementById('tiltNote').textContent = '정상 (3° 미만)';
+                    } else if (maxTilt < 5.0) {
+                        document.getElementById('tiltNote').textContent = '주의 (3~5°)';
+                    } else if (maxTilt < 10.0) {
+                        document.getElementById('tiltNote').textContent = '경고 (5~10°)';
+                    } else {
+                        document.getElementById('tiltNote').textContent = '정상 범위';
+                    }
+                } else {
+                    document.getElementById('tiltStatus').innerHTML = '<span class="badge badge-danger">위험</span>';
+                    document.getElementById('tiltNote').textContent = '위험 (10° 초과)';
+                }
             }
             
             // 4. 변형률
             if (strainData && strainData.maxStrain !== undefined) {
-                const maxStrain = Math.abs(parseFloat(strainData.maxStrain) || 0);
-                const strainPass = maxStrain <= 130;
-                document.getElementById('strainMaxResult').textContent = maxStrain.toFixed(0) + 'με';
-                document.getElementById('strainStatus').innerHTML = `<span class="badge ${strainPass ? 'badge-success' : 'badge-danger'}">${strainPass ? '✓' : '✗'}</span>`;
-                document.getElementById('strainNote').textContent = strainPass ? '-' : '허용 기준 초과';
+                const maxStrain = parseFloat(strainData.maxStrain) || 0;
+                
+                document.getElementById('strainMaxResult').textContent = maxStrain.toFixed(0) + ' με';
+                
+                // KCS 기준: 130με 이하
+                if (maxStrain <= 130) {
+                    document.getElementById('strainStatus').innerHTML = '<span class="badge badge-success">정상</span>';
+                    if (maxStrain < 60) {
+                        document.getElementById('strainNote').textContent = '정상 (60με 미만)';
+                    } else if (maxStrain < 80) {
+                        document.getElementById('strainNote').textContent = '주의 (60~80με)';
+                    } else if (maxStrain < 130) {
+                        document.getElementById('strainNote').textContent = '경고 (80~130με)';
+                    } else {
+                        document.getElementById('strainNote').textContent = '정상 범위';
+                    }
+                } else {
+                    document.getElementById('strainStatus').innerHTML = '<span class="badge badge-danger">위험</span>';
+                    document.getElementById('strainNote').textContent = '위험 (130με 초과)';
+                }
             }
             
             // 5. 제작 오차 (dashboard.html과 동일한 로직)
