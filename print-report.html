@@ -257,28 +257,7 @@
                 </div>
             </div>
             
-            <div class="card" style="margin-top: 1rem;">
-                <div class="card-header">
-                    <h3 class="card-title">측정 데이터</h3>
-                </div>
-                <div class="card-body">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>측정 지점</th>
-                                <th>X축 (g)</th>
-                                <th>Y축 (g)</th>
-                                <th>Z축 (g)</th>
-                                <th>합성 (g)</th>
-                                <th>상태</th>
-                            </tr>
-                        </thead>
-                        <tbody id="accelTable">
-                            <tr><td colspan="6" style="text-align: center;">데이터를 불러오는 중...</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+            <!-- 측정 데이터 테이블은 실제 측정 배열이 없으므로 표시하지 않음 -->
             
             <div class="card" style="margin-top: 1rem;" id="accelReportCard">
                 <div class="card-header">
@@ -330,27 +309,7 @@
                 </div>
             </div>
             
-            <div class="card" style="margin-top: 1rem;">
-                <div class="card-header">
-                    <h3 class="card-title">측정 데이터</h3>
-                </div>
-                <div class="card-body">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>측정 지점</th>
-                                <th>X축 (°)</th>
-                                <th>Y축 (°)</th>
-                                <th>합성 (°)</th>
-                                <th>상태</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tiltTable">
-                            <tr><td colspan="5" style="text-align: center;">데이터를 불러오는 중...</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+            <!-- 측정 데이터 테이블은 실제 측정 배열이 없으므로 표시하지 않음 -->
             
             <div class="card" style="margin-top: 1rem;" id="tiltReportCard">
                 <div class="card-header">
@@ -411,25 +370,7 @@
                 </div>
             </div>
             
-            <div class="card" style="margin-top: 1rem;">
-                <div class="card-header">
-                    <h3 class="card-title">측정 데이터</h3>
-                </div>
-                <div class="card-body">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>측정 지점</th>
-                                <th>측정값 (με)</th>
-                                <th>상태</th>
-                            </tr>
-                        </thead>
-                        <tbody id="strainTable">
-                            <tr><td colspan="3" style="text-align: center;">데이터를 불러오는 중...</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+            <!-- 측정 데이터 테이블은 실제 측정 배열이 없으므로 표시하지 않음 -->
             
             <div class="card" style="margin-top: 1rem;" id="strainReportCard">
                 <div class="card-header">
@@ -696,41 +637,7 @@
                 document.getElementById('avgAccel').textContent = (accelData.avgAcceleration || '-') + ' g';
                 document.getElementById('accelEvents').textContent = (accelData.eventCount || '-') + ' 회';
                 
-                // 측정 데이터 테이블
-                if (accelData.measurements && accelData.measurements.length > 0) {
-                    let html = '';
-                    const labels = ['측정 1', '측정 2'];
-                    
-                    accelData.measurements.forEach((m, i) => {
-                        const result = m.result || 0;
-                        let status = '정상';
-                        let badgeClass = 'badge-success';
-                        
-                        if (result > 0.40) {
-                            status = '위험';
-                            badgeClass = 'badge-danger';
-                        } else if (result >= 0.30) {
-                            status = '경고';
-                            badgeClass = 'badge-warning';
-                        } else if (result >= 0.20) {
-                            status = '주의';
-                            badgeClass = 'badge-warning';
-                        }
-                        
-                        html += `<tr>
-                            <td>${labels[i] || `지점 ${i+1}`}</td>
-                            <td>${m.x.toFixed(3)}</td>
-                            <td>${m.y.toFixed(3)}</td>
-                            <td>${m.z.toFixed(3)}</td>
-                            <td>${result.toFixed(3)}</td>
-                            <td><span class="badge ${badgeClass}">${status}</span></td>
-                        </tr>`;
-                    });
-                    
-                    document.getElementById('accelTable').innerHTML = html;
-                } else {
-                    document.getElementById('accelTable').innerHTML = '<tr><td colspan="6" style="text-align: center; color: #6b7280;">⚠️ 가속도 측정 데이터가 없습니다.</td></tr>';
-                }
+                // 개별 페이지는 measurements 배열을 저장하지 않으므로 테이블 생략
                 
                 // 리포트 이미지
                 const reportImage = getFromStorage(STORAGE_KEYS.ACCEL_REPORT_IMAGE);
@@ -759,40 +666,7 @@
                 document.getElementById('avgTilt').textContent = (tiltData.avgTilt || '-') + ' °';
                 document.getElementById('tiltEvents').textContent = (tiltData.eventCount || '-') + ' 회';
                 
-                // 측정 데이터 테이블
-                if (tiltData.measurements && tiltData.measurements.length > 0) {
-                    let html = '';
-                    const labels = ['상단 좌측', '상단 우측', '중앙'];
-                    
-                    tiltData.measurements.forEach((m, i) => {
-                        const result = m.result || 0;
-                        let status = '정상';
-                        let badgeClass = 'badge-success';
-                        
-                        if (result > 10.0) {
-                            status = '위험';
-                            badgeClass = 'badge-danger';
-                        } else if (result >= 5.0) {
-                            status = '경고';
-                            badgeClass = 'badge-warning';
-                        } else if (result >= 3.0) {
-                            status = '주의';
-                            badgeClass = 'badge-warning';
-                        }
-                        
-                        html += `<tr>
-                            <td>${labels[i] || `지점 ${i+1}`}</td>
-                            <td>${m.x.toFixed(2)}</td>
-                            <td>${m.y.toFixed(2)}</td>
-                            <td>${result.toFixed(2)}</td>
-                            <td><span class="badge ${badgeClass}">${status}</span></td>
-                        </tr>`;
-                    });
-                    
-                    document.getElementById('tiltTable').innerHTML = html;
-                } else {
-                    document.getElementById('tiltTable').innerHTML = '<tr><td colspan="5" style="text-align: center; color: #6b7280;">⚠️ 기울기 측정 데이터가 없습니다.</td></tr>';
-                }
+                // 개별 페이지는 measurements 배열을 저장하지 않으므로 테이블 생략
                 
                 // 리포트 이미지
                 const reportImage = getFromStorage(STORAGE_KEYS.TILT_REPORT_IMAGE);
@@ -828,39 +702,7 @@
                 document.getElementById('avgStrain').textContent = (strainData.avgStrain || '-') + ' με';
                 document.getElementById('strainEvents').textContent = (strainData.eventCount || '-') + ' 회';
                 
-                // 측정 데이터 테이블
-                if (strainData.measurements && strainData.measurements.length > 0) {
-                    let html = '';
-                    const labels = ['측점1', '측점2', '측점3'];
-                    
-                    strainData.measurements.forEach((m, i) => {
-                        const value = m.change || 0;
-                        const absValue = Math.abs(value);
-                        let status = '정상';
-                        let badgeClass = 'badge-success';
-                        
-                        if (absValue > 130) {
-                            status = '위험';
-                            badgeClass = 'badge-danger';
-                        } else if (absValue >= 80) {
-                            status = '경고';
-                            badgeClass = 'badge-warning';
-                        } else if (absValue >= 60) {
-                            status = '주의';
-                            badgeClass = 'badge-warning';
-                        }
-                        
-                        html += `<tr>
-                            <td>${labels[i] || `지점 ${i+1}`}</td>
-                            <td>${value.toFixed(1)}</td>
-                            <td><span class="badge ${badgeClass}">${status}</span></td>
-                        </tr>`;
-                    });
-                    
-                    document.getElementById('strainTable').innerHTML = html;
-                } else {
-                    document.getElementById('strainTable').innerHTML = '<tr><td colspan="3" style="text-align: center; color: #6b7280;">⚠️ 변형률 측정 데이터가 없습니다.</td></tr>';
-                }
+                // 개별 페이지는 measurements 배열을 저장하지 않으므로 테이블 생략
                 
                 // 리포트 이미지
                 const reportImage = getFromStorage(STORAGE_KEYS.STRAIN_REPORT_IMAGE);
