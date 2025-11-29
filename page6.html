@@ -148,6 +148,7 @@
                 </div>
                 <div class="mt-3">
                     <button class="btn btn-primary" onclick="updateErrorChart()">📈 그래프 업데이트</button>
+                    <button class="btn btn-success" onclick="saveChartImage()">💾 그래프 이미지 저장</button>
                 </div>
             </div>
         </div>
@@ -451,6 +452,20 @@
                     color: '#f59e0b'  // 주황색 기준선
                 }
             });
+            
+            // 차트를 이미지로 저장
+            setTimeout(() => {
+                try {
+                    const canvas = document.getElementById('errorChart');
+                    if (canvas) {
+                        const imageData = canvas.toDataURL('image/png');
+                        saveToStorage(STORAGE_KEYS.ERROR_CHART_IMAGE, imageData);
+                        console.log('✅ 제작 오차 분포 그래프 이미지 저장 완료');
+                    }
+                } catch (error) {
+                    console.error('❌ 차트 이미지 저장 오류:', error);
+                }
+            }, 100);
         }
 
         function saveErrorData() {

@@ -19,7 +19,8 @@ const STORAGE_KEYS = {
     PHOTOS: 'qms_photos',
     ACCEL_GRAPH_IMAGE: 'qms_accel_graph_image',
     TILT_GRAPH_IMAGE: 'qms_tilt_graph_image',
-    STRAIN_GRAPH_IMAGE: 'qms_strain_graph_image'
+    STRAIN_GRAPH_IMAGE: 'qms_strain_graph_image',
+    ERROR_CHART_IMAGE: 'qms_error_chart_image'
 };
 
 // Track freshly selected images to prevent loadSavedImage from overwriting them
