@@ -47,12 +47,20 @@
             /* 부재 제작 오차 사진은 1열 2행으로 인쇄 */
             #errorPhotos {
                 grid-template-columns: 1fr !important;
-                gap: 1.5rem !important;
+                gap: 1rem !important;  /* 간격 축소: 1.5rem → 1rem */
             }
             
             #errorPhotos img {
                 max-width: 100% !important;
+                max-height: 340px !important;  /* 이미지 높이 제한으로 한 페이지에 2장 수용 */
                 height: auto !important;
+                object-fit: contain !important;
+            }
+            
+            /* 부재 사진 카드는 한 페이지에 모두 출력 */
+            #errorPhotosCard {
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
             }
             
             /* 사진 라벨 인쇄 스타일 */
@@ -64,11 +72,11 @@
             }
             
             .photo-label {
-                font-size: 0.9rem !important;
+                font-size: 0.85rem !important;  /* 폰트 크기 축소 */
                 font-weight: 600 !important;
                 color: #374151 !important;
-                margin-bottom: 0.5rem !important;
-                padding: 0.3rem 0.6rem !important;
+                margin-bottom: 0.4rem !important;  /* 간격 축소 */
+                padding: 0.25rem 0.5rem !important;  /* 패딩 축소 */
                 background: #f3f4f6 !important;
                 border-left: 3px solid var(--primary-color) !important;
                 -webkit-print-color-adjust: exact;
