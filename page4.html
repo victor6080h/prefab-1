@@ -127,8 +127,8 @@
                 <div>
                     <label class="info-label">기울기 등급 평가 이미지</label>
                     <div class="photo-upload-container">
-                        <div class="photo-upload" id="tiltReportPreview" onclick="document.getElementById('tiltReportInput').click();" style="cursor: pointer; min-height: 400px;">
-                            <input type="file" id="tiltReportInput" accept="image/*" style="display: none;" onchange="handleTiltReportImageUpload(this);">
+                        <div class="photo-upload" id="tiltReportPreview" onclick="console.log('📊 업로드 영역 클릭됨'); document.getElementById('tiltReportInput').click();" style="cursor: pointer; min-height: 400px;">
+                            <input type="file" id="tiltReportInput" accept="image/*" style="display: none;" onchange="console.log('📁 파일 선택됨:', this.files[0]?.name); handleTiltReportImageUpload(this);">
                             <span class="placeholder">📊 클릭하여 기울기 등급 평가 이미지 업로드</span>
                         </div>
                     </div>
@@ -379,8 +379,13 @@
         
         // 기울기 등급 평가 이미지 업로드
         function handleTiltReportImageUpload(input) {
+            console.log('🎯 handleTiltReportImageUpload 함수 호출됨');
+            
             const file = input.files[0];
-            if (!file) return;
+            if (!file) {
+                console.log('❌ 파일이 선택되지 않았습니다');
+                return;
+            }
             
             console.log('=== 기울기 등급 평가 이미지 업로드 시작 ===');
             console.log('파일명:', file.name);
