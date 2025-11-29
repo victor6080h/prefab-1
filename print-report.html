@@ -1232,27 +1232,6 @@
             document.getElementById('passedItems').textContent = passedItems + '개';
             document.getElementById('failedItems').textContent = failedItems + '개';
             
-            // 종합 평가
-            const passRate = totalItems > 0 ? (passedItems / totalItems * 100) : 0;
-            const overallCard = document.getElementById('overallCard');
-            
-            if (passRate >= 90) {
-                overallCard.className = 'stat-card success';
-                overallCard.querySelector('.stat-value').textContent = '우수';
-                document.getElementById('finalJudgment').className = 'alert alert-success';
-                document.getElementById('finalJudgment').innerHTML = '<strong>✅ 모든 품질 기준을 만족합니다.</strong><br>시공을 진행하셔도 좋습니다.';
-            } else if (passRate >= 70) {
-                overallCard.className = 'stat-card';
-                overallCard.querySelector('.stat-value').textContent = '양호';
-                document.getElementById('finalJudgment').className = 'alert alert-warning';
-                document.getElementById('finalJudgment').innerHTML = '<strong>⚠️ 대부분의 품질 기준을 만족하나,</strong><br>일부 항목에 대한 개선이 필요합니다.';
-            } else {
-                overallCard.className = 'stat-card danger';
-                overallCard.querySelector('.stat-value').textContent = '불합격';
-                document.getElementById('finalJudgment').className = 'alert alert-danger';
-                document.getElementById('finalJudgment').innerHTML = '<strong>❌ 품질 기준 미달입니다.</strong><br>조치 후 재검사가 필요합니다.';
-            }
-            
             // 상세 평가 결과 테이블 채우기 (dashboard.html과 100% 동일)
             // 1. 운송결과 (5개 항목)
             if (surveyData) {
@@ -1454,9 +1433,47 @@
                 }
             }
             
-            // 이슈
+            // 이슈 표시 (dashboard.html과 동일)
+            const issuesContainer = document.getElementById('issuesContainer');
             if (issues.length > 0) {
-                document.getElementById('issuesContainer').innerHTML = '<ul style="margin: 0; padding-left: 1.5rem;">' + issues.map(i => `<li>${i}</li>`).join('') + '</ul>';
+                let issuesHTML = '<div class="alert alert-warning"><strong>⚠️ 발견된 이슈:</strong><ul style="margin-top: 0.5rem; padding-left: 1.5rem;">';
+                issues.forEach(issue => {
+                    issuesHTML += `<li>${issue}</li>`;
+                });
+                issuesHTML += '</ul></div>';
+                issuesContainer.innerHTML = issuesHTML;
+            } else if (completedCount === 5) {
+                issuesContainer.innerHTML = '<div class="alert alert-success"><strong>✅ 이슈 없음</strong><br>모든 품질관리 항목이 기준을 만족합니다.</div>';
+            }
+            
+            // 최종 판정 (dashboard.html과 동일)
+            if (completedCount === 5) {
+                const finalJudgment = document.getElementById('finalJudgment');
+                const overallCard = document.getElementById('overallCard');
+                
+                if (issues.length === 0) {
+                    overallCard.className = 'stat-card success';
+                    overallCard.querySelector('.stat-value').textContent = '합격';
+                    finalJudgment.innerHTML = `
+                        <div style="font-size: 5rem; margin-bottom: 1rem; color: var(--success-color);">✅</div>
+                        <h3 style="font-size: 2rem; margin-bottom: 1rem; color: var(--success-color);">품질 적합</h3>
+                        <p style="font-size: 1.125rem; color: var(--text-primary);">
+                            모든 품질관리 항목이 기준을 만족합니다.<br>
+                            해당 Prefab 부재는 사용 가능합니다.
+                        </p>
+                    `;
+                } else {
+                    overallCard.className = 'stat-card danger';
+                    overallCard.querySelector('.stat-value').textContent = '부적합';
+                    finalJudgment.innerHTML = `
+                        <div style="font-size: 5rem; margin-bottom: 1rem; color: var(--danger-color);">❌</div>
+                        <h3 style="font-size: 2rem; margin-bottom: 1rem; color: var(--danger-color);">품질 부적합</h3>
+                        <p style="font-size: 1.125rem; color: var(--text-primary);">
+                            ${issues.length}개의 품질 이슈가 발견되었습니다.<br>
+                            조치 후 재검사가 필요합니다.
+                        </p>
+                    `;
+                }
             }
             
             console.log('✅ 전체 보고서 로드 완료');
