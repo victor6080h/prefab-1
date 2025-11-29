@@ -55,6 +55,26 @@
                 height: auto !important;
             }
             
+            /* 사진 라벨 인쇄 스타일 */
+            .photo-item {
+                display: flex !important;
+                flex-direction: column !important;
+                page-break-inside: avoid;
+                break-inside: avoid;
+            }
+            
+            .photo-label {
+                font-size: 0.9rem !important;
+                font-weight: 600 !important;
+                color: #374151 !important;
+                margin-bottom: 0.5rem !important;
+                padding: 0.3rem 0.6rem !important;
+                background: #f3f4f6 !important;
+                border-left: 3px solid var(--primary-color) !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            
             table {
                 font-size: 10pt;
                 width: 100%;
@@ -210,6 +230,23 @@
         #errorPhotos img {
             max-width: 100%;
             height: auto;
+        }
+        
+        /* 사진 아이템 컨테이너 */
+        .photo-item {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* 사진 라벨 */
+        .photo-label {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 0.5rem;
+            padding: 0.4rem 0.8rem;
+            background: #f3f4f6;
+            border-left: 3px solid var(--primary-color);
         }
     </style>
     <script src="assets/js/script.js"></script>
@@ -901,8 +938,22 @@
             // 부재 사진
             if (photos && (photos.errorPhoto1 || photos.errorPhoto2)) {
                 let photoHTML = '';
-                if (photos.errorPhoto1) photoHTML += `<img src="${photos.errorPhoto1}" alt="부재 사진 1">`;
-                if (photos.errorPhoto2) photoHTML += `<img src="${photos.errorPhoto2}" alt="부재 사진 2">`;
+                if (photos.errorPhoto1) {
+                    photoHTML += `
+                        <div class="photo-item">
+                            <div class="photo-label">부재 측면</div>
+                            <img src="${photos.errorPhoto1}" alt="부재 측면">
+                        </div>
+                    `;
+                }
+                if (photos.errorPhoto2) {
+                    photoHTML += `
+                        <div class="photo-item">
+                            <div class="photo-label">부재 평면</div>
+                            <img src="${photos.errorPhoto2}" alt="부재 평면">
+                        </div>
+                    `;
+                }
                 document.getElementById('errorPhotos').innerHTML = photoHTML;
             } else {
                 document.getElementById('errorPhotosCard').style.display = 'none';
