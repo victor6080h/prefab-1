@@ -127,8 +127,8 @@
                 <div>
                     <label class="info-label">기울기 등급 평가 이미지</label>
                     <div class="photo-upload-container">
-                        <div class="photo-upload" id="tiltReportPreview" onclick="console.log('📊 업로드 영역 클릭됨'); document.getElementById('tiltReportInput').click();" style="cursor: pointer; min-height: 400px;">
-                            <input type="file" id="tiltReportInput" accept="image/*" style="display: none;" onchange="console.log('📁 파일 선택됨:', this.files[0]?.name); handleTiltReportImageUpload(this);">
+                        <div class="photo-upload" id="tiltReportPreview" onclick="document.getElementById('tiltReportInput').click();" style="cursor: pointer; min-height: 400px;">
+                            <input type="file" id="tiltReportInput" accept="image/*" style="display: none;" onchange="handleTiltReportImageUpload(this);">
                             <span class="placeholder">📊 클릭하여 기울기 등급 평가 이미지 업로드</span>
                         </div>
                     </div>
@@ -147,8 +147,8 @@
             </div>
             <div class="card-body">
                 <div class="photo-upload-container">
-                    <div class="photo-upload" id="tiltGraphPreview" onclick="console.log('📊 업로드 영역 클릭됨'); document.getElementById('tiltGraphInput').click();" style="cursor: pointer;">
-                        <input type="file" id="tiltGraphInput" accept="image/*" style="display: none;" onchange="console.log('📁 파일 선택됨:', this.files[0]?.name); handleTiltGraphImageUpload(this);">
+                    <div class="photo-upload" id="tiltGraphPreview" onclick="document.getElementById('tiltGraphInput').click();" style="cursor: pointer;">
+                        <input type="file" id="tiltGraphInput" accept="image/*" style="display: none;" onchange="handleTiltGraphImageUpload(this);">
                         <span class="placeholder">📊 클릭하여 그래프 이미지 업로드</span>
                     </div>
                 </div>
@@ -167,11 +167,11 @@
                 <div class="stats-grid">
                     <div class="stat-card">
                         <div class="stat-label">최대 기울기</div>
-                        <div class="stat-value" id="maxTilt">0.0°</div>
+                        <div class="stat-value" id="maxTiltDisplay">0.0°</div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-label">평균 기울기</div>
-                        <div class="stat-value" id="avgTilt">0.0°</div>
+                        <div class="stat-value" id="avgTiltDisplay">0.0°</div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-label">초과 지점</div>
@@ -187,23 +187,10 @@
             </div>
         </div>
 
-        <!-- 기울기 조정 이력 -->
-        <div class="card">
-            <div class="card-header">
-                <h2 class="card-title">기울기 조정 이력</h2>
-                <p class="card-description">기울기 조정 작업 내용을 기록하세요</p>
-            </div>
-            <div class="card-body">
-                <textarea id="tiltAdjustmentHistory" rows="5" 
-                          placeholder="조정 작업 내용을 입력하세요...&#10;예: 2024-11-06 14:30 - 상단 우측 2° 조정 완료"
-                          style="width: 100%; resize: vertical; padding: 1rem; border: 1px solid var(--border-color); border-radius: var(--radius-sm);"></textarea>
-            </div>
-        </div>
-
         <!-- 네비게이션 버튼 -->
         <div class="nav-buttons">
             <a href="page3.html" class="btn btn-secondary">← 이전: 가속도 데이터</a>
-            <button class="btn btn-success" onclick="saveTiltData()">💾 저장하기</button>
+            <button class="btn btn-success" id="saveTiltBtn">💾 저장하기</button>
             <a href="page5.html" class="btn btn-primary">다음: 변형률 데이터 →</a>
         </div>
     </main>
@@ -224,6 +211,7 @@
             // 저장된 데이터 로드
             loadTiltData();
             loadTiltReportImage();
+            loadTiltGraphImage();
             
             autoSaveForm('tiltInfoForm', STORAGE_KEYS.TILT_DATA);
             
@@ -242,14 +230,12 @@
                 }
             });
             
+            // 저장 버튼 클릭 이벤트
+            document.getElementById('saveTiltBtn').addEventListener('click', saveTiltData);
+            
+            console.log('✅ 이벤트 리스너 등록 완료');
         });
-        
-        // 기울기 임계값 (도) - 3단계 평가
-        const TILT_NORMAL = 3.0;    // 정상
-        const TILT_CAUTION = 5.0;   // 주의
-        const TILT_WARNING = 10.0;  // 경고
-        // 10° 초과는 위험
-        
+
         // 기울기 데이터 저장 및 요약 업데이트
         function saveTiltData() {
             console.log('🎯 saveTiltData 함수 호출됨');
@@ -291,22 +277,24 @@
             
             if (value > TILT_WARNING) {
                 console.log('🔴 위험 등급 (> 10°)');
-
                 statusDiv.style.backgroundColor = '#fee2e2';
                 statusDiv.style.borderColor = '#ef4444';
                 statusDiv.style.color = '#991b1b';
                 statusDiv.innerHTML = '❌ 위험: ' + value.toFixed(1) + '° (10° 초과)';
             } else if (value >= TILT_CAUTION) {
+                console.log('🟠 경고 등급 (5~10°)');
                 statusDiv.style.backgroundColor = '#fff7ed';
                 statusDiv.style.borderColor = '#f97316';
                 statusDiv.style.color = '#9a3412';
                 statusDiv.innerHTML = '⚠️ 경고: ' + value.toFixed(1) + '° (5~10°)';
             } else if (value >= TILT_NORMAL) {
+                console.log('🟡 주의 등급 (3~5°)');
                 statusDiv.style.backgroundColor = '#fef3c7';
                 statusDiv.style.borderColor = '#f59e0b';
                 statusDiv.style.color = '#78350f';
                 statusDiv.innerHTML = '⚠ 주의: ' + value.toFixed(1) + '° (3~5°)';
             } else if (value > 0) {
+                console.log('🟢 정상 등급 (< 3°)');
                 statusDiv.style.backgroundColor = '#d1fae5';
                 statusDiv.style.borderColor = '#10b981';
                 statusDiv.style.color = '#065f46';
@@ -317,15 +305,17 @@
                 statusDiv.style.color = '#6b7280';
                 statusDiv.innerHTML = '최대 기울기를 입력하면 자동으로 등급이 평가됩니다';
             }
+            
+            console.log('✅ 상태 표시 업데이트 완료');
         }
         
         // 측정 결과 요약 업데이트
         function updateTiltSummary(maxTilt, avgTilt, eventCount) {
             // 최대 기울기 표시
-            document.getElementById('maxTilt').textContent = maxTilt.toFixed(1) + '°';
+            document.getElementById('maxTiltDisplay').textContent = maxTilt.toFixed(1) + '°';
             
             // 평균 기울기 표시
-            document.getElementById('avgTilt').textContent = avgTilt.toFixed(1) + '°';
+            document.getElementById('avgTiltDisplay').textContent = avgTilt.toFixed(1) + '°';
             
             // 이벤트 발생 횟수 표시
             document.getElementById('tiltExceedCount').textContent = eventCount + ' 개';
@@ -390,6 +380,36 @@
                 finalStatus.querySelector('.stat-value').textContent = '대기중';
                 resultAlert.innerHTML = '';
             }
+        }
+        
+        // 기울기 데이터 로드
+        function loadTiltData() {
+            const data = getFromStorage(STORAGE_KEYS.TILT_DATA);
+            
+            let maxTilt = 0;
+            let avgTilt = 0;
+            let eventCount = 0;
+            
+            if (data) {
+                if (data.maxTilt !== undefined) {
+                    document.getElementById('maxTilt').value = data.maxTilt;
+                    maxTilt = data.maxTilt;
+                }
+                if (data.avgTilt !== undefined) {
+                    document.getElementById('avgTilt').value = data.avgTilt;
+                    avgTilt = data.avgTilt;
+                }
+                if (data.eventCount !== undefined) {
+                    document.getElementById('tiltEventCount').value = data.eventCount;
+                    eventCount = data.eventCount;
+                }
+                
+                console.log('📖 기울기 데이터 로드:', { maxTilt, avgTilt, eventCount });
+            }
+            
+            // 상태 및 요약 업데이트 (데이터 있든 없든 항상 실행)
+            updateTiltStatus(maxTilt);
+            updateTiltSummary(maxTilt, avgTilt, eventCount);
         }
         
         // 기울기 등급 평가 이미지 업로드
@@ -483,327 +503,6 @@
             }
         }
         
-        // 기울기 데이터 로드
-        function loadTiltData() {
-            const data = getFromStorage(STORAGE_KEYS.TILT_DATA);
-            
-            let maxTilt = 0;
-            let avgTilt = 0;
-            let eventCount = 0;
-            
-            if (data) {
-                if (data.maxTilt !== undefined) {
-                    document.getElementById('maxTilt').value = data.maxTilt;
-                    maxTilt = data.maxTilt;
-                }
-                if (data.avgTilt !== undefined) {
-                    document.getElementById('avgTilt').value = data.avgTilt;
-                    avgTilt = data.avgTilt;
-                }
-                if (data.eventCount !== undefined) {
-                    document.getElementById('tiltEventCount').value = data.eventCount;
-                    eventCount = data.eventCount;
-                }
-                
-                console.log('📖 기울기 데이터 로드:', { maxTilt, avgTilt, eventCount });
-            }
-            
-            // 상태 및 요약 업데이트 (데이터 있든 없든 항상 실행)
-            updateTiltStatus(maxTilt);
-            updateTiltSummary(maxTilt, avgTilt, eventCount);
-        }
-
-        // 전체 기울기 그래프 이미지 업로드 처리
-        function handleTiltGraphImageUpload(input) {
-            console.log('=== calculateTiltResultant 호출 ===');
-            console.log('index:', index);
-            
-            const xInput = document.querySelector(`input[name="tiltX${index}"]`);
-            const yInput = document.querySelector(`input[name="tiltY${index}"]`);
-            
-            console.log('xInput:', xInput);
-            console.log('yInput:', yInput);
-            
-            if (!xInput || !yInput) {
-                console.error('입력 필드를 찾을 수 없습니다:', index);
-                return;
-            }
-            
-            const x = parseFloat(xInput.value) || 0;
-            const y = parseFloat(yInput.value) || 0;
-            
-            console.log('X값:', x, 'Y값:', y);
-            
-            const resultant = Math.sqrt(x*x + y*y);
-            console.log('합성 기울기:', resultant);
-            
-            const resultCell = document.getElementById(`tiltResult${index}`);
-            if (resultCell) {
-                resultCell.textContent = resultant.toFixed(2) + '°';
-                console.log('결과 셀 업데이트:', resultant.toFixed(2) + '°');
-            } else {
-                console.error('결과 셀을 찾을 수 없습니다:', `tiltResult${index}`);
-            }
-            
-            // 상태 표시 (3단계 평가)
-            const statusCell = document.getElementById(`tiltStatus${index}`);
-            if (!statusCell) {
-                console.error('상태 셀을 찾을 수 없습니다:', `tiltStatus${index}`);
-                return;
-            }
-            
-            if (resultant > TILT_WARNING) {
-                statusCell.innerHTML = '<span class="badge badge-danger">위험</span>';
-                console.log('상태: 위험');
-            } else if (resultant >= TILT_CAUTION) {
-                statusCell.innerHTML = '<span class="badge" style="background-color: #f97316; color: white;">경고</span>';
-                console.log('상태: 경고');
-            } else if (resultant >= TILT_NORMAL) {
-                statusCell.innerHTML = '<span class="badge badge-warning">주의</span>';
-                console.log('상태: 주의');
-            } else if (resultant > 0) {
-                statusCell.innerHTML = '<span class="badge badge-success">정상</span>';
-                console.log('상태: 정상');
-            } else {
-                statusCell.textContent = '-';
-                console.log('상태: 값 없음');
-            }
-            
-            // 통계 업데이트
-            updateTiltStatistics();
-            console.log('통계 업데이트 완료');
-        }
-
-        // 통계 업데이트
-        function updateTiltStatistics() {
-            const results = [];
-            for (let i = 1; i <= 3; i++) {
-                const resultText = document.getElementById(`tiltResult${i}`).textContent;
-                if (resultText !== '-') {
-                    results.push(parseFloat(resultText));
-                }
-            }
-            
-            if (results.length === 0) return;
-            
-            const max = Math.max(...results);
-            const avg = results.reduce((a, b) => a + b, 0) / results.length;
-            
-            // 3단계 평가 카운트
-            const dangerCount = results.filter(r => r > TILT_WARNING).length;
-            const warningCount = results.filter(r => r >= TILT_CAUTION && r <= TILT_WARNING).length;
-            const cautionCount = results.filter(r => r >= TILT_NORMAL && r < TILT_CAUTION).length;
-            const normalCount = results.filter(r => r < TILT_NORMAL).length;
-            
-            document.getElementById('maxTilt').textContent = max.toFixed(2) + '°';
-            document.getElementById('avgTilt').textContent = avg.toFixed(2) + '°';
-            document.getElementById('tiltExceedCount').textContent = dangerCount + ' 개';
-            
-            // 종합 평가 (3단계 기준)
-            const finalStatus = document.getElementById('tiltFinalStatus');
-            const resultAlert = document.getElementById('tiltResultAlert');
-            
-            if (dangerCount > 0) {
-                finalStatus.className = 'stat-card danger';
-                finalStatus.querySelector('.stat-value').textContent = '위험';
-                resultAlert.innerHTML = `
-                    <div class="alert alert-danger">
-                        <strong>❌ 위험 수준</strong><br>
-                        ${dangerCount}개 지점이 위험 기준(10°)을 초과했습니다. 즉시 조정이 필요합니다.
-                    </div>
-                `;
-            } else if (warningCount > 0) {
-                finalStatus.className = 'stat-card';
-                finalStatus.style.backgroundColor = '#f97316';
-                finalStatus.style.color = 'white';
-                finalStatus.querySelector('.stat-value').textContent = '경고';
-                resultAlert.innerHTML = `
-                    <div class="alert" style="background-color: #fff7ed; border-color: #f97316; color: #9a3412;">
-                        <strong>⚠️ 경고 수준</strong><br>
-                        ${warningCount}개 지점이 경고 범위(5~10°)입니다. 조정을 검토하세요.
-                    </div>
-                `;
-            } else if (cautionCount > 0) {
-                finalStatus.className = 'stat-card warning';
-                finalStatus.querySelector('.stat-value').textContent = '주의';
-                resultAlert.innerHTML = `
-                    <div class="alert alert-warning">
-                        <strong>⚠ 주의 필요</strong><br>
-                        ${cautionCount}개 지점이 주의 범위(3~5°)입니다. 모니터링을 강화하세요.
-                    </div>
-                `;
-            } else {
-                finalStatus.className = 'stat-card success';
-                finalStatus.querySelector('.stat-value').textContent = '정상';
-                resultAlert.innerHTML = `
-                    <div class="alert alert-success">
-                        <strong>✅ 정상 범위</strong><br>
-                        모든 측정 지점의 기울기가 정상 범위(3° 미만)입니다.
-                    </div>
-                `;
-            }
-        }
-
-        // 그래프 업데이트
-        function updateTiltChart() {
-            console.log('=== updateTiltChart 호출 ===');
-            
-            const labels = ['상단 좌측', '상단 우측', '중앙'];
-            const values = [];
-            const colors = [];
-            
-            for (let i = 1; i <= 3; i++) {
-                const resultCell = document.getElementById(`tiltResult${i}`);
-                console.log(`결과 셀 ${i}:`, resultCell);
-                
-                const resultText = resultCell ? resultCell.textContent : '-';
-                console.log(`결과 텍스트 ${i}:`, resultText);
-                
-                if (resultText !== '-') {
-                    const value = parseFloat(resultText);
-                    values.push(value);
-                    console.log(`값 ${i}:`, value);
-                    
-                    // 3단계 평가 색상
-                    if (value > TILT_WARNING) {
-                        colors.push('#ef4444'); // 위험
-                        console.log(`색상 ${i}: 위험 (빨강)`);
-                    } else if (value >= TILT_CAUTION) {
-                        colors.push('#f97316'); // 경고
-                        console.log(`색상 ${i}: 경고 (주황)`);
-                    } else if (value >= TILT_NORMAL) {
-                        colors.push('#f59e0b'); // 주의
-                        console.log(`색상 ${i}: 주의 (노랑)`);
-                    } else {
-                        colors.push('#10b981'); // 정상
-                        console.log(`색상 ${i}: 정상 (초록)`);
-                    }
-                } else {
-                    values.push(0);
-                    colors.push('#9ca3af');
-                    console.log(`값 ${i}: 데이터 없음 (회색)`);
-                }
-            }
-            
-            console.log('라벨:', labels);
-            console.log('값:', values);
-            console.log('색상:', colors);
-            
-            const chartData = {
-                labels: labels,
-                values: values,
-                colors: colors,
-                thresholds: {
-                    upper: TILT_WARNING,
-                    warning: TILT_CAUTION,
-                    caution: TILT_NORMAL
-                },
-                title: '지점별 기울기 측정 결과',
-                yLabel: '기울기 (°)'
-            };
-            
-            console.log('차트 데이터:', chartData);
-            console.log('drawBarChart 호출 시작');
-            
-            try {
-                drawBarChart('tiltChart', chartData);
-                console.log('✅ 그래프 업데이트 성공');
-            } catch (error) {
-                console.error('❌ 그래프 업데이트 오류:', error);
-                alert('그래프 업데이트 중 오류가 발생했습니다. 콘솔을 확인해주세요.');
-            }
-        }
-
-        // 데이터 저장
-        function saveTiltData() {
-            const data = {
-                info: {},
-                measurements: [],
-                adjustmentHistory: document.getElementById('tiltAdjustmentHistory').value
-            };
-            
-            // 계측 정보
-            const infoForm = document.getElementById('tiltInfoForm');
-            const infoData = new FormData(infoForm);
-            for (let [key, value] of infoData.entries()) {
-                data.info[key] = value;
-            }
-            
-            // 측정 데이터
-            for (let i = 1; i <= 3; i++) {
-                const x = parseFloat(document.querySelector(`input[name="tiltX${i}"]`).value) || 0;
-                const y = parseFloat(document.querySelector(`input[name="tiltY${i}"]`).value) || 0;
-                const resultText = document.getElementById(`tiltResult${i}`).textContent;
-                const result = resultText !== '-' ? parseFloat(resultText) : 0;
-                
-                data.measurements.push({ x, y, result });
-            }
-            
-            saveToStorage(STORAGE_KEYS.TILT_DATA, data);
-            alert('기울기 데이터가 저장되었습니다!');
-        }
-
-        // 자동 저장
-        function autoSaveTiltData() {
-            const data = {
-                info: {},
-                measurements: [],
-                adjustmentHistory: document.getElementById('tiltAdjustmentHistory').value
-            };
-            
-            const infoForm = document.getElementById('tiltInfoForm');
-            const infoData = new FormData(infoForm);
-            for (let [key, value] of infoData.entries()) {
-                data.info[key] = value;
-            }
-            
-            for (let i = 1; i <= 3; i++) {
-                const x = parseFloat(document.querySelector(`input[name="tiltX${i}"]`).value) || 0;
-                const y = parseFloat(document.querySelector(`input[name="tiltY${i}"]`).value) || 0;
-                const resultText = document.getElementById(`tiltResult${i}`).textContent;
-                const result = resultText !== '-' ? parseFloat(resultText) : 0;
-                
-                data.measurements.push({ x, y, result });
-            }
-            
-            saveToStorage(STORAGE_KEYS.TILT_DATA, data);
-        }
-
-        // 데이터 로드
-        function loadTiltData() {
-            const data = getFromStorage(STORAGE_KEYS.TILT_DATA);
-            if (!data) return;
-            
-            // 계측 정보 로드
-            if (data.info) {
-                Object.keys(data.info).forEach(key => {
-                    const input = document.getElementById(key);
-                    if (input) input.value = data.info[key];
-                });
-            }
-            
-            // 측정 데이터 로드
-            if (data.measurements) {
-                data.measurements.forEach((m, i) => {
-                    const index = i + 1;
-                    const xInput = document.querySelector(`input[name="tiltX${index}"]`);
-                    const yInput = document.querySelector(`input[name="tiltY${index}"]`);
-                    
-                    if (xInput) xInput.value = m.x;
-                    if (yInput) yInput.value = m.y;
-                    
-                    calculateTiltResultant(index);
-                });
-                
-                updateTiltChart();
-            }
-            
-            // 조정 이력 로드
-            if (data.adjustmentHistory) {
-                document.getElementById('tiltAdjustmentHistory').value = data.adjustmentHistory;
-            }
-        }
-
         // 전체 기울기 그래프 이미지 업로드 처리
         function handleTiltGraphImageUpload(input) {
             console.log('🎯 handleTiltGraphImageUpload 함수 호출됨');
@@ -817,7 +516,6 @@
             console.log('=== 전체 기울기 그래프 이미지 업로드 시작 ===');
             console.log('파일명:', file.name);
             console.log('파일 크기:', (file.size / 1024).toFixed(2), 'KB');
-            console.log('파일 타입:', file.type);
             
             // 이미지 파일인지 확인
             if (!file.type.startsWith('image/')) {
@@ -870,7 +568,7 @@
             const imageData = getFromStorage(STORAGE_KEYS.TILT_GRAPH_IMAGE);
             
             if (imageData) {
-                console.log('✅ 저장된 이미지 발견, 크기:', (imageData.length / 1024).toFixed(2), 'KB');
+                console.log('✅ 저장된 이미지 발견');
                 const preview = document.getElementById('tiltGraphPreview');
                 if (preview) {
                     preview.innerHTML = `
