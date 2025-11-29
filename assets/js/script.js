@@ -534,8 +534,23 @@ function autoSaveForm(formId, storageKey) {
     const form = document.getElementById(formId);
     if (!form) return;
     
+    // 페이지 로드 직후의 change 이벤트 무시를 위한 플래그
+    let isInitialLoad = true;
+    
+    // 100ms 후 초기 로드 완료로 간주
+    setTimeout(() => {
+        isInitialLoad = false;
+        console.log('🔓 autoSaveForm 활성화:', formId);
+    }, 100);
+    
     // 폼 입력 변경 시 자동 저장
     form.addEventListener('change', function() {
+        // 초기 로드 중에는 자동 저장하지 않음
+        if (isInitialLoad) {
+            console.log('⏸️  초기 로드 중 - 자동 저장 건너뜀:', formId);
+            return;
+        }
+        
         const formData = new FormData(form);
         const data = {};
         
@@ -552,6 +567,7 @@ function autoSaveForm(formId, storageKey) {
             }
         }
         
+        console.log('💾 autoSaveForm 자동 저장:', formId, data);
         saveToStorage(storageKey, data);
     });
 }
