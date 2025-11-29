@@ -81,8 +81,13 @@
                         </div>
                         <div class="info-item">
                             <label class="info-label" for="accelDevice">측정 장비</label>
-                            <input type="text" id="accelDevice" name="accelDevice" class="info-value" 
-                                   placeholder="예: 디지털 경사계" required>
+                            <select id="accelDevice" name="accelDevice" class="info-value" required>
+                                <option value="">선택하세요</option>
+                                <option value="JANET PRO 3축 디지털 가속도계">JANET PRO 3축 디지털 가속도계</option>
+                                <option value="기타">기타 (직접 입력)</option>
+                            </select>
+                            <input type="text" id="accelDeviceOther" name="accelDeviceOther" class="info-value" 
+                                   placeholder="장비명을 입력하세요" style="display: none; margin-top: 0.5rem;">
                         </div>
                     </div>
                 </form>
@@ -210,6 +215,21 @@
             loadAccelReportImage();
             
             autoSaveForm('accelInfoForm', STORAGE_KEYS.ACCELERATION_DATA);
+            
+            // 측정 장비 선택 이벤트
+            const deviceSelect = document.getElementById('accelDevice');
+            const deviceOtherInput = document.getElementById('accelDeviceOther');
+            
+            deviceSelect.addEventListener('change', function() {
+                if (this.value === '기타') {
+                    deviceOtherInput.style.display = 'block';
+                    deviceOtherInput.required = true;
+                } else {
+                    deviceOtherInput.style.display = 'none';
+                    deviceOtherInput.required = false;
+                    deviceOtherInput.value = '';
+                }
+            });
             
             console.log('✅ 이벤트 리스너 등록 완료');
         });
