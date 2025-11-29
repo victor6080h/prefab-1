@@ -135,7 +135,7 @@
                         <tr>
                             <td>슬래브 손상/균열</td>
                             <td id="surveyResult2">-</td>
-                            <td>없음</td>
+                            <td>손상없음 또는 없음</td>
                             <td id="surveyStatus2">-</td>
                             <td id="surveyNote2">-</td>
                         </tr>
@@ -149,14 +149,14 @@
                         <tr>
                             <td>와이어/슬링벨트 결함</td>
                             <td id="surveyResult4">-</td>
-                            <td>없음</td>
+                            <td>정상 또는 없음</td>
                             <td id="surveyStatus4">-</td>
                             <td id="surveyNote4">-</td>
                         </tr>
                         <tr>
                             <td>슬래브 적치</td>
                             <td id="surveyResult5">-</td>
-                            <td>적치됨</td>
+                            <td>적치됨 또는 적치완료</td>
                             <td id="surveyStatus5">-</td>
                             <td id="surveyNote5">-</td>
                         </tr>
@@ -302,65 +302,68 @@
             let completedCount = 0;
             const issues = [];
 
-            // 운송결과 리포트 평가
+            // 운송결과 리포트 평가 (print-report.html과 동일한 로직)
             const surveyData = getFromStorage(STORAGE_KEYS.SURVEY_DATA);
             if (surveyData) {
                 completedCount++;
                 const surveyCard = document.getElementById('surveyCard');
                 
-                // 점검 결과 분석
-                let failCount = 0;
-                if (surveyData.q1 === '미수령') failCount++;
-                if (surveyData.q2 === '손상있음' || surveyData.q2 === '균열있음') failCount++;
-                if (surveyData.q3 === '불량') failCount++;
-                if (surveyData.q4 === '결함있음' || surveyData.q4 === '파손있음') failCount++;
-                if (surveyData.q5 === '미적치') failCount++;
+                // 각 항목별 pass 여부 판단
+                const q1Pass = surveyData.q1 === '수령';
+                const q2Pass = surveyData.q2 === '손상없음' || surveyData.q2 === '없음';
+                const q3Pass = surveyData.q3 === '양호';
+                const q4Pass = surveyData.q4 === '정상' || surveyData.q4 === '없음';
+                const q5Pass = surveyData.q5 === '적치됨' || surveyData.q5 === '적치완료';
                 
-                if (failCount === 0) {
+                const allPass = q1Pass && q2Pass && q3Pass && q4Pass && q5Pass;
+                
+                // 결과 표시
+                document.getElementById('surveyResult1').textContent = surveyData.q1 || '-';
+                document.getElementById('surveyResult2').textContent = surveyData.q2 || '-';
+                document.getElementById('surveyResult3').textContent = surveyData.q3 || '-';
+                document.getElementById('surveyResult4').textContent = surveyData.q4 || '-';
+                document.getElementById('surveyResult5').textContent = surveyData.q5 || '-';
+                
+                // 각 항목 개별 평가
+                document.getElementById('surveyStatus1').innerHTML = q1Pass ? 
+                    '<span class="badge badge-success">합격</span>' : 
+                    '<span class="badge badge-danger">불합격</span>';
+                document.getElementById('surveyNote1').textContent = q1Pass ? '-' : '품질보증서 미수령';
+                
+                document.getElementById('surveyStatus2').innerHTML = q2Pass ? 
+                    '<span class="badge badge-success">합격</span>' : 
+                    '<span class="badge badge-danger">불합격</span>';
+                document.getElementById('surveyNote2').textContent = q2Pass ? '-' : '슬래브에 손상 또는 균열 발견';
+                
+                document.getElementById('surveyStatus3').innerHTML = q3Pass ? 
+                    '<span class="badge badge-success">합격</span>' : 
+                    '<span class="badge badge-danger">불합격</span>';
+                document.getElementById('surveyNote3').textContent = q3Pass ? '-' : '스펀지 재료 부착 불량';
+                
+                document.getElementById('surveyStatus4').innerHTML = q4Pass ? 
+                    '<span class="badge badge-success">합격</span>' : 
+                    '<span class="badge badge-danger">불합격</span>';
+                document.getElementById('surveyNote4').textContent = q4Pass ? '-' : '와이어 또는 슬링벨트에 결함 발견';
+                
+                document.getElementById('surveyStatus5').innerHTML = q5Pass ? 
+                    '<span class="badge badge-success">합격</span>' : 
+                    '<span class="badge badge-danger">불합격</span>';
+                document.getElementById('surveyNote5').textContent = q5Pass ? '-' : '슬래브 미적치';
+                
+                // 전체 평가
+                if (allPass) {
                     surveyCard.className = 'stat-card success';
-                    surveyCard.querySelector('.stat-value').textContent = '적합';
-                    document.getElementById('surveyResult1').textContent = surveyData.q1 || '-';
-                    document.getElementById('surveyResult2').textContent = surveyData.q2 || '-';
-                    document.getElementById('surveyResult3').textContent = surveyData.q3 || '-';
-                    document.getElementById('surveyResult4').textContent = surveyData.q4 || '-';
-                    document.getElementById('surveyResult5').textContent = surveyData.q5 || '-';
-                    document.getElementById('surveyStatus1').innerHTML = '<span class="badge badge-success">적합</span>';
-                    document.getElementById('surveyStatus2').innerHTML = '<span class="badge badge-success">적합</span>';
-                    document.getElementById('surveyStatus3').innerHTML = '<span class="badge badge-success">적합</span>';
-                    document.getElementById('surveyStatus4').innerHTML = '<span class="badge badge-success">적합</span>';
-                    document.getElementById('surveyStatus5').innerHTML = '<span class="badge badge-success">적합</span>';
+                    surveyCard.querySelector('.stat-value').textContent = '합격';
                 } else {
                     surveyCard.className = 'stat-card danger';
-                    surveyCard.querySelector('.stat-value').textContent = '부적합';
-                    issues.push('운송결과 리포트에서 부적합 항목이 발견되었습니다.');
+                    surveyCard.querySelector('.stat-value').textContent = '불합격';
                     
-                    // 각 항목 결과 표시
-                    document.getElementById('surveyResult1').textContent = surveyData.q1 || '-';
-                    document.getElementById('surveyResult2').textContent = surveyData.q2 || '-';
-                    document.getElementById('surveyResult3').textContent = surveyData.q3 || '-';
-                    document.getElementById('surveyResult4').textContent = surveyData.q4 || '-';
-                    document.getElementById('surveyResult5').textContent = surveyData.q5 || '-';
-                    
-                    // 각 항목 개별 평가
-                    document.getElementById('surveyStatus1').innerHTML = surveyData.q1 === '미수령' ? 
-                        '<span class="badge badge-danger">부적합</span>' : 
-                        '<span class="badge badge-success">적합</span>';
-                    
-                    document.getElementById('surveyStatus2').innerHTML = (surveyData.q2 === '손상있음' || surveyData.q2 === '균열있음') ? 
-                        '<span class="badge badge-danger">부적합</span>' : 
-                        '<span class="badge badge-success">적합</span>';
-                    
-                    document.getElementById('surveyStatus3').innerHTML = surveyData.q3 === '불량' ? 
-                        '<span class="badge badge-danger">부적합</span>' : 
-                        '<span class="badge badge-success">적합</span>';
-                    
-                    document.getElementById('surveyStatus4').innerHTML = (surveyData.q4 === '결함있음' || surveyData.q4 === '파손있음') ? 
-                        '<span class="badge badge-danger">부적합</span>' : 
-                        '<span class="badge badge-success">적합</span>';
-                    
-                    document.getElementById('surveyStatus5').innerHTML = surveyData.q5 === '미적치' ? 
-                        '<span class="badge badge-danger">부적합</span>' : 
-                        '<span class="badge badge-success">적합</span>';
+                    // 불합격 항목 이슈 추가
+                    if (!q1Pass) issues.push('⚠️ 품질보증서 미수령');
+                    if (!q2Pass) issues.push('⚠️ 슬래브 손상/균열 발견');
+                    if (!q3Pass) issues.push('⚠️ 스펀지 재료 부착 불량');
+                    if (!q4Pass) issues.push('⚠️ 와이어/슬링벨트 결함');
+                    if (!q5Pass) issues.push('⚠️ 슬래브 미적치');
                 }
             }
 
