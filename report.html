@@ -253,32 +253,52 @@
         
         // 페이지 로드 시 프로젝트 정보 자동 저장 및 로드
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 report.html 페이지 로드 시작');
+            
             // Check active report
-            if (!checkActiveReport()) return;
+            if (!checkActiveReport()) {
+                console.log('❌ 활성화된 보고서 없음');
+                return;
+            }
+            
+            console.log('✅ 활성화된 보고서 확인됨');
             
             // 현재 날짜 자동 입력
             setCurrentDate('inspectionDate');
+            console.log('📅 날짜 설정 완료');
+            
+            // 저장된 데이터 확인
+            const savedData = getFromStorage(STORAGE_KEYS.PROJECT_INFO);
+            console.log('💾 저장된 프로젝트 정보:', savedData);
             
             // 폼 데이터 로드 (report ID prefix added in script.js)
             loadFormData('projectInfoForm', STORAGE_KEYS.PROJECT_INFO);
+            console.log('📖 폼 데이터 로드 완료');
             
             // 자동 저장 설정
             autoSaveForm('projectInfoForm', STORAGE_KEYS.PROJECT_INFO);
+            console.log('💾 자동 저장 설정 완료');
             
             // 상태 업데이트
             updateStatus();
+            console.log('✅ 상태 업데이트 완료');
         });
 
         // 프로젝트 정보 저장 함수
         function saveProjectInfo() {
+            console.log('🎯 saveProjectInfo 함수 호출됨');
+            
             const form = document.getElementById('projectInfoForm');
             
             // 폼 유효성 검사
             if (!form.checkValidity()) {
+                console.log('❌ 폼 유효성 검사 실패');
                 alert('모든 필수 항목을 입력해주세요.');
                 form.reportValidity();
                 return;
             }
+            
+            console.log('✅ 폼 유효성 검사 통과');
             
             // 폼 데이터 수집
             const formData = new FormData(form);
@@ -287,13 +307,20 @@
                 data[key] = value;
             }
             
+            console.log('📊 수집된 데이터:', data);
+            
             // LocalStorage에 저장
-            saveToStorage(STORAGE_KEYS.PROJECT_INFO, data);
+            const saveResult = saveToStorage(STORAGE_KEYS.PROJECT_INFO, data);
+            console.log('💾 저장 결과:', saveResult);
+            
+            // 저장 직후 확인
+            const verifyData = getFromStorage(STORAGE_KEYS.PROJECT_INFO);
+            console.log('🔍 저장 확인:', verifyData);
             
             // 성공 메시지
             alert('✅ 프로젝트 정보가 저장되었습니다!');
             
-            console.log('프로젝트 정보 저장 완료:', data);
+            console.log('✅ 프로젝트 정보 저장 완료:', data);
         }
 
         // 각 페이지의 완료 상태 확인 및 업데이트
