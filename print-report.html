@@ -6,14 +6,13 @@
     <title>전체 보고서 인쇄 - Prefab 품질관리 시스템</title>
     <link rel="stylesheet" href="assets/css/style.css">
     <style>
-        /* 인쇄 전용 스타일 - 기본 (세로) */
+        /* 인쇄 전용 스타일 */
         @media print {
             @page {
                 size: A4 portrait;
                 margin: 15mm;
             }
             
-            /* 브라우저 기본 헤더/푸터 제거 */
             html {
                 -webkit-print-color-adjust: exact;
                 print-color-adjust: exact;
@@ -28,14 +27,6 @@
                 display: none !important;
             }
             
-            .page-nav {
-                display: none !important;
-            }
-            
-            .nav-buttons {
-                display: none !important;
-            }
-            
             .page-break {
                 page-break-after: always;
                 break-after: page;
@@ -47,161 +38,19 @@
                 margin-bottom: 0.5rem;
             }
             
-            .card-header {
-                padding: 5mm 5mm 3mm 5mm !important;
-            }
-            
-            .card-title {
-                font-size: 11pt !important;
-                margin: 0 !important;
-            }
-            
-            .card-body {
-                padding: 3mm 5mm 5mm 5mm !important;
-            }
-            
-            /* 그래프 크기 조정 */
-            .chart-container canvas {
-                max-width: 100% !important;
-                height: auto !important;
-            }
-            
-            /* 사진 크기 조정 - 세로 (기본) */
-            .photo-upload img {
+            .photo-grid img {
                 max-width: 100% !important;
                 height: auto !important;
                 object-fit: contain !important;
             }
             
-            /* 운송결과 리포트 사진 그리드 - 세로: 1페이지당 2장 (총 2페이지) */
-            .transport-photo-grid {
-                display: grid !important;
-                grid-template-columns: 1fr !important;
-                gap: 8mm !important;
-            }
-            
-            .transport-photo-grid > div {
-                page-break-inside: avoid !important;
-                break-inside: avoid !important;
-            }
-            
-            .transport-photo-grid .photo-upload {
-                height: 90mm !important;
-                display: flex !important;
-                align-items: center !important;
-                justify-content: center !important;
-                border: 0.1mm solid #000000 !important;
-                padding: 2mm !important;
-                box-sizing: border-box !important;
-            }
-            
-            .transport-photo-grid .photo-upload img {
-                max-width: 100% !important;
-                max-height: 100% !important;
-                width: auto !important;
-                height: auto !important;
-                object-fit: contain !important;
-            }
-            
-            .transport-photo-grid h4 {
-                margin: 0 0 2mm 0 !important;
-                font-size: 10pt !important;
-                font-weight: 600 !important;
-                color: #333 !important;
-            }
-            
-            /* 부재 제작 오차 사진 - 용지 가득 채우기 */
-            .error-photo-grid {
-                display: grid !important;
-                grid-template-columns: 1fr !important;
-                gap: 20mm !important;
-            }
-            
-            .error-photo-grid .photo-upload {
-                height: 85mm !important;
-                display: flex !important;
-                align-items: center !important;
-                justify-content: center !important;
-                border: 0.1mm solid #000000 !important;
-                padding: 2mm !important;
-                box-sizing: border-box !important;
-            }
-            
-            .error-photo-grid .photo-upload img {
-                max-width: 100% !important;
-                max-height: 100% !important;
-                width: auto !important;
-                height: auto !important;
-                object-fit: contain !important;
-            }
-            
-            /* 표 스타일 최적화 */
             table {
                 font-size: 10pt;
                 width: 100%;
             }
             
             th, td {
-                padding: 0.5rem;
-            }
-            
-            /* 헤더 최적화 */
-            .print-header {
-                padding: 1.5rem 1rem !important;
-            }
-            
-            .print-header h1 {
-                font-size: 2rem !important;
-            }
-            
-            .section-title {
-                font-size: 1.5rem !important;
-                margin-top: 1rem !important;
-            }
-        }
-        
-        /* 가로 방향 인쇄 스타일 */
-        @media print {
-            body.landscape-print {
-                width: 297mm;
-                height: 210mm;
-            }
-            
-            body.landscape-print @page {
-                size: A4 landscape;
-                margin: 15mm;
-            }
-            
-            body.landscape-print .container {
-                max-width: 100% !important;
-            }
-            
-            /* 가로 모드에서 사진 그리드 3열 */
-            body.landscape-print .transport-photo-grid {
-                grid-template-columns: repeat(3, 1fr) !important;
-            }
-            
-            /* 가로 모드에서 사진 크기 조정 */
-            body.landscape-print .photo-upload img {
-                max-width: 250px !important;
-                max-height: 250px !important;
-            }
-            
-            /* 가로 모드에서 표 폰트 크기 증가 */
-            body.landscape-print table {
-                font-size: 11pt;
-            }
-            
-            /* 가로 모드에서 카드 2열 배치 */
-            body.landscape-print .two-column-landscape {
-                display: grid;
-                grid-template-columns: repeat(2, 1fr);
-                gap: 1rem;
-            }
-            
-            /* 그래프 크기 최적화 */
-            body.landscape-print .chart-container {
-                height: 400px !important;
+                padding: 0.4rem;
             }
         }
         
@@ -232,56 +81,6 @@
             margin-bottom: 0.5rem;
         }
         
-        .print-header .subtitle {
-            font-size: 1.2rem;
-            opacity: 0.9;
-        }
-        
-        .loading-message {
-            text-align: center;
-            padding: 3rem;
-            font-size: 1.2rem;
-            color: var(--primary-color);
-        }
-        
-        /* Badge styles for evaluation results */
-        .badge {
-            display: inline-block;
-            padding: 0.25rem 0.75rem;
-            font-size: 0.875rem;
-            font-weight: 600;
-            line-height: 1.5;
-            text-align: center;
-            white-space: nowrap;
-            border-radius: var(--radius-sm);
-        }
-        
-        .badge-success {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-        
-        .badge-danger {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-        
-        .badge-warning {
-            background-color: #fff3cd;
-            color: #856404;
-            border: 1px solid #ffeaa7;
-        }
-        
-        /* Print styles for badges */
-        @media print {
-            .badge {
-                -webkit-print-color-adjust: exact;
-                print-color-adjust: exact;
-            }
-        }
-        
         .print-button-container {
             position: fixed;
             top: 20px;
@@ -293,54 +92,6 @@
             box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         }
         
-        .print-options {
-            margin-bottom: 1rem;
-            padding-bottom: 1rem;
-            border-bottom: 2px solid var(--border-color);
-        }
-        
-        .print-options h3 {
-            margin: 0 0 0.75rem 0;
-            font-size: 1rem;
-            color: var(--text-primary);
-        }
-        
-        .orientation-buttons {
-            display: flex;
-            gap: 0.5rem;
-        }
-        
-        .orientation-btn {
-            flex: 1;
-            padding: 0.75rem 1rem;
-            border: 2px solid var(--border-color);
-            background: white;
-            border-radius: var(--radius-md);
-            cursor: pointer;
-            font-size: 0.9rem;
-            transition: all 0.3s ease;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 0.25rem;
-        }
-        
-        .orientation-btn:hover {
-            border-color: var(--primary-color);
-            background: #f0f9ff;
-        }
-        
-        .orientation-btn.active {
-            border-color: var(--primary-color);
-            background: var(--primary-color);
-            color: white;
-            font-weight: 600;
-        }
-        
-        .orientation-btn .icon {
-            font-size: 1.5rem;
-        }
-        
         .print-button {
             background: var(--primary-color);
             color: white;
@@ -349,17 +100,12 @@
             font-size: 1.1rem;
             border-radius: var(--radius-md);
             cursor: pointer;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            transition: all 0.3s ease;
             width: 100%;
-            display: block;
             margin-bottom: 0.5rem;
         }
         
         .print-button:hover {
             background: var(--secondary-color);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 8px rgba(0,0,0,0.15);
         }
         
         .back-button {
@@ -371,11 +117,20 @@
             border-radius: var(--radius-md);
             cursor: pointer;
             width: 100%;
-            display: block;
         }
         
-        .back-button:hover {
-            background: #4b5563;
+        .photo-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .photo-grid img {
+            width: 100%;
+            height: auto;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.375rem;
         }
     </style>
     <script src="assets/js/script.js"></script>
@@ -383,1824 +138,861 @@
 <body>
     <!-- 인쇄 버튼 -->
     <div class="print-button-container no-print">
-        <div class="print-options">
-            <h3>📄 용지 방향 선택</h3>
-            <div class="orientation-buttons">
-                <button class="orientation-btn active" id="portraitBtn" onclick="setOrientation('portrait')">
-                    <span class="icon">📄</span>
-                    <span>세로 (A4)</span>
-                </button>
-                <button class="orientation-btn" id="landscapeBtn" onclick="setOrientation('landscape')">
-                    <span class="icon">📃</span>
-                    <span>가로 (A4)</span>
-                </button>
-            </div>
-        </div>
-        <button class="print-button" onclick="printReport()">🖨️ 전체 보고서 인쇄</button>
-        <button class="back-button" onclick="window.location.href='index.html'">← 돌아가기</button>
+        <button class="print-button" onclick="window.print()">🖨️ 전체 보고서 인쇄</button>
+        <button class="back-button" onclick="window.location.href='dashboard.html'">← 대시보드로</button>
         
-        <!-- 인쇄 안내 -->
-        <div style="margin-top: 1rem; padding: 1rem; background: #fff3cd; border: 1px solid #ffc107; border-radius: 5px;">
-            <strong>💡 깔끔한 인쇄를 위한 설정:</strong><br>
-            인쇄 대화상자에서 <strong>"헤더 및 푸터"</strong> 옵션을 <strong>끄기</strong>로 설정하세요.<br>
-            <small style="color: #666;">
-                Chrome: 인쇄 → 기타 설정 → "헤더 및 푸터" 체크 해제<br>
-                Edge: 인쇄 → 기타 설정 → "머리글 및 바닥글" 체크 해제
-            </small>
+        <div style="margin-top: 1rem; padding: 1rem; background: #fff3cd; border: 1px solid #ffc107; border-radius: 5px; font-size: 0.875rem;">
+            <strong>💡 인쇄 안내:</strong><br>
+            인쇄 대화상자에서 <strong>"헤더 및 푸터"</strong>를 끄고,<br>
+            <strong>"배경 그래픽"</strong>을 켜주세요.
         </div>
     </div>
 
-    <!-- 로딩 메시지 -->
-    <div id="loadingMessage" class="loading-message">
-        <h2>📄 전체 보고서 생성 중...</h2>
-        <p>모든 데이터를 불러오고 있습니다. 잠시만 기다려주세요.</p>
-        <div id="debugInfo" style="margin-top: 1rem; font-size: 0.9rem; color: #666;"></div>
+    <!-- 보고서 헤더 -->
+    <div class="print-header">
+        <h1>Prefab 품질관리 시스템</h1>
+        <div class="subtitle">전체 품질관리 보고서</div>
     </div>
 
-    <!-- 보고서 컨테이너 -->
-    <div id="reportContainer" style="display: none;">
-        <!-- 보고서 헤더 -->
-        <div class="print-header">
-            <h1>Prefab 품질관리 시스템</h1>
-            <div class="subtitle">전체 품질관리 보고서</div>
+    <div class="container">
+        <!-- 1. 프로젝트 정보 -->
+        <div class="report-section page-break">
+            <h2 class="section-title">1. 프로젝트 정보</h2>
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">기본 정보</h3>
+                </div>
+                <div class="card-body">
+                    <div class="info-grid" id="projectInfo">
+                        <div class="info-item">
+                            <label class="info-label">공사명</label>
+                            <div class="info-value" id="projectName">-</div>
+                        </div>
+                        <div class="info-item">
+                            <label class="info-label">점검일</label>
+                            <div class="info-value" id="inspectionDate">-</div>
+                        </div>
+                        <div class="info-item">
+                            <label class="info-label">Prefab 종류</label>
+                            <div class="info-value" id="prefabType">-</div>
+                        </div>
+                        <div class="info-item">
+                            <label class="info-label">설치 위치</label>
+                            <div class="info-value" id="location">-</div>
+                        </div>
+                        <div class="info-item">
+                            <label class="info-label">점검자</label>
+                            <div class="info-value" id="inspector">-</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <div class="container">
-            <!-- 1. 종합 요약 -->
-            <div class="report-section page-break">
-                <h2 class="section-title">1. 종합 요약</h2>
-                <div id="section1Content"></div>
+        <!-- 2. 운송결과 리포트 -->
+        <div class="report-section page-break">
+            <h2 class="section-title">2. 운송결과 리포트</h2>
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">점검 항목</h3>
+                </div>
+                <div class="card-body">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>평가 항목</th>
+                                <th>측정 결과</th>
+                                <th>허용 기준</th>
+                                <th>판정</th>
+                                <th>비고</th>
+                            </tr>
+                        </thead>
+                        <tbody id="surveyTable">
+                            <tr><td colspan="5" style="text-align: center;">데이터를 불러오는 중...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
-
-            <!-- 2. 운송결과 리포트 -->
-            <div class="report-section page-break">
-                <h2 class="section-title">2. 운송결과 리포트</h2>
-                <div id="section2Content"></div>
+            
+            <div class="card" style="margin-top: 1rem;">
+                <div class="card-header">
+                    <h3 class="card-title">현장 사진</h3>
+                </div>
+                <div class="card-body">
+                    <div class="photo-grid" id="surveyPhotos">
+                        <p style="text-align: center; color: #6b7280;">사진이 없습니다.</p>
+                    </div>
+                </div>
             </div>
+        </div>
 
-            <!-- 3. 가속도 데이터 -->
-            <div class="report-section page-break">
-                <h2 class="section-title">3. 가속도 데이터</h2>
-                <div id="section3Content"></div>
+        <!-- 3. 가속도 데이터 -->
+        <div class="report-section page-break">
+            <h2 class="section-title">3. 가속도 데이터</h2>
+            
+            <div class="alert alert-info" style="margin-bottom: 1rem;">
+                <strong>📊 평가 기준 (KCS 기준)</strong><br>
+                정상: &lt;0.20g | 주의: 0.20~0.30g | 경고: 0.30~0.40g | 위험: &gt;0.40g
             </div>
-
-            <!-- 4. 기울기 데이터 -->
-            <div class="report-section page-break">
-                <h2 class="section-title">4. 기울기 데이터</h2>
-                <div id="section4Content"></div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">측정 결과</h3>
+                </div>
+                <div class="card-body">
+                    <div class="stats-grid" id="accelStats">
+                        <div class="stat-card">
+                            <div class="stat-label">최대 가속도</div>
+                            <div class="stat-value" id="maxAccel">-</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">평균 가속도</div>
+                            <div class="stat-value" id="avgAccel">-</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">이벤트 횟수</div>
+                            <div class="stat-value" id="accelEvents">-</div>
+                        </div>
+                    </div>
+                </div>
             </div>
-
-            <!-- 5. 변형률 데이터 -->
-            <div class="report-section page-break">
-                <h2 class="section-title">5. 변형률 데이터</h2>
-                <div id="section5Content"></div>
+            
+            <div class="card" style="margin-top: 1rem;">
+                <div class="card-header">
+                    <h3 class="card-title">측정 데이터</h3>
+                </div>
+                <div class="card-body">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>측정 지점</th>
+                                <th>X축 (g)</th>
+                                <th>Y축 (g)</th>
+                                <th>Z축 (g)</th>
+                                <th>합성 (g)</th>
+                                <th>상태</th>
+                            </tr>
+                        </thead>
+                        <tbody id="accelTable">
+                            <tr><td colspan="6" style="text-align: center;">데이터를 불러오는 중...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
-
-            <!-- 6. 부재 제작 오차 -->
-            <div class="report-section page-break">
-                <h2 class="section-title">6. 부재 제작 오차</h2>
-                <div id="section6Content"></div>
+            
+            <div class="card" style="margin-top: 1rem;" id="accelReportCard">
+                <div class="card-header">
+                    <h3 class="card-title">등급 평가 리포트</h3>
+                </div>
+                <div class="card-body" id="accelReportImage">
+                    <p style="text-align: center; color: #6b7280;">리포트 이미지가 없습니다.</p>
+                </div>
             </div>
+        </div>
 
-            <!-- 7. 종합 대시보드 -->
-            <div class="report-section">
-                <h2 class="section-title">7. 종합 대시보드</h2>
-                <div id="section7Content"></div>
+        <!-- 4. 기울기 데이터 -->
+        <div class="report-section page-break">
+            <h2 class="section-title">4. 기울기 데이터</h2>
+            
+            <div class="alert alert-info" style="margin-bottom: 1rem;">
+                <strong>📐 평가 기준 (KCS 기준)</strong><br>
+                정상: &lt;3° | 주의: 3~5° | 경고: 5~10° | 위험: &gt;10°
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">측정 결과</h3>
+                </div>
+                <div class="card-body">
+                    <div class="stats-grid" id="tiltStats">
+                        <div class="stat-card">
+                            <div class="stat-label">최대 기울기</div>
+                            <div class="stat-value" id="maxTilt">-</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">평균 기울기</div>
+                            <div class="stat-value" id="avgTilt">-</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">이벤트 횟수</div>
+                            <div class="stat-value" id="tiltEvents">-</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card" style="margin-top: 1rem;">
+                <div class="card-header">
+                    <h3 class="card-title">측정 데이터</h3>
+                </div>
+                <div class="card-body">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>측정 지점</th>
+                                <th>X축 (°)</th>
+                                <th>Y축 (°)</th>
+                                <th>합성 (°)</th>
+                                <th>상태</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tiltTable">
+                            <tr><td colspan="5" style="text-align: center;">데이터를 불러오는 중...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="card" style="margin-top: 1rem;" id="tiltReportCard">
+                <div class="card-header">
+                    <h3 class="card-title">등급 평가 리포트</h3>
+                </div>
+                <div class="card-body" id="tiltReportImage">
+                    <p style="text-align: center; color: #6b7280;">리포트 이미지가 없습니다.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 5. 변형률 데이터 -->
+        <div class="report-section page-break">
+            <h2 class="section-title">5. 변형률 데이터</h2>
+            
+            <div class="alert alert-info" style="margin-bottom: 1rem;">
+                <strong>📏 평가 기준 (KCS 기준)</strong><br>
+                정상: &lt;60με | 주의: 60~80με | 경고: 80~130με | 위험: &gt;130με
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">측정 결과</h3>
+                </div>
+                <div class="card-body">
+                    <div class="stats-grid" id="strainStats">
+                        <div class="stat-card">
+                            <div class="stat-label">최대 변형률</div>
+                            <div class="stat-value" id="maxStrain">-</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">평균 변형률</div>
+                            <div class="stat-value" id="avgStrain">-</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">이벤트 횟수</div>
+                            <div class="stat-value" id="strainEvents">-</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card" style="margin-top: 1rem;">
+                <div class="card-header">
+                    <h3 class="card-title">측정 데이터</h3>
+                </div>
+                <div class="card-body">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>측정 지점</th>
+                                <th>측정값 (με)</th>
+                                <th>상태</th>
+                            </tr>
+                        </thead>
+                        <tbody id="strainTable">
+                            <tr><td colspan="3" style="text-align: center;">데이터를 불러오는 중...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="card" style="margin-top: 1rem;" id="strainReportCard">
+                <div class="card-header">
+                    <h3 class="card-title">등급 평가 리포트</h3>
+                </div>
+                <div class="card-body" id="strainReportImage">
+                    <p style="text-align: center; color: #6b7280;">리포트 이미지가 없습니다.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 6. 부재 제작 오차 -->
+        <div class="report-section page-break">
+            <h2 class="section-title">6. 부재 제작 오차</h2>
+            
+            <div class="alert alert-info" style="margin-bottom: 1rem;">
+                <strong>📐 허용 오차 기준 (KCS)</strong><br>
+                패널 길이/폭: ±min(1%, 30mm) | 패널 두께: +10mm ~ -5mm
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">측정 데이터</h3>
+                </div>
+                <div class="card-body">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>측정 항목</th>
+                                <th>설계값 (mm)</th>
+                                <th>실측값 (mm)</th>
+                                <th>오차 (mm)</th>
+                                <th>허용오차</th>
+                                <th>판정</th>
+                            </tr>
+                        </thead>
+                        <tbody id="errorTable">
+                            <tr><td colspan="6" style="text-align: center;">데이터를 불러오는 중...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="card" style="margin-top: 1rem;" id="errorPhotosCard">
+                <div class="card-header">
+                    <h3 class="card-title">부재 사진</h3>
+                </div>
+                <div class="card-body">
+                    <div class="photo-grid" id="errorPhotos">
+                        <p style="text-align: center; color: #6b7280;">사진이 없습니다.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 7. 종합 대시보드 -->
+        <div class="report-section">
+            <h2 class="section-title">7. 종합 대시보드</h2>
+            
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">종합 품질 평가</h2>
+                </div>
+                <div class="card-body">
+                    <div class="stats-grid" id="overallStats">
+                        <div class="stat-card" id="overallCard">
+                            <div class="stat-label">종합 평가</div>
+                            <div class="stat-value">평가중</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">검사 항목</div>
+                            <div class="stat-value" id="totalItems">-</div>
+                        </div>
+                        <div class="stat-card success">
+                            <div class="stat-label">합격 항목</div>
+                            <div class="stat-value" id="passedItems">-</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">불합격 항목</div>
+                            <div class="stat-value" id="failedItems">-</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card" style="margin-top: 1rem;">
+                <div class="card-header">
+                    <h2 class="card-title">상세 평가 결과</h2>
+                </div>
+                <div class="card-body">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>평가 항목</th>
+                                <th>측정 결과</th>
+                                <th>허용 기준</th>
+                                <th>판정</th>
+                                <th>비고</th>
+                            </tr>
+                        </thead>
+                        <tbody id="detailTable">
+                            <tr><td colspan="5" style="text-align: center;">데이터를 불러오는 중...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="card" style="margin-top: 1rem;">
+                <div class="card-header">
+                    <h2 class="card-title">주요 이슈 및 권고사항</h2>
+                </div>
+                <div class="card-body" id="issuesContainer">
+                    <p style="text-align: center; color: var(--success-color); font-weight: 600;">✅ 주요 이슈 없음</p>
+                </div>
+            </div>
+            
+            <div class="card" style="margin-top: 1rem;">
+                <div class="card-header">
+                    <h2 class="card-title">최종 품질 판정</h2>
+                </div>
+                <div class="card-body">
+                    <div class="alert" id="finalJudgment" style="text-align: center; padding: 2rem; font-size: 1.25rem;">
+                        ⏳ 평가 대기중
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
-        // 인쇄 방향 설정 변수
-        let currentOrientation = 'portrait'; // 기본값: 세로
-        
-        // 방향 설정 함수
-        function setOrientation(orientation) {
-            console.log('용지 방향 변경:', orientation);
-            currentOrientation = orientation;
-            
-            // 버튼 활성화 상태 변경
-            document.getElementById('portraitBtn').classList.toggle('active', orientation === 'portrait');
-            document.getElementById('landscapeBtn').classList.toggle('active', orientation === 'landscape');
-            
-            // body 클래스 변경
-            if (orientation === 'landscape') {
-                document.body.classList.add('landscape-print');
-            } else {
-                document.body.classList.remove('landscape-print');
-            }
-        }
-        
-        // 인쇄 함수
-        function printReport() {
-            console.log('보고서 인쇄 시작, 방향:', currentOrientation);
-            
-            // 인쇄 전 확인 메시지
-            const orientationText = currentOrientation === 'portrait' ? '세로 (Portrait)' : '가로 (Landscape)';
-            const printConfirm = confirm(
-                `📄 전체 보고서를 ${orientationText} 방향으로 인쇄하시겠습니까?\n\n` +
-                `인쇄 설정:\n` +
-                `• 용지 방향: ${orientationText}\n` +
-                `• 용지 크기: A4\n` +
-                `• 배경 그래픽: 활성화 권장\n` +
-                `• 여백: 보통\n\n` +
-                `인쇄 대화상자에서 방향을 "${orientationText}"로 설정해주세요.`
-            );
-            
-            if (printConfirm) {
-                // 방향에 따라 body 클래스 설정
-                if (currentOrientation === 'landscape') {
-                    document.body.classList.add('landscape-print');
-                } else {
-                    document.body.classList.remove('landscape-print');
-                }
-                
-                // 인쇄 실행
-                window.print();
-            }
-        }
-        
-        // 전체 보고서 생성
-        document.addEventListener('DOMContentLoaded', async function() {
-            console.log('=== 전체 보고서 생성 시작 ===');
-            
-            const debugInfo = document.getElementById('debugInfo');
-            
-            try {
-                // 필수 함수 확인
-                debugInfo.textContent = '필수 함수 확인 중...';
-                console.log('STORAGE_KEYS 확인:', typeof STORAGE_KEYS);
-                console.log('getFromStorage 확인:', typeof getFromStorage);
-                console.log('drawBarChart 확인:', typeof drawBarChart);
-                
-                if (typeof STORAGE_KEYS === 'undefined') {
-                    throw new Error('STORAGE_KEYS가 정의되지 않았습니다. script.js 로드를 확인하세요.');
-                }
-                
-                if (typeof getFromStorage === 'undefined') {
-                    throw new Error('getFromStorage 함수가 정의되지 않았습니다.');
-                }
-                
-                // 모든 섹션 로드
-                debugInfo.textContent = '데이터 로드 중...';
-                await loadAllSections();
-                
-                // 로딩 메시지 숨기고 보고서 표시
-                document.getElementById('loadingMessage').style.display = 'none';
-                document.getElementById('reportContainer').style.display = 'block';
-                
-                console.log('✅ 전체 보고서 생성 완료');
-            } catch (error) {
-                console.error('❌ 보고서 생성 오류:', error);
-                console.error('오류 스택:', error.stack);
-                document.getElementById('loadingMessage').innerHTML = `
-                    <h2>❌ 보고서 생성 실패</h2>
-                    <p style="color: red; font-weight: bold;">오류: ${error.message}</p>
-                    <pre style="text-align: left; background: #f5f5f5; padding: 1rem; border-radius: 4px; overflow: auto; max-width: 600px; margin: 1rem auto;">${error.stack || '스택 정보 없음'}</pre>
-                    <button class="btn btn-primary" onclick="location.reload()">다시 시도</button>
-                    <button class="btn btn-secondary" onclick="window.location.href='index.html'" style="margin-left: 1rem;">메인으로</button>
-                `;
-            }
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('📄 전체 보고서 로드 시작');
+            loadAllData();
         });
 
-        async function loadAllSections() {
-            const debugInfo = document.getElementById('debugInfo');
+        function loadAllData() {
+            // 1. 프로젝트 정보
+            loadProjectInfo();
             
-            try {
-                debugInfo.textContent = '1. 종합 요약 로드 중...';
-                console.log('섹션 1 로드 시작');
-                loadSection1();
-                console.log('섹션 1 로드 완료');
-            } catch (e) {
-                console.error('섹션 1 오류:', e);
-            }
+            // 2. 운송결과 리포트
+            loadSurveyData();
             
-            try {
-                debugInfo.textContent = '2. 운송결과 리포트 로드 중...';
-                console.log('섹션 2 로드 시작');
-                loadSection2();
-                console.log('섹션 2 로드 완료');
-            } catch (e) {
-                console.error('섹션 2 오류:', e);
-            }
+            // 3. 가속도 데이터
+            loadAccelData();
             
-            try {
-                debugInfo.textContent = '3. 가속도 데이터 로드 중...';
-                console.log('섹션 3 로드 시작');
-                loadSection3();
-                console.log('섹션 3 로드 완료');
-            } catch (e) {
-                console.error('섹션 3 오류:', e);
-            }
+            // 4. 기울기 데이터
+            loadTiltData();
             
-            try {
-                debugInfo.textContent = '4. 기울기 데이터 로드 중...';
-                console.log('섹션 4 로드 시작');
-                loadSection4();
-                console.log('섹션 4 로드 완료');
-            } catch (e) {
-                console.error('섹션 4 오류:', e);
-            }
+            // 5. 변형률 데이터
+            loadStrainData();
             
-            try {
-                debugInfo.textContent = '5. 변형률 데이터 로드 중...';
-                console.log('섹션 5 로드 시작');
-                loadSection5();
-                console.log('섹션 5 로드 완료');
-            } catch (e) {
-                console.error('섹션 5 오류:', e);
-            }
+            // 6. 부재 제작 오차
+            loadErrorData();
             
-            try {
-                debugInfo.textContent = '6. 부재 제작 오차 로드 중...';
-                console.log('섹션 6 로드 시작');
-                loadSection6();
-                console.log('섹션 6 로드 완료');
-            } catch (e) {
-                console.error('섹션 6 오류:', e);
-            }
-            
-            try {
-                debugInfo.textContent = '7. 종합 대시보드 로드 중...';
-                console.log('섹션 7 로드 시작');
-                loadSection7();
-                console.log('섹션 7 로드 완료');
-            } catch (e) {
-                console.error('섹션 7 오류:', e);
-            }
-            
-            debugInfo.textContent = '모든 섹션 로드 완료!';
-        }
-
-        // 1. 종합 요약 로드
-        function loadSection1() {
-            console.log('섹션 1 로드: 종합 요약');
-            const container = document.getElementById('section1Content');
-            
-            // 프로젝트 정보
-            const projectData = getFromStorage(STORAGE_KEYS.PROJECT_INFO) || {};
-            
-            container.innerHTML = `
-                <div class="card">
-                    <div class="card-header">
-                        <h3 class="card-title">프로젝트 정보</h3>
-                    </div>
-                    <div class="card-body">
-                        <div class="info-grid">
-                            <div class="info-item">
-                                <label class="info-label">공사명</label>
-                                <div class="info-value">${projectData.projectName || '-'}</div>
-                            </div>
-                            <div class="info-item">
-                                <label class="info-label">점검일</label>
-                                <div class="info-value">${projectData.inspectionDate || '-'}</div>
-                            </div>
-                            <div class="info-item">
-                                <label class="info-label">Prefab 종류</label>
-                                <div class="info-value">${projectData.prefabType || '-'}</div>
-                            </div>
-                            <div class="info-item">
-                                <label class="info-label">설치 위치</label>
-                                <div class="info-value">${projectData.location || '-'}</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card" style="margin-top: 1rem;">
-                    <div class="card-header">
-                        <h3 class="card-title">품질 점검 개요</h3>
-                    </div>
-                    <div class="card-body">
-                        <div class="stats-grid">
-                            <div class="stat-card">
-                                <div class="stat-label">서류 검증</div>
-                                <div class="stat-value">완료</div>
-                            </div>
-                            <div class="stat-card">
-                                <div class="stat-label">가속도 계측</div>
-                                <div class="stat-value">완료</div>
-                            </div>
-                            <div class="stat-card">
-                                <div class="stat-label">기울기 계측</div>
-                                <div class="stat-value">완료</div>
-                            </div>
-                            <div class="stat-card">
-                                <div class="stat-label">변형률 계측</div>
-                                <div class="stat-value">완료</div>
-                            </div>
-                            <div class="stat-card">
-                                <div class="stat-label">제작 오차</div>
-                                <div class="stat-value">완료</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
-
-        // 2. 운송결과 리포트 로드
-        function loadSection2() {
-            console.log('섹션 2 로드: 운송결과 리포트');
-            const container = document.getElementById('section2Content');
-            
-            const surveyData = getFromStorage(STORAGE_KEYS.SURVEY_DATA) || {};
-            
-            // 사진 1-2 (첫 번째 페이지)
-            let photosHTML1 = '';
-            for (let i = 1; i <= 2; i++) {
-                const photoKey = `photo${i}Preview`;
-                const photoData = getFromStorage(STORAGE_KEYS.PHOTOS)?.[photoKey];
-                const label = `현장사진 ${i}`;
-                
-                if (photoData) {
-                    photosHTML1 += `
-                        <div>
-                            <h4 style="margin: 0 0 0.5rem 0; font-size: 0.9rem; font-weight: 600; color: #333;">📷 ${label}</h4>
-                            <div class="photo-upload has-image">
-                                <img src="${photoData}">
-                            </div>
-                        </div>
-                    `;
-                } else {
-                    photosHTML1 += `
-                        <div>
-                            <h4 style="margin: 0 0 0.5rem 0; font-size: 0.9rem; font-weight: 600; color: #333;">📷 ${label}</h4>
-                            <div class="photo-upload">
-                                <span class="placeholder">(사진 없음)</span>
-                            </div>
-                        </div>
-                    `;
-                }
-            }
-            
-            // 사진 3-4 (두 번째 페이지)
-            let photosHTML2 = '';
-            for (let i = 3; i <= 4; i++) {
-                const photoKey = `photo${i}Preview`;
-                const photoData = getFromStorage(STORAGE_KEYS.PHOTOS)?.[photoKey];
-                const label = `현장사진 ${i}`;
-                
-                if (photoData) {
-                    photosHTML2 += `
-                        <div>
-                            <h4 style="margin: 0 0 0.5rem 0; font-size: 0.9rem; font-weight: 600; color: #333;">📷 ${label}</h4>
-                            <div class="photo-upload has-image">
-                                <img src="${photoData}">
-                            </div>
-                        </div>
-                    `;
-                } else {
-                    photosHTML2 += `
-                        <div>
-                            <h4 style="margin: 0 0 0.5rem 0; font-size: 0.9rem; font-weight: 600; color: #333;">📷 ${label}</h4>
-                            <div class="photo-upload">
-                                <span class="placeholder">(사진 없음)</span>
-                            </div>
-                        </div>
-                    `;
-                }
-            }
-            
-            // 평가 로직 (dashboard.html 및 section 7과 동일)
-            const q1Pass = surveyData.q1 === '수령';
-            const q2Pass = surveyData.q2 === '손상없음' || surveyData.q2 === '없음';
-            const q3Pass = surveyData.q3 === '양호';
-            const q4Pass = surveyData.q4 === '정상' || surveyData.q4 === '없음';
-            const q5Pass = surveyData.q5 === '적치됨' || surveyData.q5 === '적치완료';
-            
-            container.innerHTML = `
-                <div class="card">
-                    <div class="card-header">
-                        <h3 class="card-title">운송결과 점검 항목</h3>
-                    </div>
-                    <div class="card-body">
-                        <table class="result-table">
-                            <thead>
-                                <tr>
-                                    <th>평가 항목</th>
-                                    <th>측정 결과</th>
-                                    <th>허용 기준</th>
-                                    <th>판정</th>
-                                    <th>비고</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>품질보증서 수령</td>
-                                    <td>${surveyData.q1 || '-'}</td>
-                                    <td>수령 필수</td>
-                                    <td>${q1Pass ? '✅ 정상' : '❌ 부적합'}</td>
-                                    <td>${q1Pass ? '-' : '품질보증서 미수령'}</td>
-                                </tr>
-                                <tr>
-                                    <td>슬래브 손상/균열</td>
-                                    <td>${surveyData.q2 || '-'}</td>
-                                    <td>손상없음 또는 없음</td>
-                                    <td>${q2Pass ? '✅ 정상' : '❌ 부적합'}</td>
-                                    <td>${q2Pass ? '-' : '손상 또는 균열 확인됨'}</td>
-                                </tr>
-                                <tr>
-                                    <td>스펀지 재료 부착상태</td>
-                                    <td>${surveyData.q3 || '-'}</td>
-                                    <td>양호</td>
-                                    <td>${q3Pass ? '✅ 정상' : '❌ 부적합'}</td>
-                                    <td>${q3Pass ? '-' : '부착상태 불량'}</td>
-                                </tr>
-                                <tr>
-                                    <td>와이어/슬링벨트 결함</td>
-                                    <td>${surveyData.q4 || '-'}</td>
-                                    <td>정상 또는 없음</td>
-                                    <td>${q4Pass ? '✅ 정상' : '❌ 부적합'}</td>
-                                    <td>${q4Pass ? '-' : '결함 또는 파손 확인됨'}</td>
-                                </tr>
-                                <tr>
-                                    <td>슬래브 적치</td>
-                                    <td>${surveyData.q5 || '-'}</td>
-                                    <td>적치됨 또는 적치완료</td>
-                                    <td>${q5Pass ? '✅ 정상' : '❌ 부적합'}</td>
-                                    <td>${q5Pass ? '-' : '상차 순서 미고려'}</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <div class="card" style="margin-top: 1rem;">
-                    <div class="card-header">
-                        <h3 class="card-title">현장 사진 (1/2)</h3>
-                    </div>
-                    <div class="card-body">
-                        <div class="transport-photo-grid">
-                            ${photosHTML1}
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="card page-break" style="margin-top: 1rem;">
-                    <div class="card-header">
-                        <h3 class="card-title">현장 사진 (2/2)</h3>
-                    </div>
-                    <div class="card-body">
-                        <div class="transport-photo-grid">
-                            ${photosHTML2}
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
-
-        // 3. 가속도 데이터 로드
-        function loadSection3() {
-            console.log('섹션 3 로드: 가속도 데이터');
-            const container = document.getElementById('section3Content');
-            
-            const accelData = getFromStorage(STORAGE_KEYS.ACCELERATION_DATA) || {};
-            
-            // 측정 단계 표시
-            let phaseText = '-';
-            if (accelData.info && accelData.info.accelPhase) {
-                if (Array.isArray(accelData.info.accelPhase)) {
-                    phaseText = accelData.info.accelPhase.join(', ');
-                } else {
-                    phaseText = accelData.info.accelPhase;
-                }
-            }
-            
-            container.innerHTML = `
-                <div class="alert alert-info" style="margin-bottom: 1rem; padding: 1rem; background-color: #e0f2fe; border-left: 4px solid #0284c7; border-radius: 0.375rem;">
-                    <strong style="color: #0369a1;">📊 가속도 계측 안내</strong>
-                    <p style="margin-top: 0.5rem; color: #0c4a6e;">
-                        Prefab 부재의 운반 및 설치 과정에서 발생하는 가속도를 측정합니다. (1g = 9.8 m/s²)
-                    </p>
-                    <div style="margin-top: 0.75rem; padding: 0.5rem; background-color: white; border-radius: 0.25rem;">
-                        <strong>평가 기준:</strong><br>
-                        <span style="color: #10b981;">✓ 정상: 0.20G 미만</span> | 
-                        <span style="color: #f59e0b;">⚠ 주의: 0.20~0.30G</span> | 
-                        <span style="color: #f97316;">⚠️ 경고: 0.30~0.40G</span> | 
-                        <span style="color: #ef4444;">❌ 위험: 0.40G 초과</span>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <div class="card-header">
-                        <h3 class="card-title">계측 정보</h3>
-                    </div>
-                    <div class="card-body">
-                        <div class="info-grid">
-                            <div class="info-item">
-                                <label class="info-label">측정 단계</label>
-                                <div class="info-value">${phaseText}</div>
-                            </div>
-                            <div class="info-item">
-                                <label class="info-label">측정 장비</label>
-                                <div class="info-value">${accelData.info?.accelDevice || '-'}</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card" style="margin-top: 1rem;">
-                    <div class="card-header">
-                        <h3 class="card-title">가속도 측정 데이터</h3>
-                    </div>
-                    <div class="card-body">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>측정 지점</th>
-                                    <th>X축 (g)</th>
-                                    <th>Y축 (g)</th>
-                                    <th>Z축 (g)</th>
-                                    <th>합성 (g)</th>
-                                    <th>상태</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                ${generateAccelTableRows(accelData.measurements)}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <div class="card" style="margin-top: 1rem;">
-                    <div class="card-header">
-                        <h3 class="card-title">가속도 분포 그래프</h3>
-                    </div>
-                    <div class="card-body">
-                        <div class="chart-container">
-                            <canvas id="accelChart"></canvas>
-                        </div>
-                    </div>
-                </div>
-            `;
-            
-            // 가속도 측정 결과 요약 추가
-            const maxAccel = accelData.maxAcceleration || '-';
-            const avgAccel = accelData.avgAcceleration || '-';
-            const eventCount = accelData.eventCount || '-';
-            
-            container.innerHTML += `
-                <div class="card" style="margin-top: 1rem;">
-                    <div class="card-header">
-                        <h3 class="card-title">측정 결과 요약</h3>
-                    </div>
-                    <div class="card-body">
-                        <div class="stats-grid">
-                            <div class="stat-card">
-                                <div class="stat-label">최대 가속도</div>
-                                <div class="stat-value">${maxAccel} g</div>
-                            </div>
-                            <div class="stat-card">
-                                <div class="stat-label">평균 가속도</div>
-                                <div class="stat-value">${avgAccel} g</div>
-                            </div>
-                            <div class="stat-card">
-                                <div class="stat-label">이벤트 횟수</div>
-                                <div class="stat-value">${eventCount}회</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `;
-            
-            // 가속도 등급 평가 이미지 추가
-            const reportImage = getFromStorage(STORAGE_KEYS.ACCEL_REPORT_IMAGE);
-            if (reportImage) {
-                container.innerHTML += `
-                    <div class="card" style="margin-top: 1rem;">
-                        <div class="card-header">
-                            <h3 class="card-title">가속도 등급 평가</h3>
-                        </div>
-                        <div class="card-body">
-                            <div style="text-align: center;">
-                                <img src="${reportImage}" alt="가속도 등급 평가" style="max-width: 100%; height: auto; border: 1px solid #e5e7eb; border-radius: 0.375rem;">
-                            </div>
-                        </div>
-                    </div>
-                `;
-            }
-            
-            // 전체 가속도 그래프 이미지 추가
-            const graphImage = getFromStorage(STORAGE_KEYS.ACCEL_GRAPH_IMAGE);
-            if (graphImage) {
-                container.innerHTML += `
-                    <div class="card" style="margin-top: 1rem;">
-                        <div class="card-header">
-                            <h3 class="card-title">전체 가속도 그래프</h3>
-                        </div>
-                        <div class="card-body">
-                            <div style="text-align: center;">
-                                <img src="${graphImage}" alt="전체 가속도 그래프" style="max-width: 100%; height: auto; border: 1px solid #e5e7eb; border-radius: 0.375rem;">
-                            </div>
-                        </div>
-                    </div>
-                `;
-            }
-            
-            // 그래프 그리기
+            // 7. 종합 대시보드 (모든 데이터 로드 후)
             setTimeout(() => {
-                if (accelData.measurements && accelData.measurements.length > 0) {
-                    drawAccelChart(accelData.measurements);
-                }
-            }, 100);
+                loadDashboard();
+            }, 500);
         }
 
-        function generateAccelTableRows(measurements) {
-            if (!measurements || measurements.length === 0) {
-                return '<tr><td colspan="6" style="text-align: center; padding: 2rem; color: #6b7280;">⚠️ 가속도 측정 데이터가 없습니다. Page 3에서 데이터를 입력해주세요.</td></tr>';
+        function loadProjectInfo() {
+            const projectData = getFromStorage(STORAGE_KEYS.PROJECT_INFO);
+            if (projectData) {
+                document.getElementById('projectName').textContent = projectData.projectName || '-';
+                document.getElementById('inspectionDate').textContent = projectData.inspectionDate || '-';
+                document.getElementById('prefabType').textContent = projectData.prefabType || '-';
+                document.getElementById('location').textContent = projectData.location || '-';
+                document.getElementById('inspector').textContent = projectData.inspector || '-';
             }
+        }
+
+        function loadSurveyData() {
+            const surveyData = getFromStorage(STORAGE_KEYS.SURVEY_DATA);
+            const photos = getFromStorage(STORAGE_KEYS.PHOTOS);
             
-            const labels = ['측정 1', '측정 2'];
-            let html = '';
-            
-            measurements.forEach((m, i) => {
-                const status = m.result > 0.40 ? '위험' : m.result >= 0.30 ? '경고' : m.result >= 0.20 ? '주의' : '정상';
-                const statusClass = m.result > 0.40 ? 'danger' : m.result >= 0.30 ? 'warning' : m.result >= 0.20 ? 'warning' : 'success';
+            if (surveyData) {
+                // 평가 로직 (dashboard.html과 동일)
+                const q1Pass = surveyData.q1 === '수령';
+                const q2Pass = surveyData.q2 === '손상없음' || surveyData.q2 === '없음';
+                const q3Pass = surveyData.q3 === '양호';
+                const q4Pass = surveyData.q4 === '정상' || surveyData.q4 === '없음';
+                const q5Pass = surveyData.q5 === '적치됨' || surveyData.q5 === '적치완료';
                 
-                html += `
-                    <tr>
-                        <td>${labels[i] || `지점 ${i+1}`}</td>
-                        <td>${m.x.toFixed(3)}</td>
-                        <td>${m.y.toFixed(3)}</td>
-                        <td>${m.z.toFixed(3)}</td>
-                        <td>${m.result.toFixed(3)}</td>
-                        <td><span class="badge badge-${statusClass}">${status}</span></td>
-                    </tr>
-                `;
-            });
-            
-            return html;
-        }
-
-        function drawAccelChart(measurements) {
-            const labels = ['측정 1', '측정 2'];
-            const values = measurements.map(m => m.result);
-            const colors = values.map(v => {
-                if (v > 0.40) return '#ef4444';  // 위험: 0.40g 초과
-                if (v >= 0.30) return '#f97316';  // 경고: 0.30~0.40g
-                if (v >= 0.20) return '#f59e0b';  // 주의: 0.20~0.30g
-                return '#10b981';  // 정상: 0.20g 미만
-            });
-            
-            const chartData = {
-                labels: labels.slice(0, measurements.length),
-                values: values,
-                colors: colors,
-                thresholds: {
-                    upper: 0.40,
-                    warning: 0.30,
-                    caution: 0.20
-                },
-                title: '지점별 가속도 측정 결과',
-                yLabel: '가속도 (g)'
-            };
-            
-            drawBarChart('accelChart', chartData);
-        }
-
-        // 4. 기울기 데이터 로드
-        function loadSection4() {
-            console.log('섹션 4 로드: 기울기 데이터');
-            const container = document.getElementById('section4Content');
-            
-            const tiltData = getFromStorage(STORAGE_KEYS.TILT_DATA) || {};
-            
-            // 측정 단계 표시
-            let phaseText = '-';
-            if (tiltData.info && tiltData.info.tiltPhase) {
-                if (Array.isArray(tiltData.info.tiltPhase)) {
-                    phaseText = tiltData.info.tiltPhase.join(', ');
-                } else {
-                    phaseText = tiltData.info.tiltPhase;
-                }
-            }
-            
-            container.innerHTML = `
-                <div class="alert alert-info" style="margin-bottom: 1rem; padding: 1rem; background-color: #e0f2fe; border-left: 4px solid #0284c7; border-radius: 0.375rem;">
-                    <strong style="color: #0369a1;">📐 기울기 계측 안내</strong>
-                    <p style="margin-top: 0.5rem; color: #0c4a6e;">
-                        Prefab 부재의 설치 시 수평/수직 기울기를 측정합니다.
-                    </p>
-                    <div style="margin-top: 0.75rem; padding: 0.5rem; background-color: white; border-radius: 0.25rem;">
-                        <strong>평가 기준:</strong><br>
-                        <span style="color: #10b981;">✓ 정상: 3° 미만</span> | 
-                        <span style="color: #f59e0b;">⚠ 주의: 3~5°</span> | 
-                        <span style="color: #f97316;">⚠️ 경고: 5~10°</span> | 
-                        <span style="color: #ef4444;">❌ 위험: 10° 초과</span>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <div class="card-header">
-                        <h3 class="card-title">계측 정보</h3>
-                    </div>
-                    <div class="card-body">
-                        <div class="info-grid">
-                            <div class="info-item">
-                                <label class="info-label">측정 단계</label>
-                                <div class="info-value">${phaseText}</div>
-                            </div>
-                            <div class="info-item">
-                                <label class="info-label">측정 장비</label>
-                                <div class="info-value">${tiltData.info?.tiltDevice || '-'}</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card" style="margin-top: 1rem;">
-                    <div class="card-header">
-                        <h3 class="card-title">기울기 측정 데이터</h3>
-                    </div>
-                    <div class="card-body">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>측정 지점</th>
-                                    <th>X축 기울기 (°)</th>
-                                    <th>Y축 기울기 (°)</th>
-                                    <th>합성 기울기 (°)</th>
-                                    <th>상태</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                ${generateTiltTableRows(tiltData.measurements)}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <div class="card" style="margin-top: 1rem;">
-                    <div class="card-header">
-                        <h3 class="card-title">기울기 분포 그래프</h3>
-                    </div>
-                    <div class="card-body">
-                        <div class="chart-container">
-                            <canvas id="tiltChart"></canvas>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card" style="margin-top: 1rem;">
-                    <div class="card-header">
-                        <h3 class="card-title">기울기 조정 이력</h3>
-                    </div>
-                    <div class="card-body">
-                        <pre style="white-space: pre-wrap; font-family: inherit;">${tiltData.adjustmentHistory || '조정 이력 없음'}</pre>
-                    </div>
-                </div>
-            `;
-            
-            // 기울기 측정 결과 요약 추가
-            const maxTilt = tiltData.maxTilt || '-';
-            const avgTilt = tiltData.avgTilt || '-';
-            const tiltEventCount = tiltData.eventCount || '-';
-            
-            container.innerHTML += `
-                <div class="card" style="margin-top: 1rem;">
-                    <div class="card-header">
-                        <h3 class="card-title">측정 결과 요약</h3>
-                    </div>
-                    <div class="card-body">
-                        <div class="stats-grid">
-                            <div class="stat-card">
-                                <div class="stat-label">최대 기울기</div>
-                                <div class="stat-value">${maxTilt} °</div>
-                            </div>
-                            <div class="stat-card">
-                                <div class="stat-label">평균 기울기</div>
-                                <div class="stat-value">${avgTilt} °</div>
-                            </div>
-                            <div class="stat-card">
-                                <div class="stat-label">이벤트 횟수</div>
-                                <div class="stat-value">${tiltEventCount}회</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `;
-            
-            // 기울기 등급 평가 이미지 추가
-            const tiltReportImage = getFromStorage(STORAGE_KEYS.TILT_REPORT_IMAGE);
-            if (tiltReportImage) {
-                container.innerHTML += `
-                    <div class="card" style="margin-top: 1rem;">
-                        <div class="card-header">
-                            <h3 class="card-title">기울기 등급 평가</h3>
-                        </div>
-                        <div class="card-body">
-                            <div style="text-align: center;">
-                                <img src="${tiltReportImage}" alt="기울기 등급 평가" style="max-width: 100%; height: auto; border: 1px solid #e5e7eb; border-radius: 0.375rem;">
-                            </div>
-                        </div>
-                    </div>
-                `;
-            }
-            
-            // 전체 기울기 그래프 이미지 표시
-            const tiltGraphImage = getFromStorage(STORAGE_KEYS.TILT_GRAPH_IMAGE);
-            if (tiltGraphImage) {
-                container.innerHTML += `
-                    <div class="card" style="margin-top: 1rem;">
-                        <div class="card-header">
-                            <h3 class="card-title">전체 기울기 그래프</h3>
-                        </div>
-                        <div class="card-body">
-                            <div style="text-align: center;">
-                                <img src="${tiltGraphImage}" alt="전체 기울기 그래프" 
-                                     style="max-width: 100%; height: auto; border: 1px solid #e5e7eb; border-radius: 0.375rem;">
-                            </div>
-                        </div>
-                    </div>
-                `;
-            }
-            
-            // 그래프 그리기
-            setTimeout(() => {
-                if (tiltData.measurements && tiltData.measurements.length > 0) {
-                    drawTiltChart(tiltData.measurements);
-                }
-            }, 100);
-        }
-
-        function generateTiltTableRows(measurements) {
-            if (!measurements || measurements.length === 0) {
-                return '<tr><td colspan="5" style="text-align: center; padding: 2rem; color: #6b7280;">⚠️ 기울기 측정 데이터가 없습니다. Page 4에서 데이터를 입력해주세요.</td></tr>';
-            }
-            
-            const labels = ['상단 좌측', '상단 우측', '중앙'];
-            let html = '';
-            
-            measurements.forEach((m, i) => {
-                const result = m.result || 0;
-                let status = '정상';
-                let statusClass = 'success';
+                let html = '';
                 
-                if (result > 10.0) {
-                    status = '위험';
-                    statusClass = 'danger';
-                } else if (result >= 5.0) {
-                    status = '경고';
-                    statusClass = 'warning';
-                } else if (result >= 3.0) {
-                    status = '주의';
-                    statusClass = 'warning';
-                }
+                // Q1
+                html += `<tr>
+                    <td>품질보증서 수령</td>
+                    <td>${surveyData.q1 || '-'}</td>
+                    <td>수령 필수</td>
+                    <td><span class="badge ${q1Pass ? 'badge-success' : 'badge-danger'}">${q1Pass ? '합격' : '불합격'}</span></td>
+                    <td>${q1Pass ? '-' : '품질보증서 미수령'}</td>
+                </tr>`;
                 
-                html += `
-                    <tr>
-                        <td>${labels[i] || `지점 ${i+1}`}</td>
-                        <td>${m.x.toFixed(2)}</td>
-                        <td>${m.y.toFixed(2)}</td>
-                        <td>${result.toFixed(2)}</td>
-                        <td><span class="badge badge-${statusClass}">${status}</span></td>
-                    </tr>
-                `;
-            });
-            
-            return html;
-        }
-
-        function drawTiltChart(measurements) {
-            const labels = ['상단 좌측', '상단 우측', '중앙'];
-            const values = measurements.map(m => m.result || 0);
-            const colors = values.map(v => {
-                if (v > 10.0) return '#ef4444';  // 위험
-                if (v >= 5.0) return '#f97316';  // 경고
-                if (v >= 3.0) return '#f59e0b';  // 주의
-                return '#10b981';  // 정상
-            });
-            
-            const chartData = {
-                labels: labels.slice(0, measurements.length),
-                values: values,
-                colors: colors,
-                thresholds: {
-                    upper: 10.0,
-                    warning: 5.0,
-                    caution: 3.0
-                },
-                title: '지점별 기울기 측정 결과',
-                yLabel: '기울기 (°)'
-            };
-            
-            drawBarChart('tiltChart', chartData);
-        }
-
-        // 5. 변형률 데이터 로드
-        function loadSection5() {
-            console.log('섹션 5 로드: 변형률 데이터');
-            const container = document.getElementById('section5Content');
-            
-            const strainData = getFromStorage(STORAGE_KEYS.STRAIN_DATA) || {};
-            
-            // 측정 단계 표시
-            let phaseText = '-';
-            if (strainData.info && strainData.info.strainPhase) {
-                if (Array.isArray(strainData.info.strainPhase)) {
-                    phaseText = strainData.info.strainPhase.join(', ');
-                } else {
-                    phaseText = strainData.info.strainPhase;
-                }
-            }
-            
-            container.innerHTML = `
-                <div class="alert alert-info" style="margin-bottom: 1rem; padding: 1rem; background-color: #e0f2fe; border-left: 4px solid #0284c7; border-radius: 0.375rem;">
-                    <strong style="color: #0369a1;">📏 변형률 계측 안내</strong>
-                    <p style="margin-top: 0.5rem; color: #0c4a6e;">
-                        Prefab 부재의 응력 상태를 확인하기 위한 변형률 측정입니다. (마이크로 스트레인)
-                    </p>
-                    <div style="margin-top: 0.75rem; padding: 0.5rem; background-color: white; border-radius: 0.25rem;">
-                        <strong>평가 기준:</strong><br>
-                        <span style="color: #10b981;">✓ 정상: 60με 미만</span> | 
-                        <span style="color: #f59e0b;">⚠ 주의: 60~80με</span> | 
-                        <span style="color: #f97316;">⚠️ 경고: 80~130με</span> | 
-                        <span style="color: #ef4444;">❌ 위험: 130με 초과</span>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <div class="card-header">
-                        <h3 class="card-title">계측 정보</h3>
-                    </div>
-                    <div class="card-body">
-                        <div class="info-grid">
-                            <div class="info-item">
-                                <label class="info-label">측정 단계</label>
-                                <div class="info-value">${phaseText}</div>
-                            </div>
-                            <div class="info-item">
-                                <label class="info-label">측정 장비</label>
-                                <div class="info-value">${strainData.info?.strainDevice || '-'}</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card" style="margin-top: 1rem;">
-                    <div class="card-header">
-                        <h3 class="card-title">변형률 측정 데이터</h3>
-                    </div>
-                    <div class="card-body">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>측정 지점</th>
-                                    <th>측정값 (με)</th>
-                                    <th>상태</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                ${generateStrainTableRows(strainData.measurements)}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <div class="card" style="margin-top: 1rem;">
-                    <div class="card-header">
-                        <h3 class="card-title">변형률 분포 그래프</h3>
-                    </div>
-                    <div class="card-body">
-                        <div class="chart-container">
-                            <canvas id="strainChart"></canvas>
-                        </div>
-                    </div>
-                </div>
-            `;
-            
-            // 변형률 측정 결과 요약 추가
-            const maxStrain = strainData.maxStrain || '-';
-            const avgStrain = strainData.avgStrain || '-';
-            const strainEventCount = strainData.eventCount || '-';
-            
-            container.innerHTML += `
-                <div class="card" style="margin-top: 1rem;">
-                    <div class="card-header">
-                        <h3 class="card-title">측정 결과 요약</h3>
-                    </div>
-                    <div class="card-body">
-                        <div class="stats-grid">
-                            <div class="stat-card">
-                                <div class="stat-label">최대 변형률</div>
-                                <div class="stat-value">${maxStrain} με</div>
-                            </div>
-                            <div class="stat-card">
-                                <div class="stat-label">평균 변형률</div>
-                                <div class="stat-value">${avgStrain} με</div>
-                            </div>
-                            <div class="stat-card">
-                                <div class="stat-label">이벤트 횟수</div>
-                                <div class="stat-value">${strainEventCount}회</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `;
-            
-            // 변형률 등급 평가 이미지 추가
-            const strainReportImage = getFromStorage(STORAGE_KEYS.STRAIN_REPORT_IMAGE);
-            if (strainReportImage) {
-                container.innerHTML += `
-                    <div class="card" style="margin-top: 1rem;">
-                        <div class="card-header">
-                            <h3 class="card-title">변형률 등급 평가</h3>
-                        </div>
-                        <div class="card-body">
-                            <div style="text-align: center;">
-                                <img src="${strainReportImage}" alt="변형률 등급 평가" style="max-width: 100%; height: auto; border: 1px solid #e5e7eb; border-radius: 0.375rem;">
-                            </div>
-                        </div>
-                    </div>
-                `;
-            }
-            
-            // 전체 변형률 그래프 이미지 표시
-            const strainGraphImage = getFromStorage(STORAGE_KEYS.STRAIN_GRAPH_IMAGE);
-            if (strainGraphImage) {
-                container.innerHTML += `
-                    <div class="card" style="margin-top: 1rem;">
-                        <div class="card-header">
-                            <h3 class="card-title">전체 변형률 그래프</h3>
-                        </div>
-                        <div class="card-body">
-                            <div style="text-align: center;">
-                                <img src="${strainGraphImage}" alt="전체 변형률 그래프" 
-                                     style="max-width: 100%; height: auto; border: 1px solid #e5e7eb; border-radius: 0.375rem;">
-                            </div>
-                        </div>
-                    </div>
-                `;
-            }
-            
-            // 그래프 그리기
-            setTimeout(() => {
-                if (strainData.measurements && strainData.measurements.length > 0) {
-                    drawStrainChart(strainData.measurements);
-                }
-            }, 100);
-        }
-
-        function generateStrainTableRows(measurements) {
-            if (!measurements || measurements.length === 0) {
-                return '<tr><td colspan="3" style="text-align: center; padding: 2rem; color: #6b7280;">⚠️ 변형률 측정 데이터가 없습니다. Page 5에서 데이터를 입력해주세요.</td></tr>';
-            }
-            
-            const labels = ['측점1', '측점2', '측점3'];
-            let html = '';
-            
-            measurements.forEach((m, i) => {
-                const value = m.change || 0;
-                const absValue = Math.abs(value);
-                const status = absValue > 130 ? '위험' : absValue >= 80 ? '경고' : absValue >= 60 ? '주의' : '정상';
-                const statusClass = absValue > 130 ? 'danger' : absValue >= 80 ? 'warning' : absValue >= 60 ? 'warning' : 'success';
+                // Q2
+                html += `<tr>
+                    <td>슬래브 손상/균열</td>
+                    <td>${surveyData.q2 || '-'}</td>
+                    <td>손상없음 또는 없음</td>
+                    <td><span class="badge ${q2Pass ? 'badge-success' : 'badge-danger'}">${q2Pass ? '합격' : '불합격'}</span></td>
+                    <td>${q2Pass ? '-' : '슬래브에 손상 또는 균열 발견'}</td>
+                </tr>`;
                 
-                html += `
-                    <tr>
-                        <td>${labels[i] || `지점 ${i+1}`}</td>
-                        <td>${value.toFixed(1)}</td>
-                        <td><span class="badge badge-${statusClass}">${status}</span></td>
-                    </tr>
-                `;
-            });
-            
-            return html;
-        }
-
-        function drawStrainChart(measurements) {
-            const labels = ['측점1', '측점2', '측점3'];
-            const values = measurements.map(m => m.change || 0);
-            const colors = values.map(v => {
-                const absV = Math.abs(v);
-                if (absV > 130) return '#ef4444';  // 위험
-                if (absV >= 80) return '#f97316';  // 경고
-                if (absV >= 60) return '#f59e0b';  // 주의
-                return '#10b981';  // 정상
-            });
-            
-            const chartData = {
-                labels: labels.slice(0, measurements.length),
-                values: values,
-                colors: colors,
-                thresholds: {
-                    upper: 130,
-                    warning: 80,
-                    caution: 60
-                },
-                title: '지점별 변형률 측정 결과',
-                yLabel: '변형률 (με)'
-            };
-            
-            drawBarChart('strainChart', chartData);
-        }
-
-        // 6. 부재 제작 오차 로드
-        function loadSection6() {
-            console.log('섹션 6 로드: 부재 제작 오차');
-            const container = document.getElementById('section6Content');
-            
-            if (!container) {
-                console.error('section6Content 컨테이너를 찾을 수 없습니다!');
-                return;
+                // Q3
+                html += `<tr>
+                    <td>스펀지 재료 부착상태</td>
+                    <td>${surveyData.q3 || '-'}</td>
+                    <td>양호</td>
+                    <td><span class="badge ${q3Pass ? 'badge-success' : 'badge-danger'}">${q3Pass ? '합격' : '불합격'}</span></td>
+                    <td>${q3Pass ? '-' : '스펀지 재료 부착 불량'}</td>
+                </tr>`;
+                
+                // Q4
+                html += `<tr>
+                    <td>와이어/슬링벨트 결함</td>
+                    <td>${surveyData.q4 || '-'}</td>
+                    <td>정상 또는 없음</td>
+                    <td><span class="badge ${q4Pass ? 'badge-success' : 'badge-danger'}">${q4Pass ? '합격' : '불합격'}</span></td>
+                    <td>${q4Pass ? '-' : '와이어 또는 슬링벨트에 결함 발견'}</td>
+                </tr>`;
+                
+                // Q5
+                html += `<tr>
+                    <td>슬래브 적치</td>
+                    <td>${surveyData.q5 || '-'}</td>
+                    <td>적치됨 또는 적치완료</td>
+                    <td><span class="badge ${q5Pass ? 'badge-success' : 'badge-danger'}">${q5Pass ? '합격' : '불합격'}</span></td>
+                    <td>${q5Pass ? '-' : '슬래브 미적치'}</td>
+                </tr>`;
+                
+                document.getElementById('surveyTable').innerHTML = html;
             }
             
-            const errorData = getFromStorage(STORAGE_KEYS.FABRICATION_ERROR) || {};
-            console.log('부재 제작 오차 데이터:', errorData);
-            console.log('부재 제작 오차 info:', errorData.info);
-            console.log('부재 제작 오차 measurements:', errorData.measurements);
-            console.log('부재 제작 오차 notes:', errorData.notes);
-            
-            // 사진 데이터 - page6.html은 2개의 사진만 사용 (errorPhoto1, errorPhoto2)
-            let photosHTML = '';
-            const photos = getFromStorage(STORAGE_KEYS.PHOTOS) || {};
-            console.log('저장된 사진 데이터:', photos);
-            
-            for (let i = 1; i <= 2; i++) {
-                const photoKey = `errorPhoto${i}`;
-                const photoData = photos[photoKey];
-                const photoLabel = i === 1 ? '부재 측면' : '부재 정면';
-                
-                console.log(`${photoKey}:`, photoData ? '있음' : '없음');
-                
-                if (photoData) {
-                    photosHTML += `
-                        <div class="photo-upload has-image">
-                            <img src="${photoData}">
-                        </div>
-                    `;
-                } else {
-                    photosHTML += `
-                        <div class="photo-upload">
-                            <span class="placeholder">${photoLabel} (없음)</span>
-                        </div>
-                    `;
-                }
-            }
-            
-            container.innerHTML = `
-                <div class="card">
-                    <div class="card-header">
-                        <h3 class="card-title">제작 오차 측정 데이터</h3>
-                    </div>
-                    <div class="card-body">
-                        ${errorData.measurements && errorData.measurements.length > 0 ? `
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>측정 항목</th>
-                                    <th>설계값 (mm)</th>
-                                    <th>실측가 (mm)</th>
-                                    <th>오차 (mm)</th>
-                                    <th>허용오차 (mm)</th>
-                                    <th>상태</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                ${generateErrorTableRows(errorData.measurements)}
-                            </tbody>
-                        </table>
-                        ` : `
-                        <div class="alert alert-warning" style="padding: 2rem; text-align: center; background-color: #fff3cd; border: 1px solid #ffc107; border-radius: 0.375rem;">
-                            <strong>⚠️ 데이터 없음</strong>
-                            <p style="margin-top: 0.5rem; color: #856404;">부재 제작 오차 측정 데이터가 없습니다.<br>Page 6에서 데이터를 입력해주세요.</p>
-                        </div>
-                        `}
-                    </div>
-                </div>
-
-                ${errorData.measurements && errorData.measurements.length > 0 ? `
-                <div class="card" style="margin-top: 1rem;">
-                    <div class="card-header">
-                        <h3 class="card-title">제작 오차 분포 그래프</h3>
-                    </div>
-                    <div class="card-body">
-                        <div class="chart-container">
-                            <canvas id="errorChart"></canvas>
-                        </div>
-                    </div>
-                </div>
-                ` : ''}
-
-                ${photos.errorPhoto1 || photos.errorPhoto2 ? `
-                <div class="card" style="margin-top: 1rem;">
-                    <div class="card-header">
-                        <h3 class="card-title">부재 사진</h3>
-                    </div>
-                    <div class="card-body">
-                        <div class="error-photo-grid">
-                            ${photosHTML}
-                        </div>
-                    </div>
-                </div>
-                ` : ''}
-                
-                ${errorData.notes ? `
-                <div class="card" style="margin-top: 1rem;">
-                    <div class="card-header">
-                        <h3 class="card-title">비고 및 특이사항</h3>
-                    </div>
-                    <div class="card-body">
-                        <p style="white-space: pre-wrap;">${errorData.notes}</p>
-                    </div>
-                </div>
-                ` : ''}
-            `;
-            
-            console.log('섹션 6 HTML 설정 완료');
-            
-            // 그래프 그리기
-            setTimeout(() => {
-                console.log('제작 오차 그래프 그리기 시도');
-                if (errorData.measurements && errorData.measurements.length > 0) {
-                    console.log('측정 데이터 있음, 그래프 그리기 시작');
-                    try {
-                        drawErrorChart(errorData.measurements);
-                        console.log('제작 오차 그래프 그리기 완료');
-                    } catch (error) {
-                        console.error('제작 오차 그래프 그리기 오류:', error);
+            // 현장 사진 로드
+            if (photos) {
+                let photoHTML = '';
+                for (let i = 1; i <= 4; i++) {
+                    const photoKey = `photo${i}Preview`;
+                    if (photos[photoKey]) {
+                        photoHTML += `<img src="${photos[photoKey]}" alt="현장사진 ${i}">`;
                     }
-                } else {
-                    console.log('측정 데이터 없음, 그래프 스킵');
                 }
-            }, 100);
+                if (photoHTML) {
+                    document.getElementById('surveyPhotos').innerHTML = photoHTML;
+                }
+            }
         }
 
-        function generateErrorTableRows(measurements) {
-            console.log('generateErrorTableRows 호출, measurements:', measurements);
+        function loadAccelData() {
+            const accelData = getFromStorage(STORAGE_KEYS.ACCELERATION_DATA);
             
-            if (!measurements || measurements.length === 0) {
-                console.log('측정 데이터 없음');
-                return '<tr><td colspan="6" style="text-align: center; padding: 2rem; color: #6b7280;">⚠️ 제작 오차 측정 데이터가 없습니다. Page 6에서 데이터를 입력해주세요.</td></tr>';
-            }
-            
-            // page6.html의 실제 항목명 사용 (3개만)
-            const labels = ['패널 길이', '패널 폭', '패널 두께'];
-            let html = '';
-            
-            measurements.forEach((m, i) => {
-                console.log(`측정 항목 ${i}:`, m);
+            if (accelData) {
+                // 통계 정보
+                document.getElementById('maxAccel').textContent = (accelData.maxAcceleration || '-') + ' g';
+                document.getElementById('avgAccel').textContent = (accelData.avgAcceleration || '-') + ' g';
+                document.getElementById('accelEvents').textContent = (accelData.eventCount || '-') + ' 회';
                 
-                // page6.html은 { design, measured, error } 구조 사용
-                const design = m.design || 0;
-                const measured = m.measured || 0;
-                const error = m.error || 0;
-                
-                // 허용오차 계산 (page6.html의 로직 복제)
-                let tolerance = 5; // 기본값
-                let toleranceDisplay = '±5.0';
-                
-                if (i === 0) { // 패널 길이
-                    const onePct = design * 0.01;
-                    tolerance = Math.min(onePct, 30);
-                    toleranceDisplay = `±${tolerance.toFixed(1)}`;
-                } else if (i === 1) { // 패널 폭
-                    const onePct = design * 0.01;
-                    tolerance = Math.min(onePct, 30);
-                    toleranceDisplay = `±${tolerance.toFixed(1)}`;
-                } else if (i === 2) { // 패널 두께
-                    toleranceDisplay = '+10.0 ~ -5.0';
-                    // 두께는 비대칭 허용오차: +10mm ~ -5mm
-                    const passCheck = error >= -5 && error <= 10;
-                    const status = passCheck ? '합격' : '불합격';
-                    const statusClass = passCheck ? 'success' : 'danger';
+                // 측정 데이터 테이블
+                if (accelData.measurements && accelData.measurements.length > 0) {
+                    let html = '';
+                    const labels = ['측정 1', '측정 2'];
                     
-                    html += `
-                        <tr>
-                            <td>${labels[i]}</td>
-                            <td>${design.toFixed(1)}</td>
-                            <td>${measured.toFixed(1)}</td>
-                            <td>${error.toFixed(1)}</td>
-                            <td>${toleranceDisplay}</td>
-                            <td><span class="badge badge-${statusClass}">${status}</span></td>
-                        </tr>
-                    `;
-                    return;
+                    accelData.measurements.forEach((m, i) => {
+                        const result = m.result || 0;
+                        let status = '정상';
+                        let badgeClass = 'badge-success';
+                        
+                        if (result > 0.40) {
+                            status = '위험';
+                            badgeClass = 'badge-danger';
+                        } else if (result >= 0.30) {
+                            status = '경고';
+                            badgeClass = 'badge-warning';
+                        } else if (result >= 0.20) {
+                            status = '주의';
+                            badgeClass = 'badge-warning';
+                        }
+                        
+                        html += `<tr>
+                            <td>${labels[i] || `지점 ${i+1}`}</td>
+                            <td>${m.x.toFixed(3)}</td>
+                            <td>${m.y.toFixed(3)}</td>
+                            <td>${m.z.toFixed(3)}</td>
+                            <td>${result.toFixed(3)}</td>
+                            <td><span class="badge ${badgeClass}">${status}</span></td>
+                        </tr>`;
+                    });
+                    
+                    document.getElementById('accelTable').innerHTML = html;
+                } else {
+                    document.getElementById('accelTable').innerHTML = '<tr><td colspan="6" style="text-align: center; color: #6b7280;">⚠️ 가속도 측정 데이터가 없습니다.</td></tr>';
                 }
                 
-                // 길이, 폭은 대칭 허용오차
-                const status = Math.abs(error) <= tolerance ? '합격' : '불합격';
-                const statusClass = Math.abs(error) <= tolerance ? 'success' : 'danger';
+                // 리포트 이미지
+                const reportImage = getFromStorage(STORAGE_KEYS.ACCEL_REPORT_IMAGE);
+                if (reportImage) {
+                    document.getElementById('accelReportImage').innerHTML = `<img src="${reportImage}" style="max-width: 100%; height: auto;">`;
+                } else {
+                    document.getElementById('accelReportCard').style.display = 'none';
+                }
+            }
+        }
+
+        function loadTiltData() {
+            const tiltData = getFromStorage(STORAGE_KEYS.TILT_DATA);
+            
+            if (tiltData) {
+                // 통계 정보
+                document.getElementById('maxTilt').textContent = (tiltData.maxTilt || '-') + ' °';
+                document.getElementById('avgTilt').textContent = (tiltData.avgTilt || '-') + ' °';
+                document.getElementById('tiltEvents').textContent = (tiltData.eventCount || '-') + ' 회';
                 
-                html += `
-                    <tr>
+                // 측정 데이터 테이블
+                if (tiltData.measurements && tiltData.measurements.length > 0) {
+                    let html = '';
+                    const labels = ['상단 좌측', '상단 우측', '중앙'];
+                    
+                    tiltData.measurements.forEach((m, i) => {
+                        const result = m.result || 0;
+                        let status = '정상';
+                        let badgeClass = 'badge-success';
+                        
+                        if (result > 10.0) {
+                            status = '위험';
+                            badgeClass = 'badge-danger';
+                        } else if (result >= 5.0) {
+                            status = '경고';
+                            badgeClass = 'badge-warning';
+                        } else if (result >= 3.0) {
+                            status = '주의';
+                            badgeClass = 'badge-warning';
+                        }
+                        
+                        html += `<tr>
+                            <td>${labels[i] || `지점 ${i+1}`}</td>
+                            <td>${m.x.toFixed(2)}</td>
+                            <td>${m.y.toFixed(2)}</td>
+                            <td>${result.toFixed(2)}</td>
+                            <td><span class="badge ${badgeClass}">${status}</span></td>
+                        </tr>`;
+                    });
+                    
+                    document.getElementById('tiltTable').innerHTML = html;
+                } else {
+                    document.getElementById('tiltTable').innerHTML = '<tr><td colspan="5" style="text-align: center; color: #6b7280;">⚠️ 기울기 측정 데이터가 없습니다.</td></tr>';
+                }
+                
+                // 리포트 이미지
+                const reportImage = getFromStorage(STORAGE_KEYS.TILT_REPORT_IMAGE);
+                if (reportImage) {
+                    document.getElementById('tiltReportImage').innerHTML = `<img src="${reportImage}" style="max-width: 100%; height: auto;">`;
+                } else {
+                    document.getElementById('tiltReportCard').style.display = 'none';
+                }
+            }
+        }
+
+        function loadStrainData() {
+            const strainData = getFromStorage(STORAGE_KEYS.STRAIN_DATA);
+            
+            if (strainData) {
+                // 통계 정보
+                document.getElementById('maxStrain').textContent = (strainData.maxStrain || '-') + ' με';
+                document.getElementById('avgStrain').textContent = (strainData.avgStrain || '-') + ' με';
+                document.getElementById('strainEvents').textContent = (strainData.eventCount || '-') + ' 회';
+                
+                // 측정 데이터 테이블
+                if (strainData.measurements && strainData.measurements.length > 0) {
+                    let html = '';
+                    const labels = ['측점1', '측점2', '측점3'];
+                    
+                    strainData.measurements.forEach((m, i) => {
+                        const value = m.change || 0;
+                        const absValue = Math.abs(value);
+                        let status = '정상';
+                        let badgeClass = 'badge-success';
+                        
+                        if (absValue > 130) {
+                            status = '위험';
+                            badgeClass = 'badge-danger';
+                        } else if (absValue >= 80) {
+                            status = '경고';
+                            badgeClass = 'badge-warning';
+                        } else if (absValue >= 60) {
+                            status = '주의';
+                            badgeClass = 'badge-warning';
+                        }
+                        
+                        html += `<tr>
+                            <td>${labels[i] || `지점 ${i+1}`}</td>
+                            <td>${value.toFixed(1)}</td>
+                            <td><span class="badge ${badgeClass}">${status}</span></td>
+                        </tr>`;
+                    });
+                    
+                    document.getElementById('strainTable').innerHTML = html;
+                } else {
+                    document.getElementById('strainTable').innerHTML = '<tr><td colspan="3" style="text-align: center; color: #6b7280;">⚠️ 변형률 측정 데이터가 없습니다.</td></tr>';
+                }
+                
+                // 리포트 이미지
+                const reportImage = getFromStorage(STORAGE_KEYS.STRAIN_REPORT_IMAGE);
+                if (reportImage) {
+                    document.getElementById('strainReportImage').innerHTML = `<img src="${reportImage}" style="max-width: 100%; height: auto;">`;
+                } else {
+                    document.getElementById('strainReportCard').style.display = 'none';
+                }
+            }
+        }
+
+        function loadErrorData() {
+            const errorData = getFromStorage(STORAGE_KEYS.FABRICATION_ERROR);
+            const photos = getFromStorage(STORAGE_KEYS.PHOTOS);
+            
+            if (errorData && errorData.measurements && errorData.measurements.length > 0) {
+                let html = '';
+                const labels = ['패널 길이', '패널 폭', '패널 두께'];
+                
+                errorData.measurements.forEach((m, i) => {
+                    const design = m.design || 0;
+                    const measured = m.measured || 0;
+                    const error = m.error || 0;
+                    
+                    let tolerance = '';
+                    let isPass = false;
+                    
+                    if (i === 0 || i === 1) {
+                        // 패널 길이/폭
+                        const onePct = design * 0.01;
+                        const tol = Math.min(onePct, 30);
+                        tolerance = `±${tol.toFixed(1)}mm`;
+                        isPass = Math.abs(error) <= tol;
+                    } else {
+                        // 패널 두께
+                        tolerance = '+10.0 ~ -5.0mm';
+                        isPass = error >= -5 && error <= 10;
+                    }
+                    
+                    html += `<tr>
                         <td>${labels[i]}</td>
                         <td>${design.toFixed(1)}</td>
                         <td>${measured.toFixed(1)}</td>
                         <td>${error.toFixed(1)}</td>
-                        <td>${toleranceDisplay}</td>
-                        <td><span class="badge badge-${statusClass}">${status}</span></td>
-                    </tr>
-                `;
-            });
-            
-            console.log('생성된 HTML:', html);
-            return html;
-        }
-
-        function drawErrorChart(measurements) {
-            console.log('drawErrorChart 호출, measurements:', measurements);
-            
-            // page6.html의 실제 항목명 사용 (3개만)
-            const labels = ['패널 길이', '패널 폭', '패널 두께'];
-            const values = measurements.map(m => Math.abs(m.error || 0));
-            
-            // 각 항목의 허용오차 계산
-            const tolerances = measurements.map((m, i) => {
-                if (i === 0 || i === 1) { // 길이, 폭
-                    const onePct = (m.design || 0) * 0.01;
-                    return Math.min(onePct, 30);
-                } else { // 두께
-                    return 10; // 상한 허용오차
-                }
-            });
-            
-            // 합격/불합격 색상
-            const colors = measurements.map((m, i) => {
-                const error = m.error || 0;
-                
-                if (i === 2) { // 패널 두께 (비대칭)
-                    return (error >= -5 && error <= 10) ? '#10b981' : '#ef4444';
-                } else { // 길이, 폭 (대칭)
-                    const design = m.design || 0;
-                    const onePct = design * 0.01;
-                    const tolerance = Math.min(onePct, 30);
-                    return Math.abs(error) <= tolerance ? '#10b981' : '#ef4444';
-                }
-            });
-            
-            console.log('차트 labels:', labels.slice(0, measurements.length));
-            console.log('차트 values:', values);
-            console.log('차트 colors:', colors);
-            console.log('차트 tolerances:', tolerances);
-            
-            const chartData = {
-                labels: labels.slice(0, measurements.length),
-                values: values,
-                colors: colors,
-                thresholds: {
-                    upper: Math.max(...tolerances)
-                },
-                title: '항목별 제작 오차',
-                yLabel: '오차 (mm)'
-            };
-            
-            console.log('차트 데이터:', chartData);
-            
-            try {
-                drawBarChart('errorChart', chartData);
-                console.log('차트 그리기 성공');
-            } catch (error) {
-                console.error('차트 그리기 실패:', error);
-            }
-        }
-
-        // 7. 종합 대시보드 로드
-        function loadSection7() {
-            console.log('섹션 7 로드: 종합 대시보드');
-            const container = document.getElementById('section7Content');
-            
-            const projectData = getFromStorage(STORAGE_KEYS.PROJECT_INFO) || {};
-            const surveyData = getFromStorage(STORAGE_KEYS.SURVEY_DATA) || {};
-            const accelData = getFromStorage(STORAGE_KEYS.ACCELERATION_DATA) || {};
-            const tiltData = getFromStorage(STORAGE_KEYS.TILT_DATA) || {};
-            const strainData = getFromStorage(STORAGE_KEYS.STRAIN_DATA) || {};
-            const errorData = getFromStorage(STORAGE_KEYS.FABRICATION_ERROR) || {};
-            
-            // 종합 평가 로직
-            const overallStatus = calculateOverallStatus({
-                survey: surveyData,
-                accel: accelData,
-                tilt: tiltData,
-                strain: strainData,
-                error: errorData
-            });
-            
-            // 진행률 계산
-            let completedCount = 0;
-            if (surveyData && Object.keys(surveyData).length > 0) completedCount++;
-            if (accelData && (accelData.maxAcceleration !== undefined || (accelData.measurements && accelData.measurements.length > 0))) completedCount++;
-            if (tiltData && (tiltData.maxTilt !== undefined || (tiltData.measurements && tiltData.measurements.length > 0))) completedCount++;
-            if (strainData && (strainData.maxStrain !== undefined || (strainData.measurements && strainData.measurements.length > 0))) completedCount++;
-            if (errorData && errorData.measurements && errorData.measurements.length > 0) completedCount++;
-            
-            const progressPercent = (completedCount / 5 * 100).toFixed(0);
-            
-            // 주요 이슈 수집
-            const issues = [];
-            
-            // 운송결과 리포트 이슈
-            if (surveyData && Object.keys(surveyData).length > 0) {
-                if (surveyData.q1 !== '수령') issues.push('⚠️ 품질보증서 미수령');
-                if (surveyData.q2 && surveyData.q2 !== '손상없음' && surveyData.q2 !== '없음') issues.push('⚠️ 슬래브 손상/균열 발견');
-                if (surveyData.q3 !== '양호') issues.push('⚠️ 스펀지 재료 부착 불량');
-                if (surveyData.q4 && surveyData.q4 !== '정상' && surveyData.q4 !== '없음') issues.push('⚠️ 와이어/슬링벨트 결함');
-                if (surveyData.q5 !== '적치됨' && surveyData.q5 !== '적치완료') issues.push('⚠️ 슬래브 미적치');
-            }
-            
-            // 가속도 이슈 (0.40g 초과)
-            let maxAccelValue = 0;
-            if (accelData.maxAcceleration !== undefined) {
-                maxAccelValue = parseFloat(accelData.maxAcceleration) || 0;
-            } else if (accelData.measurements && accelData.measurements.length > 0) {
-                maxAccelValue = Math.max(...accelData.measurements.map(m => m.result || 0));
-            }
-            if (maxAccelValue > 0.40) {
-                issues.push(`⚠️ 가속도 위험 수준 (최대 ${maxAccelValue.toFixed(3)}g)`);
-            }
-            
-            // 기울기 이슈 (10.0° 초과)
-            let maxTiltValue = 0;
-            if (tiltData.maxTilt !== undefined) {
-                maxTiltValue = parseFloat(tiltData.maxTilt) || 0;
-            } else if (tiltData.measurements && tiltData.measurements.length > 0) {
-                maxTiltValue = Math.max(...tiltData.measurements.map(m => m.result || 0));
-            }
-            if (maxTiltValue > 10.0) {
-                issues.push(`⚠️ 기울기 위험 수준 (최대 ${maxTiltValue.toFixed(2)}°)`);
-            }
-            
-            // 변형률 이슈 (130με 초과)
-            let maxStrainValue = 0;
-            if (strainData.maxStrain !== undefined) {
-                maxStrainValue = Math.abs(parseFloat(strainData.maxStrain) || 0);
-            } else if (strainData.measurements && strainData.measurements.length > 0) {
-                maxStrainValue = Math.max(...strainData.measurements.map(m => Math.abs(m.change || 0)));
-            }
-            if (maxStrainValue > 130) {
-                issues.push(`⚠️ 변형률 허용치 초과 (최대 ${maxStrainValue.toFixed(1)}με)`);
-            }
-            
-            // 제작 오차 이슈
-            if (errorData.measurements && errorData.measurements.length > 0) {
-                const labels = ['패널 길이', '패널 폭', '패널 두께'];
-                errorData.measurements.forEach((m, i) => {
-                    const design = m.design || 0;
-                    const error = m.error || 0;
-                    let isPass = false;
-                    
-                    if (i === 0 || i === 1) {
-                        const tolerance = Math.min(design * 0.01, 30);
-                        isPass = Math.abs(error) <= tolerance;
-                    } else if (i === 2) {
-                        isPass = error >= -5 && error <= 10;
-                    }
-                    
-                    if (!isPass) {
-                        issues.push(`⚠️ ${labels[i]} 제작 오차 초과 (${error.toFixed(1)}mm)`);
-                    }
+                        <td>${tolerance}</td>
+                        <td><span class="badge ${isPass ? 'badge-success' : 'badge-danger'}">${isPass ? '합격' : '불합격'}</span></td>
+                    </tr>`;
                 });
+                
+                document.getElementById('errorTable').innerHTML = html;
+            } else {
+                document.getElementById('errorTable').innerHTML = '<tr><td colspan="6" style="text-align: center; color: #6b7280;">⚠️ 제작 오차 측정 데이터가 없습니다.</td></tr>';
             }
             
-            const issuesHTML = issues.length > 0 
-                ? `<ul style="margin: 0; padding-left: 1.5rem;">${issues.map(issue => `<li>${issue}</li>`).join('')}</ul>`
-                : '<p style="text-align: center; color: var(--success-color); font-weight: 600;">✅ 주요 이슈 없음</p>';
-            
-            container.innerHTML = `
-                <!-- 프로젝트 정보 -->
-                <div class="card">
-                    <div class="card-header">
-                        <h3 class="card-title">프로젝트 정보</h3>
-                    </div>
-                    <div class="card-body">
-                        <div class="info-grid">
-                            <div class="info-item">
-                                <div class="info-label">공사명</div>
-                                <div class="info-value">${projectData.projectName || '-'}</div>
-                            </div>
-                            <div class="info-item">
-                                <div class="info-label">점검일</div>
-                                <div class="info-value">${projectData.inspectionDate || '-'}</div>
-                            </div>
-                            <div class="info-item">
-                                <div class="info-label">Prefab 종류</div>
-                                <div class="info-value">${projectData.prefabType || '-'}</div>
-                            </div>
-                            <div class="info-item">
-                                <div class="info-label">점검자</div>
-                                <div class="info-value">${projectData.inspector || '-'}</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- 종합 품질 평가 -->
-                <div class="card" style="margin-top: 1rem;">
-                    <div class="card-header">
-                        <h3 class="card-title">종합 품질 평가</h3>
-                    </div>
-                    <div class="card-body">
-                        <div class="stats-grid">
-                            <div class="stat-card ${overallStatus.class}">
-                                <div class="stat-label">종합 평가</div>
-                                <div class="stat-value">${overallStatus.status}</div>
-                            </div>
-                            <div class="stat-card">
-                                <div class="stat-label">검사 항목</div>
-                                <div class="stat-value">${overallStatus.totalItems}개</div>
-                            </div>
-                            <div class="stat-card success">
-                                <div class="stat-label">합격 항목</div>
-                                <div class="stat-value">${overallStatus.passedItems}개</div>
-                            </div>
-                            <div class="stat-card ${overallStatus.failedItems > 0 ? 'danger' : ''}">
-                                <div class="stat-label">불합격 항목</div>
-                                <div class="stat-value">${overallStatus.failedItems}개</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 상세 평가 결과 -->
-                <div class="card" style="margin-top: 1rem;">
-                    <div class="card-header">
-                        <h3 class="card-title">상세 평가 결과</h3>
-                    </div>
-                    <div class="card-body">
-                        ${overallStatus.details}
-                    </div>
-                </div>
-                
-                <!-- 품질관리 진행률 -->
-                <div class="card" style="margin-top: 1rem;">
-                    <div class="card-header">
-                        <h3 class="card-title">품질관리 진행률</h3>
-                    </div>
-                    <div class="card-body">
-                        <div style="margin-bottom: 1rem;">
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-                                <span style="font-weight: 600;">전체 진행률</span>
-                                <span style="font-weight: 700; font-size: 1.25rem;">${progressPercent}%</span>
-                            </div>
-                            <div class="progress-bar">
-                                <div class="progress-fill" style="width: ${progressPercent}%;">${progressPercent}%</div>
-                            </div>
-                        </div>
-                        <div style="font-size: 0.875rem; color: var(--text-secondary);">
-                            <p>완료된 항목: <span style="font-weight: 600; color: var(--success-color);">${completedCount}</span> / 5</p>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- 주요 이슈 및 권고사항 -->
-                <div class="card" style="margin-top: 1rem;">
-                    <div class="card-header">
-                        <h3 class="card-title">주요 이슈 및 권고사항</h3>
-                    </div>
-                    <div class="card-body">
-                        ${issuesHTML}
-                    </div>
-                </div>
-
-                <!-- 최종 품질 판정 -->
-                <div class="card" style="margin-top: 1rem;">
-                    <div class="card-header">
-                        <h3 class="card-title">최종 품질 판정</h3>
-                    </div>
-                    <div class="card-body">
-                        <div class="alert ${overallStatus.alertClass}">
-                            <strong>${overallStatus.recommendation}</strong>
-                        </div>
-                    </div>
-                </div>
-            `;
+            // 부재 사진
+            if (photos && (photos.errorPhoto1 || photos.errorPhoto2)) {
+                let photoHTML = '';
+                if (photos.errorPhoto1) photoHTML += `<img src="${photos.errorPhoto1}" alt="부재 사진 1">`;
+                if (photos.errorPhoto2) photoHTML += `<img src="${photos.errorPhoto2}" alt="부재 사진 2">`;
+                document.getElementById('errorPhotos').innerHTML = photoHTML;
+            } else {
+                document.getElementById('errorPhotosCard').style.display = 'none';
+            }
         }
 
-        function calculateOverallStatus(data) {
+        function loadDashboard() {
+            // 모든 데이터 수집
+            const surveyData = getFromStorage(STORAGE_KEYS.SURVEY_DATA);
+            const accelData = getFromStorage(STORAGE_KEYS.ACCELERATION_DATA);
+            const tiltData = getFromStorage(STORAGE_KEYS.TILT_DATA);
+            const strainData = getFromStorage(STORAGE_KEYS.STRAIN_DATA);
+            const errorData = getFromStorage(STORAGE_KEYS.FABRICATION_ERROR);
+            
             let totalItems = 0;
             let passedItems = 0;
             let failedItems = 0;
-            let tableRows = '';
+            let detailHTML = '';
+            const issues = [];
             
-            // 운송결과 리포트 평가 (각 질문을 개별 행으로)
-            if (data.survey && Object.keys(data.survey).length > 0) {
+            // 1. 운송결과 평가 (5개 항목)
+            if (surveyData) {
+                const q1Pass = surveyData.q1 === '수령';
+                const q2Pass = surveyData.q2 === '손상없음' || surveyData.q2 === '없음';
+                const q3Pass = surveyData.q3 === '양호';
+                const q4Pass = surveyData.q4 === '정상' || surveyData.q4 === '없음';
+                const q5Pass = surveyData.q5 === '적치됨' || surveyData.q5 === '적치완료';
+                
                 totalItems += 5;
+                if (q1Pass) passedItems++; else { failedItems++; issues.push('⚠️ 품질보증서 미수령'); }
+                if (q2Pass) passedItems++; else { failedItems++; issues.push('⚠️ 슬래브 손상/균열 발견'); }
+                if (q3Pass) passedItems++; else { failedItems++; issues.push('⚠️ 스펀지 재료 부착 불량'); }
+                if (q4Pass) passedItems++; else { failedItems++; issues.push('⚠️ 와이어/슬링벨트 결함'); }
+                if (q5Pass) passedItems++; else { failedItems++; issues.push('⚠️ 슬래브 미적치'); }
                 
-                // Q1: 품질보증서 수령
-                const q1Pass = data.survey.q1 === '수령';
-                if (q1Pass) passedItems++; else failedItems++;
-                tableRows += `
-                    <tr>
-                        <td>품질보증서 수령</td>
-                        <td>${data.survey.q1 || '-'}</td>
-                        <td>수령 필수</td>
-                        <td><span class="badge ${q1Pass ? 'badge-success' : 'badge-danger'}">${q1Pass ? '합격' : '불합격'}</span></td>
-                        <td>${q1Pass ? '-' : '품질보증서를 수령하지 않았습니다.'}</td>
-                    </tr>
-                `;
-                
-                // Q2: 슬래브 손상/균열
-                const q2Pass = data.survey.q2 === '손상없음' || data.survey.q2 === '없음';
-                if (q2Pass) passedItems++; else failedItems++;
-                tableRows += `
-                    <tr>
-                        <td>슬래브 손상/균열</td>
-                        <td>${data.survey.q2 || '-'}</td>
-                        <td>손상없음 또는 없음</td>
-                        <td><span class="badge ${q2Pass ? 'badge-success' : 'badge-danger'}">${q2Pass ? '합격' : '불합격'}</span></td>
-                        <td>${q2Pass ? '-' : '슬래브에 손상 또는 균열이 발견되었습니다.'}</td>
-                    </tr>
-                `;
-                
-                // Q3: 스펀지 재료 부착상태
-                const q3Pass = data.survey.q3 === '양호';
-                if (q3Pass) passedItems++; else failedItems++;
-                tableRows += `
-                    <tr>
-                        <td>스펀지 재료 부착상태</td>
-                        <td>${data.survey.q3 || '-'}</td>
-                        <td>양호</td>
-                        <td><span class="badge ${q3Pass ? 'badge-success' : 'badge-danger'}">${q3Pass ? '합격' : '불합격'}</span></td>
-                        <td>${q3Pass ? '-' : '스펀지 재료 부착상태가 불량합니다.'}</td>
-                    </tr>
-                `;
-                
-                // Q4: 와이어/슬링벨트 결함
-                const q4Pass = data.survey.q4 === '정상' || data.survey.q4 === '없음';
-                if (q4Pass) passedItems++; else failedItems++;
-                tableRows += `
-                    <tr>
-                        <td>와이어/슬링벨트 결함</td>
-                        <td>${data.survey.q4 || '-'}</td>
-                        <td>정상 또는 없음</td>
-                        <td><span class="badge ${q4Pass ? 'badge-success' : 'badge-danger'}">${q4Pass ? '합격' : '불합격'}</span></td>
-                        <td>${q4Pass ? '-' : '와이어 또는 슬링벨트에 결함이 발견되었습니다.'}</td>
-                    </tr>
-                `;
-                
-                // Q5: 슬래브 적치
-                const q5Pass = data.survey.q5 === '적치됨' || data.survey.q5 === '적치완료';
-                if (q5Pass) passedItems++; else failedItems++;
-                tableRows += `
-                    <tr>
-                        <td>슬래브 적치</td>
-                        <td>${data.survey.q5 || '-'}</td>
-                        <td>적치됨 또는 적치완료</td>
-                        <td><span class="badge ${q5Pass ? 'badge-success' : 'badge-danger'}">${q5Pass ? '합격' : '불합격'}</span></td>
-                        <td>${q5Pass ? '-' : '슬래브가 적치되지 않았습니다.'}</td>
-                    </tr>
+                detailHTML += `
+                    <tr><td>품질보증서 수령</td><td>${surveyData.q1 || '-'}</td><td>수령 필수</td><td><span class="badge ${q1Pass ? 'badge-success' : 'badge-danger'}">${q1Pass ? '합격' : '불합격'}</span></td><td>${q1Pass ? '-' : '품질보증서 미수령'}</td></tr>
+                    <tr><td>슬래브 손상/균열</td><td>${surveyData.q2 || '-'}</td><td>손상없음 또는 없음</td><td><span class="badge ${q2Pass ? 'badge-success' : 'badge-danger'}">${q2Pass ? '합격' : '불합격'}</span></td><td>${q2Pass ? '-' : '슬래브 손상/균열 발견'}</td></tr>
+                    <tr><td>스펀지 재료 부착상태</td><td>${surveyData.q3 || '-'}</td><td>양호</td><td><span class="badge ${q3Pass ? 'badge-success' : 'badge-danger'}">${q3Pass ? '합격' : '불합격'}</span></td><td>${q3Pass ? '-' : '스펀지 재료 부착 불량'}</td></tr>
+                    <tr><td>와이어/슬링벨트 결함</td><td>${surveyData.q4 || '-'}</td><td>정상 또는 없음</td><td><span class="badge ${q4Pass ? 'badge-success' : 'badge-danger'}">${q4Pass ? '합격' : '불합격'}</span></td><td>${q4Pass ? '-' : '와이어/슬링벨트 결함 발견'}</td></tr>
+                    <tr><td>슬래브 적치</td><td>${surveyData.q5 || '-'}</td><td>적치됨 또는 적치완료</td><td><span class="badge ${q5Pass ? 'badge-success' : 'badge-danger'}">${q5Pass ? '합격' : '불합격'}</span></td><td>${q5Pass ? '-' : '슬래브 미적치'}</td></tr>
                 `;
             }
             
-            // 가속도 최대값 (허용 기준: 0.40g 이하)
-            let maxAccel = 0;
-            if (data.accel.maxAcceleration !== undefined) {
-                maxAccel = parseFloat(data.accel.maxAcceleration) || 0;
-            } else if (data.accel.measurements && data.accel.measurements.length > 0) {
-                maxAccel = Math.max(...data.accel.measurements.map(m => m.result || 0));
-            }
-            
-            if (maxAccel > 0 || (data.accel && Object.keys(data.accel).length > 0)) {
+            // 2. 가속도
+            if (accelData && accelData.maxAcceleration !== undefined) {
                 totalItems++;
+                const maxAccel = parseFloat(accelData.maxAcceleration) || 0;
                 const accelPass = maxAccel <= 0.40;
-                if (accelPass) passedItems++; else failedItems++;
-                
-                tableRows += `
-                    <tr>
-                        <td>가속도 최대값</td>
-                        <td>${maxAccel.toFixed(3)}g</td>
-                        <td>0.40g 이하</td>
-                        <td><span class="badge ${accelPass ? 'badge-success' : 'badge-danger'}">${accelPass ? '합격' : '불합격'}</span></td>
-                        <td>${accelPass ? '-' : '위험 기준(0.40g)을 초과했습니다.'}</td>
-                    </tr>
-                `;
+                if (accelPass) passedItems++; else { failedItems++; issues.push(`⚠️ 가속도 위험 (${maxAccel.toFixed(2)}g)`); }
+                detailHTML += `<tr><td>가속도 최대값</td><td>${maxAccel.toFixed(2)}g</td><td>0.40g 이하</td><td><span class="badge ${accelPass ? 'badge-success' : 'badge-danger'}">${accelPass ? '합격' : '불합격'}</span></td><td>${accelPass ? '-' : '위험 기준 초과'}</td></tr>`;
             }
             
-            // 기울기 최대값 (허용 기준: 10.0° 이하)
-            let maxTilt = 0;
-            if (data.tilt.maxTilt !== undefined) {
-                maxTilt = parseFloat(data.tilt.maxTilt) || 0;
-            } else if (data.tilt.measurements && data.tilt.measurements.length > 0) {
-                maxTilt = Math.max(...data.tilt.measurements.map(m => m.result || 0));
-            }
-            
-            if (maxTilt > 0 || (data.tilt && Object.keys(data.tilt).length > 0)) {
+            // 3. 기울기
+            if (tiltData && tiltData.maxTilt !== undefined) {
                 totalItems++;
+                const maxTilt = parseFloat(tiltData.maxTilt) || 0;
                 const tiltPass = maxTilt <= 10.0;
-                if (tiltPass) passedItems++; else failedItems++;
-                
-                tableRows += `
-                    <tr>
-                        <td>기울기 최대값</td>
-                        <td>${maxTilt.toFixed(2)}°</td>
-                        <td>10.0° 이하</td>
-                        <td><span class="badge ${tiltPass ? 'badge-success' : 'badge-danger'}">${tiltPass ? '합격' : '불합격'}</span></td>
-                        <td>${tiltPass ? '-' : '위험 기준(10.0°)을 초과했습니다.'}</td>
-                    </tr>
-                `;
+                if (tiltPass) passedItems++; else { failedItems++; issues.push(`⚠️ 기울기 위험 (${maxTilt.toFixed(1)}°)`); }
+                detailHTML += `<tr><td>기울기 최대값</td><td>${maxTilt.toFixed(1)}°</td><td>10.0° 이하</td><td><span class="badge ${tiltPass ? 'badge-success' : 'badge-danger'}">${tiltPass ? '합격' : '불합격'}</span></td><td>${tiltPass ? '-' : '위험 기준 초과'}</td></tr>`;
             }
             
-            // 변형률 최대값 (허용 기준: 130με 이하)
-            let maxStrain = 0;
-            if (data.strain.maxStrain !== undefined) {
-                maxStrain = Math.abs(parseFloat(data.strain.maxStrain) || 0);
-            } else if (data.strain.measurements && data.strain.measurements.length > 0) {
-                maxStrain = Math.max(...data.strain.measurements.map(m => Math.abs(m.change || 0)));
-            }
-            
-            if (maxStrain > 0 || (data.strain && Object.keys(data.strain).length > 0)) {
+            // 4. 변형률
+            if (strainData && strainData.maxStrain !== undefined) {
                 totalItems++;
+                const maxStrain = Math.abs(parseFloat(strainData.maxStrain) || 0);
                 const strainPass = maxStrain <= 130;
-                if (strainPass) passedItems++; else failedItems++;
-                
-                tableRows += `
-                    <tr>
-                        <td>변형률 최대값</td>
-                        <td>${maxStrain.toFixed(1)}με</td>
-                        <td>130με 이하</td>
-                        <td><span class="badge ${strainPass ? 'badge-success' : 'badge-danger'}">${strainPass ? '합격' : '불합격'}</span></td>
-                        <td>${strainPass ? '-' : '허용 기준을 초과했습니다.'}</td>
-                    </tr>
-                `;
+                if (strainPass) passedItems++; else { failedItems++; issues.push(`⚠️ 변형률 위험 (${maxStrain.toFixed(0)}με)`); }
+                detailHTML += `<tr><td>변형률 최대값</td><td>${maxStrain.toFixed(0)}με</td><td>130με 이하</td><td><span class="badge ${strainPass ? 'badge-success' : 'badge-danger'}">${strainPass ? '합격' : '불합격'}</span></td><td>${strainPass ? '-' : '허용 기준 초과'}</td></tr>`;
             }
             
-            // 제작 오차 평가 (각 항목을 개별 평가)
-            if (data.error.measurements && data.error.measurements.length > 0) {
+            // 5. 제작 오차
+            if (errorData && errorData.measurements && errorData.measurements.length > 0) {
                 const labels = ['패널 길이', '패널 폭', '패널 두께'];
-                const toleranceDesc = ['min(1%, 30mm)', 'min(1%, 30mm)', '+10mm ~ -5mm'];
-                
-                data.error.measurements.forEach((m, i) => {
+                errorData.measurements.forEach((m, i) => {
                     totalItems++;
-                    
                     const design = m.design || 0;
                     const error = m.error || 0;
                     let isPass = false;
-                    let note = '';
+                    let toleranceDesc = '';
                     
-                    // 각 항목별 허용오차 기준 (page6.html과 동일한 로직)
-                    if (i === 0 || i === 1) { // 패널 길이, 패널 폭
-                        const onePct = design * 0.01;
-                        const tolerance = Math.min(onePct, 30);
-                        isPass = Math.abs(error) <= tolerance;
-                        note = isPass ? '-' : `허용 오차(±${tolerance.toFixed(1)}mm)를 초과했습니다.`;
-                    } else if (i === 2) { // 패널 두께 (비대칭 허용오차: +10mm ~ -5mm)
+                    if (i === 0 || i === 1) {
+                        const tol = Math.min(design * 0.01, 30);
+                        isPass = Math.abs(error) <= tol;
+                        toleranceDesc = `±${tol.toFixed(1)}mm`;
+                    } else {
                         isPass = error >= -5 && error <= 10;
-                        note = isPass ? '-' : '허용 오차 범위를 벗어났습니다.';
+                        toleranceDesc = '+10 ~ -5mm';
                     }
                     
-                    if (isPass) passedItems++; else failedItems++;
-                    
-                    tableRows += `
-                        <tr>
-                            <td>${labels[i]}</td>
-                            <td>${error.toFixed(1)}mm (설계: ${design.toFixed(1)}mm)</td>
-                            <td>${toleranceDesc[i]}</td>
-                            <td><span class="badge ${isPass ? 'badge-success' : 'badge-danger'}">${isPass ? '합격' : '불합격'}</span></td>
-                            <td>${note}</td>
-                        </tr>
-                    `;
+                    if (isPass) passedItems++; else { failedItems++; issues.push(`⚠️ ${labels[i]} 오차 초과 (${error.toFixed(1)}mm)`); }
+                    detailHTML += `<tr><td>${labels[i]}</td><td>${error.toFixed(1)}mm</td><td>${toleranceDesc}</td><td><span class="badge ${isPass ? 'badge-success' : 'badge-danger'}">${isPass ? '합격' : '불합격'}</span></td><td>${isPass ? '-' : '허용 오차 초과'}</td></tr>`;
                 });
             }
             
-            // 테이블 HTML 생성
-            const details = `
-                <table>
-                    <thead>
-                        <tr>
-                            <th>평가 항목</th>
-                            <th>측정 결과</th>
-                            <th>허용 기준</th>
-                            <th>판정</th>
-                            <th>비고</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${tableRows || '<tr><td colspan="5" style="text-align: center;">평가 데이터가 없습니다.</td></tr>'}
-                    </tbody>
-                </table>
-            `;
+            // 통계 업데이트
+            document.getElementById('totalItems').textContent = totalItems + '개';
+            document.getElementById('passedItems').textContent = passedItems + '개';
+            document.getElementById('failedItems').textContent = failedItems + '개';
             
             // 종합 평가
             const passRate = totalItems > 0 ? (passedItems / totalItems * 100) : 0;
-            let status, statusClass, recommendation, alertClass;
+            const overallCard = document.getElementById('overallCard');
             
             if (passRate >= 90) {
-                status = '우수';
-                statusClass = 'success';
-                recommendation = '✅ 모든 품질 기준을 만족합니다. 시공을 진행하셔도 좋습니다.';
-                alertClass = 'alert-success';
+                overallCard.className = 'stat-card success';
+                overallCard.querySelector('.stat-value').textContent = '우수';
+                document.getElementById('finalJudgment').className = 'alert alert-success';
+                document.getElementById('finalJudgment').innerHTML = '<strong>✅ 모든 품질 기준을 만족합니다.</strong><br>시공을 진행하셔도 좋습니다.';
             } else if (passRate >= 70) {
-                status = '양호';
-                statusClass = '';
-                recommendation = '⚠️ 대부분의 품질 기준을 만족하나, 일부 항목에 대한 개선이 필요합니다.';
-                alertClass = 'alert-warning';
+                overallCard.className = 'stat-card';
+                overallCard.querySelector('.stat-value').textContent = '양호';
+                document.getElementById('finalJudgment').className = 'alert alert-warning';
+                document.getElementById('finalJudgment').innerHTML = '<strong>⚠️ 대부분의 품질 기준을 만족하나,</strong><br>일부 항목에 대한 개선이 필요합니다.';
             } else {
-                status = '불합격';
-                statusClass = 'danger';
-                recommendation = '❌ 품질 기준 미달입니다. 조치 후 재검사가 필요합니다.';
-                alertClass = 'alert-danger';
+                overallCard.className = 'stat-card danger';
+                overallCard.querySelector('.stat-value').textContent = '불합격';
+                document.getElementById('finalJudgment').className = 'alert alert-danger';
+                document.getElementById('finalJudgment').innerHTML = '<strong>❌ 품질 기준 미달입니다.</strong><br>조치 후 재검사가 필요합니다.';
             }
             
-            return {
-                status,
-                class: statusClass,
-                totalItems,
-                passedItems,
-                failedItems,
-                details,
-                recommendation,
-                alertClass
-            };
+            // 상세 테이블
+            if (detailHTML) {
+                document.getElementById('detailTable').innerHTML = detailHTML;
+            }
+            
+            // 이슈
+            if (issues.length > 0) {
+                document.getElementById('issuesContainer').innerHTML = '<ul style="margin: 0; padding-left: 1.5rem;">' + issues.map(i => `<li>${i}</li>`).join('') + '</ul>';
+            }
+            
+            console.log('✅ 전체 보고서 로드 완료');
         }
     </script>
 </body>
