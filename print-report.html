@@ -630,6 +630,7 @@
 
         function loadAccelData() {
             const accelData = getFromStorage(STORAGE_KEYS.ACCELERATION_DATA);
+            console.log('📊 가속도 데이터 로드:', accelData);
             
             // 통계 정보 (데이터 없을 때도 표시)
             document.getElementById('maxAccel').textContent = (accelData?.maxAcceleration || '0.00') + ' g';
@@ -638,8 +639,10 @@
             
             // 리포트 이미지 (ACCELERATION_DATA 객체 내부)
             if (accelData?.accelReportImage) {
+                console.log('✅ 가속도 등급 평가 이미지 발견:', accelData.accelReportImage.substring(0, 50) + '...');
                 document.getElementById('accelReportImage').innerHTML = `<img src="${accelData.accelReportImage}" style="max-width: 100%; height: auto; border: 1px solid #e5e7eb; border-radius: 0.375rem;">`;
             } else {
+                console.log('❌ 가속도 등급 평가 이미지 없음');
                 document.getElementById('accelReportCard').style.display = 'none';
             }
             
@@ -654,6 +657,7 @@
 
         function loadTiltData() {
             const tiltData = getFromStorage(STORAGE_KEYS.TILT_DATA);
+            console.log('📐 기울기 데이터 로드:', tiltData);
             
             // 통계 정보 (데이터 없을 때도 표시)
             document.getElementById('maxTilt').textContent = (tiltData?.maxTilt || '0.0') + ' °';
@@ -662,8 +666,10 @@
             
             // 리포트 이미지 (TILT_DATA 객체 내부)
             if (tiltData?.tiltReportImage) {
+                console.log('✅ 기울기 등급 평가 이미지 발견');
                 document.getElementById('tiltReportImage').innerHTML = `<img src="${tiltData.tiltReportImage}" style="max-width: 100%; height: auto; border: 1px solid #e5e7eb; border-radius: 0.375rem;">`;
             } else {
+                console.log('❌ 기울기 등급 평가 이미지 없음');
                 document.getElementById('tiltReportCard').style.display = 'none';
             }
             
@@ -685,6 +691,7 @@
 
         function loadStrainData() {
             const strainData = getFromStorage(STORAGE_KEYS.STRAIN_DATA);
+            console.log('📏 변형률 데이터 로드:', strainData);
             
             // 통계 정보 (데이터 없을 때도 표시)
             document.getElementById('maxStrain').textContent = (strainData?.maxStrain || '0') + ' με';
@@ -693,8 +700,10 @@
             
             // 리포트 이미지 (STRAIN_DATA 객체 내부)
             if (strainData?.strainReportImage) {
+                console.log('✅ 변형률 등급 평가 이미지 발견');
                 document.getElementById('strainReportImage').innerHTML = `<img src="${strainData.strainReportImage}" style="max-width: 100%; height: auto; border: 1px solid #e5e7eb; border-radius: 0.375rem;">`;
             } else {
+                console.log('❌ 변형률 등급 평가 이미지 없음');
                 document.getElementById('strainReportCard').style.display = 'none';
             }
             
