@@ -1312,35 +1312,93 @@
                 document.getElementById('strainNote').textContent = strainPass ? '-' : '허용 기준 초과';
             }
             
-            // 5. 제작 오차
+            // 5. 제작 오차 (dashboard.html과 동일한 로직)
             if (errorData && errorData.measurements && errorData.measurements.length > 0) {
-                const labels = ['패널 길이', '패널 폭', '패널 두께'];
-                let errorResults = [];
-                let allPass = true;
-                
-                errorData.measurements.forEach((m, i) => {
-                    const design = m.design || 0;
-                    const error = m.error || 0;
-                    let isPass = false;
-                    let toleranceDesc = '';
-                    
-                    if (i === 0 || i === 1) {
-                        const tol = Math.min(design * 0.01, 30);
-                        isPass = Math.abs(error) <= tol;
-                        toleranceDesc = `±${tol.toFixed(1)}mm`;
-                    } else {
-                        isPass = error >= -5 && error <= 10;
-                        toleranceDesc = '+10 ~ -5mm';
+                function getAllowableTolerance(index, design) {
+                    if (index === 0) {
+                        // 패널 길이: ±1% 또는 ±30mm 중 작은 값
+                        const onePct = design * 0.01;
+                        return Math.min(onePct, 30);
+                    } else if (index === 1) {
+                        // 패널 폭: ±1% 또는 ±30mm 중 작은 값
+                        const onePct = design * 0.01;
+                        return Math.min(onePct, 30);
+                    } else if (index === 2) {
+                        // 패널 두께: +10mm ~ -5mm (비대칭)
+                        return { upper: 10, lower: 5 };
                     }
+                    return 5; // 기본값
+                }
+                
+                // 각 항목별 허용오차 초과 여부 확인
+                let hasExceeded = false;
+                const labels = ['패널 길이', '패널 폭', '패널 두께'];
+                let resultDetails = [];
+                let exceededItems = [];
+                
+                errorData.measurements.forEach((m, index) => {
+                    const design = parseFloat(m.design) || 0;
+                    const measured = parseFloat(m.measured) || 0;
+                    const error = parseFloat(m.error) || 0;
                     
-                    if (!isPass) allPass = false;
-                    errorResults.push(`${labels[i]}: ${error.toFixed(1)}mm (${toleranceDesc})`);
+                    if (measured > 0) {
+                        const tolerance = getAllowableTolerance(index, design);
+                        let isExceeded = false;
+                        let toleranceText = '';
+                        
+                        if (index === 2) {
+                            // 패널 두께는 비대칭 허용오차
+                            toleranceText = `+${tolerance.upper}/-${tolerance.lower}mm`;
+                            if (error > tolerance.upper || error < -tolerance.lower) {
+                                isExceeded = true;
+                            }
+                        } else {
+                            // 패널 길이/폭은 대칭 허용오차
+                            toleranceText = `±${tolerance.toFixed(1)}mm`;
+                            if (Math.abs(error) > tolerance) {
+                                isExceeded = true;
+                            }
+                        }
+                        
+                        resultDetails.push({
+                            label: labels[index],
+                            error: error,
+                            tolerance: toleranceText,
+                            exceeded: isExceeded
+                        });
+                        
+                        if (isExceeded) {
+                            hasExceeded = true;
+                            exceededItems.push(`${labels[index]} ${error > 0 ? '+' : ''}${error.toFixed(1)}mm (허용: ${toleranceText})`);
+                        }
+                    }
                 });
                 
-                document.getElementById('errorMaxResult').innerHTML = errorResults.join('<br>');
-                document.getElementById('errorTolerance').innerHTML = '패널 길이/폭: ±1% 또는 ±30mm 중 작은 값<br>패널 두께: +10mm ~ -5mm';
-                document.getElementById('errorStatus').innerHTML = `<span class="badge ${allPass ? 'badge-success' : 'badge-danger'}">${allPass ? '✓' : '✗'}</span>`;
-                document.getElementById('errorNote').textContent = allPass ? '-' : '일부 항목 허용 오차 초과';
+                // 결과 표시 - 각 항목별 상세 정보
+                let resultText = '';
+                if (resultDetails.length > 0) {
+                    resultText = resultDetails.map(item => {
+                        const errorSign = item.error > 0 ? '+' : '';
+                        const status = item.exceeded ? '⚠️' : '✓';
+                        return `${status} ${item.label}: ${errorSign}${item.error.toFixed(1)}mm (허용: ${item.tolerance})`;
+                    }).join('<br>');
+                } else {
+                    resultText = '-';
+                }
+                
+                document.getElementById('errorMaxResult').innerHTML = resultText;
+                document.getElementById('errorTolerance').innerHTML = 'KCS 24 11 25 : 2025 기준<br>(항목별 상이)';
+                
+                if (!hasExceeded) {
+                    document.getElementById('errorStatus').innerHTML = '<span class="badge badge-success">적합</span>';
+                    document.getElementById('errorNote').textContent = '모든 항목 정상';
+                } else {
+                    document.getElementById('errorStatus').innerHTML = '<span class="badge badge-danger">초과</span>';
+                    document.getElementById('errorNote').textContent = `${exceededItems.length}개 항목 초과`;
+                    exceededItems.forEach(item => {
+                        issues.push(`제작 오차: ${item}`);
+                    });
+                }
             }
             
             // 이슈
