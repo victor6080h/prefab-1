@@ -96,13 +96,27 @@
                 <p class="card-description">최대 가속도 측정치를 입력하고 평가 이미지를 업로드하세요</p>
             </div>
             <div class="card-body">
-                <!-- 최대 가속도 입력 -->
-                <div style="margin-bottom: 2rem;">
-                    <label class="info-label" for="maxAcceleration">최대 가속도 측정치 (g)</label>
-                    <input type="number" id="maxAcceleration" name="maxAcceleration" step="0.01" class="info-value" 
-                           placeholder="예: 0.35" onchange="saveMaxAcceleration()" style="font-size: 1.2rem; font-weight: 600;">
-                    <div id="accelStatus" style="margin-top: 0.75rem; padding: 0.75rem; border-radius: 0.375rem; font-weight: 600; text-align: center;"></div>
+                <!-- 가속도 측정 데이터 입력 -->
+                <div class="info-grid" style="margin-bottom: 2rem;">
+                    <div class="info-item">
+                        <label class="info-label" for="maxAcceleration">최대 가속도 측정치 (g)</label>
+                        <input type="number" id="maxAcceleration" name="maxAcceleration" step="0.01" class="info-value" 
+                               placeholder="예: 0.35" onchange="saveAccelerationData()" style="font-size: 1.1rem; font-weight: 600;">
+                    </div>
+                    <div class="info-item">
+                        <label class="info-label" for="avgAcceleration">평균 가속도 측정치 (g)</label>
+                        <input type="number" id="avgAcceleration" name="avgAcceleration" step="0.01" class="info-value" 
+                               placeholder="예: 0.25" onchange="saveAccelerationData()" style="font-size: 1.1rem; font-weight: 600;">
+                    </div>
+                    <div class="info-item">
+                        <label class="info-label" for="eventCount">이벤트 발생 횟수</label>
+                        <input type="number" id="eventCount" name="eventCount" step="1" class="info-value" 
+                               placeholder="예: 5" onchange="saveAccelerationData()" style="font-size: 1.1rem; font-weight: 600;">
+                    </div>
                 </div>
+                
+                <!-- 상태 표시 -->
+                <div id="accelStatus" style="margin-bottom: 2rem; padding: 0.75rem; border-radius: 0.375rem; font-weight: 600; text-align: center;"></div>
                 
                 <!-- 가속도 평가 이미지 업로드 -->
                 <div>
@@ -173,7 +187,7 @@
         <!-- 네비게이션 버튼 -->
         <div class="nav-buttons">
             <a href="page2.html" class="btn btn-secondary">← 이전: 운송결과 리포트</a>
-            <button class="btn btn-success" onclick="saveAccelData()">💾 저장하기</button>
+            <button class="btn btn-success" onclick="saveAccelerationData()">💾 저장하기</button>
             <a href="page4.html" class="btn btn-primary">다음: 기울기 데이터 →</a>
         </div>
     </main>
@@ -200,20 +214,26 @@
             console.log('✅ 이벤트 리스너 등록 완료');
         });
 
-        // 최대 가속도 값 저장
-        function saveMaxAcceleration() {
-            const maxAccel = document.getElementById('maxAcceleration').value;
-            const accelValue = parseFloat(maxAccel) || 0;
+        // 가속도 데이터 저장 및 요약 업데이트
+        function saveAccelerationData() {
+            const maxAccel = parseFloat(document.getElementById('maxAcceleration').value) || 0;
+            const avgAccel = parseFloat(document.getElementById('avgAcceleration').value) || 0;
+            const eventCount = parseInt(document.getElementById('eventCount').value) || 0;
             
             // LocalStorage에 저장
             const data = getFromStorage(STORAGE_KEYS.ACCELERATION_DATA) || {};
-            data.maxAcceleration = accelValue;
+            data.maxAcceleration = maxAccel;
+            data.avgAcceleration = avgAccel;
+            data.eventCount = eventCount;
             saveToStorage(STORAGE_KEYS.ACCELERATION_DATA, data);
             
             // 상태 표시 업데이트
-            updateAccelStatus(accelValue);
+            updateAccelStatus(maxAccel);
             
-            console.log('💾 최대 가속도 저장:', accelValue);
+            // 측정 결과 요약 업데이트
+            updateSummary(maxAccel, avgAccel, eventCount);
+            
+            console.log('💾 가속도 데이터 저장:', { maxAccel, avgAccel, eventCount });
         }
         
         // 가속도 상태 표시 업데이트
@@ -245,14 +265,102 @@
             }
         }
         
-        // 최대 가속도 값 로드
+        // 측정 결과 요약 업데이트
+        function updateSummary(maxAccel, avgAccel, eventCount) {
+            // 최대 가속도 표시
+            document.getElementById('maxAccel').textContent = maxAccel.toFixed(2) + ' g';
+            
+            // 평균 가속도 표시
+            document.getElementById('avgAccel').textContent = avgAccel.toFixed(2) + ' g';
+            
+            // 이벤트 발생 횟수 표시
+            document.getElementById('exceedCount').textContent = eventCount + ' 회';
+            
+            // 종합 평가
+            const finalStatus = document.getElementById('finalStatus');
+            const resultAlert = document.getElementById('resultAlert');
+            
+            if (maxAccel > ACCEL_WARNING) {
+                finalStatus.className = 'stat-card danger';
+                finalStatus.style.backgroundColor = '#fee2e2';
+                finalStatus.style.borderColor = '#ef4444';
+                finalStatus.style.color = '#991b1b';
+                finalStatus.querySelector('.stat-value').textContent = '위험';
+                resultAlert.innerHTML = `
+                    <div class="alert alert-danger">
+                        <strong>❌ 위험 수준</strong><br>
+                        최대 가속도가 위험 기준(0.40g)을 초과했습니다. 즉시 조치가 필요합니다.
+                    </div>
+                `;
+            } else if (maxAccel >= ACCEL_CAUTION) {
+                finalStatus.className = 'stat-card';
+                finalStatus.style.backgroundColor = '#fff7ed';
+                finalStatus.style.borderColor = '#f97316';
+                finalStatus.style.color = '#9a3412';
+                finalStatus.querySelector('.stat-value').textContent = '경고';
+                resultAlert.innerHTML = `
+                    <div class="alert" style="background-color: #fff7ed; border: 1px solid #f97316; color: #9a3412; padding: 1rem; border-radius: 0.375rem;">
+                        <strong>⚠️ 경고 수준</strong><br>
+                        최대 가속도가 경고 범위(0.30~0.40g)입니다. 주의 깊은 모니터링이 필요합니다.
+                    </div>
+                `;
+            } else if (maxAccel >= ACCEL_NORMAL) {
+                finalStatus.className = 'stat-card warning';
+                finalStatus.style.backgroundColor = '#fef3c7';
+                finalStatus.style.borderColor = '#f59e0b';
+                finalStatus.style.color = '#78350f';
+                finalStatus.querySelector('.stat-value').textContent = '주의';
+                resultAlert.innerHTML = `
+                    <div class="alert alert-warning">
+                        <strong>⚠ 주의 필요</strong><br>
+                        최대 가속도가 주의 범위(0.20~0.30g)입니다. 지속적인 관찰이 권장됩니다.
+                    </div>
+                `;
+            } else if (maxAccel > 0) {
+                finalStatus.className = 'stat-card success';
+                finalStatus.style.backgroundColor = '#d1fae5';
+                finalStatus.style.borderColor = '#10b981';
+                finalStatus.style.color = '#065f46';
+                finalStatus.querySelector('.stat-value').textContent = '정상';
+                resultAlert.innerHTML = `
+                    <div class="alert alert-success">
+                        <strong>✅ 정상 범위</strong><br>
+                        최대 가속도가 정상 범위(0.20g 미만)입니다.
+                    </div>
+                `;
+            } else {
+                finalStatus.className = 'stat-card';
+                finalStatus.style.backgroundColor = '';
+                finalStatus.style.borderColor = '';
+                finalStatus.style.color = '';
+                finalStatus.querySelector('.stat-value').textContent = '대기중';
+                resultAlert.innerHTML = '';
+            }
+        }
+        
+        // 가속도 데이터 로드
         function loadMaxAcceleration() {
             const data = getFromStorage(STORAGE_KEYS.ACCELERATION_DATA);
-            if (data && data.maxAcceleration !== undefined) {
-                const input = document.getElementById('maxAcceleration');
-                input.value = data.maxAcceleration;
-                updateAccelStatus(data.maxAcceleration);
-                console.log('📖 최대 가속도 로드:', data.maxAcceleration);
+            if (data) {
+                if (data.maxAcceleration !== undefined) {
+                    document.getElementById('maxAcceleration').value = data.maxAcceleration;
+                }
+                if (data.avgAcceleration !== undefined) {
+                    document.getElementById('avgAcceleration').value = data.avgAcceleration;
+                }
+                if (data.eventCount !== undefined) {
+                    document.getElementById('eventCount').value = data.eventCount;
+                }
+                
+                // 상태 및 요약 업데이트
+                const maxAccel = data.maxAcceleration || 0;
+                const avgAccel = data.avgAcceleration || 0;
+                const eventCount = data.eventCount || 0;
+                
+                updateAccelStatus(maxAccel);
+                updateSummary(maxAccel, avgAccel, eventCount);
+                
+                console.log('📖 가속도 데이터 로드:', { maxAccel, avgAccel, eventCount });
             }
         }
         
