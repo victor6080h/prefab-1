@@ -89,59 +89,33 @@
             </div>
         </div>
 
-        <!-- 가속도 데이터 입력 -->
+        <!-- 가속도 등급 평가 (Acceleration Report) -->
         <div class="card">
             <div class="card-header">
-                <h2 class="card-title">가속도 측정 데이터</h2>
-                <p class="card-description">X, Y, Z 축별 가속도 값을 입력하세요 (단위: g)</p>
+                <h2 class="card-title">가속도 등급 평가 (Acceleration Report)</h2>
+                <p class="card-description">최대 가속도 측정치를 입력하고 평가 이미지를 업로드하세요</p>
             </div>
             <div class="card-body">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>측정 시점</th>
-                            <th>X축 (g)</th>
-                            <th>Y축 (g)</th>
-                            <th>Z축 (g)</th>
-                            <th>합성 (g)</th>
-                            <th>상태</th>
-                        </tr>
-                    </thead>
-                    <tbody id="accelDataTable">
-                        <tr>
-                            <td>측정 1</td>
-                            <td><input type="number" step="0.01" name="x1" class="accel-input" onchange="calculateResultant(1)"></td>
-                            <td><input type="number" step="0.01" name="y1" class="accel-input" onchange="calculateResultant(1)"></td>
-                            <td><input type="number" step="0.01" name="z1" class="accel-input" onchange="calculateResultant(1)"></td>
-                            <td id="result1">-</td>
-                            <td id="status1">-</td>
-                        </tr>
-                        <tr>
-                            <td>측정 2</td>
-                            <td><input type="number" step="0.01" name="x2" class="accel-input" onchange="calculateResultant(2)"></td>
-                            <td><input type="number" step="0.01" name="y2" class="accel-input" onchange="calculateResultant(2)"></td>
-                            <td><input type="number" step="0.01" name="z2" class="accel-input" onchange="calculateResultant(2)"></td>
-                            <td id="result2">-</td>
-                            <td id="status2">-</td>
-                        </tr>
-
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- 가속도 그래프 -->
-        <div class="card">
-            <div class="card-header">
-                <h2 class="card-title">가속도 추이 그래프</h2>
-                <p class="card-description">측정된 합성 가속도의 변화를 시각화합니다</p>
-            </div>
-            <div class="card-body">
-                <div class="chart-container">
-                    <canvas id="accelChart"></canvas>
+                <!-- 최대 가속도 입력 -->
+                <div style="margin-bottom: 2rem;">
+                    <label class="info-label" for="maxAcceleration">최대 가속도 측정치 (g)</label>
+                    <input type="number" id="maxAcceleration" name="maxAcceleration" step="0.01" class="info-value" 
+                           placeholder="예: 0.35" onchange="saveMaxAcceleration()" style="font-size: 1.2rem; font-weight: 600;">
+                    <div id="accelStatus" style="margin-top: 0.75rem; padding: 0.75rem; border-radius: 0.375rem; font-weight: 600; text-align: center;"></div>
                 </div>
-                <div class="mt-3">
-                    <button class="btn btn-primary" onclick="updateChart()">📈 그래프 업데이트</button>
+                
+                <!-- 가속도 평가 이미지 업로드 -->
+                <div>
+                    <label class="info-label">가속도 등급 평가 이미지</label>
+                    <div class="photo-upload-container">
+                        <div class="photo-upload" id="accelReportPreview" onclick="document.getElementById('accelReportInput').click();" style="cursor: pointer; min-height: 400px;">
+                            <input type="file" id="accelReportInput" accept="image/*" style="display: none;" onchange="handleAccelReportImageUpload(this);">
+                            <span class="placeholder">📊 클릭하여 가속도 등급 평가 이미지 업로드</span>
+                        </div>
+                    </div>
+                    <div class="mt-3" style="text-align: center;">
+                        <button class="btn btn-secondary" onclick="clearAccelReportImage()" style="margin-right: 10px;">🗑️ 이미지 삭제</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -218,240 +192,156 @@
             console.log('🚀 페이지 로드 완료');
             
             // 저장된 데이터 로드
-            loadAccelData();
-            
-            // 전체 가속도 그래프 이미지 로드
-            loadAccelGraphImage();
-
-            // 입력 필드 변경 시 자동 저장
-            document.querySelectorAll('.accel-input').forEach(input => {
-                input.addEventListener('change', autoSaveAccelData);
-            });
+            loadMaxAcceleration();
+            loadAccelReportImage();
             
             autoSaveForm('accelInfoForm', STORAGE_KEYS.ACCELERATION_DATA);
             
             console.log('✅ 이벤트 리스너 등록 완료');
         });
 
-        // 합성 가속도 계산
-        function calculateResultant(index) {
-            const xInput = document.querySelector(`input[name="x${index}"]`);
-            const yInput = document.querySelector(`input[name="y${index}"]`);
-            const zInput = document.querySelector(`input[name="z${index}"]`);
+        // 최대 가속도 값 저장
+        function saveMaxAcceleration() {
+            const maxAccel = document.getElementById('maxAcceleration').value;
+            const accelValue = parseFloat(maxAccel) || 0;
             
-            const x = parseFloat(xInput.value) || 0;
-            const y = parseFloat(yInput.value) || 0;
-            const z = parseFloat(zInput.value) || 0;
-            
-            const resultant = Math.sqrt(x*x + y*y + z*z);
-            
-            document.getElementById(`result${index}`).textContent = resultant.toFixed(3) + ' g';
-            
-            // 상태 표시 (3단계 평가)
-            const statusCell = document.getElementById(`status${index}`);
-            if (resultant > ACCEL_WARNING) {
-                statusCell.innerHTML = '<span class="badge badge-danger">위험</span>';
-            } else if (resultant >= ACCEL_CAUTION) {
-                statusCell.innerHTML = '<span class="badge" style="background-color: #f97316; color: white;">경고</span>';
-            } else if (resultant >= ACCEL_NORMAL) {
-                statusCell.innerHTML = '<span class="badge badge-warning">주의</span>';
-            } else if (resultant > 0) {
-                statusCell.innerHTML = '<span class="badge badge-success">정상</span>';
-            } else {
-                statusCell.textContent = '-';
-            }
-            
-            // 통계 업데이트
-            updateStatistics();
-        }
-
-        // 통계 업데이트
-        function updateStatistics() {
-            const results = [];
-            for (let i = 1; i <= 2; i++) {
-                const resultText = document.getElementById(`result${i}`).textContent;
-                if (resultText !== '-') {
-                    results.push(parseFloat(resultText));
-                }
-            }
-            
-            if (results.length === 0) return;
-            
-            const max = Math.max(...results);
-            const avg = results.reduce((a, b) => a + b, 0) / results.length;
-            
-            // 3단계 평가 카운트
-            const dangerCount = results.filter(r => r > ACCEL_WARNING).length;
-            const warningCount = results.filter(r => r >= ACCEL_CAUTION && r <= ACCEL_WARNING).length;
-            const cautionCount = results.filter(r => r >= ACCEL_NORMAL && r < ACCEL_CAUTION).length;
-            const normalCount = results.filter(r => r < ACCEL_NORMAL).length;
-            
-            document.getElementById('maxAccel').textContent = max.toFixed(3) + ' g';
-            document.getElementById('avgAccel').textContent = avg.toFixed(3) + ' g';
-            document.getElementById('exceedCount').textContent = dangerCount + ' 회';
-            
-            // 종합 평가 (3단계 기준)
-            const finalStatus = document.getElementById('finalStatus');
-            const resultAlert = document.getElementById('resultAlert');
-            
-            if (dangerCount > 0) {
-                finalStatus.className = 'stat-card danger';
-                finalStatus.querySelector('.stat-value').textContent = '위험';
-                resultAlert.innerHTML = `
-                    <div class="alert alert-danger">
-                        <strong>❌ 위험 수준</strong><br>
-                        ${dangerCount}개 측정값이 위험 기준(0.40G)을 초과했습니다. 즉시 조치가 필요합니다.
-                    </div>
-                `;
-            } else if (warningCount > 0) {
-                finalStatus.className = 'stat-card';
-                finalStatus.style.backgroundColor = '#f97316';
-                finalStatus.style.color = 'white';
-                finalStatus.querySelector('.stat-value').textContent = '경고';
-                resultAlert.innerHTML = `
-                    <div class="alert" style="background-color: #fff7ed; border-color: #f97316; color: #9a3412;">
-                        <strong>⚠️ 경고 수준</strong><br>
-                        ${warningCount}개 측정값이 경고 범위(0.30~0.40G)입니다. 주의 깊은 모니터링이 필요합니다.
-                    </div>
-                `;
-            } else if (cautionCount > 0) {
-                finalStatus.className = 'stat-card warning';
-                finalStatus.querySelector('.stat-value').textContent = '주의';
-                resultAlert.innerHTML = `
-                    <div class="alert alert-warning">
-                        <strong>⚠ 주의 필요</strong><br>
-                        ${cautionCount}개 측정값이 주의 범위(0.20~0.30G)입니다. 지속적인 관찰이 권장됩니다.
-                    </div>
-                `;
-            } else {
-                finalStatus.className = 'stat-card success';
-                finalStatus.querySelector('.stat-value').textContent = '정상';
-                resultAlert.innerHTML = `
-                    <div class="alert alert-success">
-                        <strong>✅ 정상 범위</strong><br>
-                        모든 측정값이 정상 범위(0.3g 미만)입니다.
-                    </div>
-                `;
-            }
-        }
-
-        // 그래프 업데이트
-        function updateChart() {
-            const labels = ['측정 1', '측정 2'];
-            const values = [];
-            
-            for (let i = 1; i <= 2; i++) {
-                const resultText = document.getElementById(`result${i}`).textContent;
-                if (resultText !== '-') {
-                    values.push(parseFloat(resultText));
-                } else {
-                    values.push(0);
-                }
-            }
-            
-            const chartData = {
-                labels: labels,
-                values: values,
-                thresholds: {
-                    upper: ACCEL_WARNING,
-                    lower: -ACCEL_WARNING,
-                    caution: ACCEL_NORMAL,
-                    warning: ACCEL_CAUTION
-                },
-                title: '가속도 측정 결과',
-                yLabel: '가속도 (g)'
-            };
-            
-            drawLineChart('accelChart', chartData);
-        }
-
-        // 데이터 저장
-        function saveAccelData() {
-            const data = {
-                info: {},
-                measurements: []
-            };
-            
-            // 계측 정보
-            const infoForm = document.getElementById('accelInfoForm');
-            const infoData = new FormData(infoForm);
-            for (let [key, value] of infoData.entries()) {
-                data.info[key] = value;
-            }
-            
-            // 측정 데이터
-            for (let i = 1; i <= 2; i++) {
-                const x = parseFloat(document.querySelector(`input[name="x${i}"]`).value) || 0;
-                const y = parseFloat(document.querySelector(`input[name="y${i}"]`).value) || 0;
-                const z = parseFloat(document.querySelector(`input[name="z${i}"]`).value) || 0;
-                const resultText = document.getElementById(`result${i}`).textContent;
-                const result = resultText !== '-' ? parseFloat(resultText) : 0;
-                
-                data.measurements.push({ x, y, z, result });
-            }
-            
+            // LocalStorage에 저장
+            const data = getFromStorage(STORAGE_KEYS.ACCELERATION_DATA) || {};
+            data.maxAcceleration = accelValue;
             saveToStorage(STORAGE_KEYS.ACCELERATION_DATA, data);
-            alert('가속도 데이터가 저장되었습니다!');
+            
+            // 상태 표시 업데이트
+            updateAccelStatus(accelValue);
+            
+            console.log('💾 최대 가속도 저장:', accelValue);
         }
-
-        // 자동 저장
-        function autoSaveAccelData() {
-            const data = {
-                info: {},
-                measurements: []
-            };
+        
+        // 가속도 상태 표시 업데이트
+        function updateAccelStatus(value) {
+            const statusDiv = document.getElementById('accelStatus');
             
-            const infoForm = document.getElementById('accelInfoForm');
-            const infoData = new FormData(infoForm);
-            for (let [key, value] of infoData.entries()) {
-                data.info[key] = value;
+            if (value > ACCEL_WARNING) {
+                statusDiv.style.backgroundColor = '#fee2e2';
+                statusDiv.style.borderColor = '#ef4444';
+                statusDiv.style.color = '#991b1b';
+                statusDiv.innerHTML = '❌ 위험: ' + value.toFixed(2) + 'g (0.40g 초과)';
+            } else if (value >= ACCEL_CAUTION) {
+                statusDiv.style.backgroundColor = '#fff7ed';
+                statusDiv.style.borderColor = '#f97316';
+                statusDiv.style.color = '#9a3412';
+                statusDiv.innerHTML = '⚠️ 경고: ' + value.toFixed(2) + 'g (0.30~0.40g)';
+            } else if (value >= ACCEL_NORMAL) {
+                statusDiv.style.backgroundColor = '#fef3c7';
+                statusDiv.style.borderColor = '#f59e0b';
+                statusDiv.style.color = '#78350f';
+                statusDiv.innerHTML = '⚠ 주의: ' + value.toFixed(2) + 'g (0.20~0.30g)';
+            } else if (value > 0) {
+                statusDiv.style.backgroundColor = '#d1fae5';
+                statusDiv.style.borderColor = '#10b981';
+                statusDiv.style.color = '#065f46';
+                statusDiv.innerHTML = '✅ 정상: ' + value.toFixed(2) + 'g (0.20g 미만)';
+            } else {
+                statusDiv.innerHTML = '';
             }
-            
-            for (let i = 1; i <= 2; i++) {
-                const x = parseFloat(document.querySelector(`input[name="x${i}"]`).value) || 0;
-                const y = parseFloat(document.querySelector(`input[name="y${i}"]`).value) || 0;
-                const z = parseFloat(document.querySelector(`input[name="z${i}"]`).value) || 0;
-                const resultText = document.getElementById(`result${i}`).textContent;
-                const result = resultText !== '-' ? parseFloat(resultText) : 0;
-                
-                data.measurements.push({ x, y, z, result });
-            }
-            
-            saveToStorage(STORAGE_KEYS.ACCELERATION_DATA, data);
         }
-
-        // 데이터 로드
-        function loadAccelData() {
+        
+        // 최대 가속도 값 로드
+        function loadMaxAcceleration() {
             const data = getFromStorage(STORAGE_KEYS.ACCELERATION_DATA);
-            if (!data) return;
-            
-            // 계측 정보 로드
-            if (data.info) {
-                Object.keys(data.info).forEach(key => {
-                    const input = document.getElementById(key);
-                    if (input) input.value = data.info[key];
-                });
-            }
-            
-            // 측정 데이터 로드
-            if (data.measurements) {
-                data.measurements.forEach((m, i) => {
-                    const index = i + 1;
-                    const xInput = document.querySelector(`input[name="x${index}"]`);
-                    const yInput = document.querySelector(`input[name="y${index}"]`);
-                    const zInput = document.querySelector(`input[name="z${index}"]`);
-                    
-                    if (xInput) xInput.value = m.x;
-                    if (yInput) yInput.value = m.y;
-                    if (zInput) zInput.value = m.z;
-                    
-                    calculateResultant(index);
-                });
-                
-                updateChart();
+            if (data && data.maxAcceleration !== undefined) {
+                const input = document.getElementById('maxAcceleration');
+                input.value = data.maxAcceleration;
+                updateAccelStatus(data.maxAcceleration);
+                console.log('📖 최대 가속도 로드:', data.maxAcceleration);
             }
         }
-
+        
+        // 가속도 등급 평가 이미지 업로드
+        function handleAccelReportImageUpload(input) {
+            const file = input.files[0];
+            if (!file) return;
+            
+            console.log('=== 가속도 등급 평가 이미지 업로드 시작 ===');
+            console.log('파일명:', file.name);
+            console.log('파일 크기:', (file.size / 1024).toFixed(2), 'KB');
+            
+            if (!file.type.startsWith('image/')) {
+                alert('이미지 파일만 업로드할 수 있습니다.');
+                return;
+            }
+            
+            if (typeof resizeAndCompressImage === 'undefined') {
+                console.error('❌ resizeAndCompressImage 함수가 정의되지 않았습니다!');
+                alert('이미지 처리 함수를 찾을 수 없습니다. 페이지를 새로고침해주세요.');
+                return;
+            }
+            
+            resizeAndCompressImage(
+                file,
+                110,
+                0.9,
+                function(compressedDataUrl) {
+                    console.log('✅ 압축 성공, 미리보기 표시');
+                    
+                    const preview = document.getElementById('accelReportPreview');
+                    preview.innerHTML = `
+                        <input type="file" id="accelReportInput" accept="image/*" style="display: none;" onchange="handleAccelReportImageUpload(this)">
+                        <img src="${compressedDataUrl}" alt="가속도 등급 평가" style="max-width: 100%; height: auto; display: block;">
+                    `;
+                    preview.classList.add('has-image');
+                    preview.onclick = null;
+                    
+                    // LocalStorage에 저장
+                    const data = getFromStorage(STORAGE_KEYS.ACCELERATION_DATA) || {};
+                    data.accelReportImage = compressedDataUrl;
+                    saveToStorage(STORAGE_KEYS.ACCELERATION_DATA, data);
+                    
+                    console.log('💾 가속도 등급 평가 이미지 저장 완료');
+                    alert('✅ 이미지가 성공적으로 업로드되었습니다!');
+                },
+                function(error) {
+                    console.error('❌ 이미지 압축 실패:', error);
+                    alert('이미지 처리 중 오류가 발생했습니다: ' + error.message);
+                }
+            );
+        }
+        
+        // 가속도 등급 평가 이미지 삭제
+        function clearAccelReportImage() {
+            if (!confirm('이미지를 삭제하시겠습니까?')) return;
+            
+            const preview = document.getElementById('accelReportPreview');
+            preview.innerHTML = `
+                <input type="file" id="accelReportInput" accept="image/*" style="display: none;" onchange="handleAccelReportImageUpload(this);">
+                <span class="placeholder">📊 클릭하여 가속도 등급 평가 이미지 업로드</span>
+            `;
+            preview.classList.remove('has-image');
+            preview.onclick = function() { document.getElementById('accelReportInput').click(); };
+            
+            // LocalStorage에서 삭제
+            const data = getFromStorage(STORAGE_KEYS.ACCELERATION_DATA) || {};
+            delete data.accelReportImage;
+            saveToStorage(STORAGE_KEYS.ACCELERATION_DATA, data);
+            
+            console.log('🗑️ 가속도 등급 평가 이미지 삭제됨');
+            alert('이미지가 삭제되었습니다.');
+        }
+        
+        // 가속도 등급 평가 이미지 로드
+        function loadAccelReportImage() {
+            const data = getFromStorage(STORAGE_KEYS.ACCELERATION_DATA);
+            if (data && data.accelReportImage) {
+                const preview = document.getElementById('accelReportPreview');
+                preview.innerHTML = `
+                    <input type="file" id="accelReportInput" accept="image/*" style="display: none;" onchange="handleAccelReportImageUpload(this)">
+                    <img src="${data.accelReportImage}" alt="가속도 등급 평가" style="max-width: 100%; height: auto; display: block;">
+                `;
+                preview.classList.add('has-image');
+                preview.onclick = null;
+                console.log('📖 가속도 등급 평가 이미지 로드됨');
+            }
+        }
+        
         // 전체 가속도 그래프 이미지 업로드 처리
         function handleAccelGraphImageUpload(input) {
             console.log('🎯 handleAccelGraphImageUpload 함수 호출됨');
