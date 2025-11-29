@@ -60,19 +60,31 @@
                 object-fit: contain !important;
             }
             
-            /* 운송결과 리포트 사진 그리드 - 세로: 2x2 그리드, 용지 가득 채우기 */
+            /* 운송결과 리포트 사진 그리드 - 세로: 1페이지당 2장 (총 2페이지) */
             .transport-photo-grid {
-                grid-template-columns: repeat(2, 1fr) !important;
-                gap: 20mm !important;
+                display: grid !important;
+                grid-template-columns: 1fr !important;
+                gap: 15mm !important;
+            }
+            
+            .transport-photo-grid > div {
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+            }
+            
+            /* 첫 2장과 나머지 2장 사이에 페이지 나누기 */
+            .transport-photo-grid > div:nth-child(2) {
+                page-break-after: always !important;
+                break-after: page !important;
             }
             
             .transport-photo-grid .photo-upload {
-                height: 85mm !important;
+                height: 110mm !important;
                 display: flex !important;
                 align-items: center !important;
                 justify-content: center !important;
                 border: 0.1mm solid #000000 !important;
-                padding: 2mm !important;
+                padding: 3mm !important;
                 box-sizing: border-box !important;
             }
             
@@ -82,6 +94,13 @@
                 width: auto !important;
                 height: auto !important;
                 object-fit: contain !important;
+            }
+            
+            .transport-photo-grid h4 {
+                margin: 0 0 3mm 0 !important;
+                font-size: 11pt !important;
+                font-weight: 600 !important;
+                color: #333 !important;
             }
             
             /* 부재 제작 오차 사진 - 용지 가득 채우기 */
