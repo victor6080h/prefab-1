@@ -216,10 +216,26 @@
             
             <div class="card" style="margin-top: 1rem;">
                 <div class="card-header">
-                    <h3 class="card-title">현장 사진</h3>
+                    <h3 class="card-title">현장 사진 (1/2)</h3>
                 </div>
                 <div class="card-body">
-                    <div class="photo-grid" id="surveyPhotos">
+                    <div class="photo-grid" id="surveyPhotos1">
+                        <p style="text-align: center; color: #6b7280;">사진이 없습니다.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2-2. 운송결과 리포트 - 현장 사진 (3, 4) -->
+        <div class="report-section page-break">
+            <h2 class="section-title">2. 운송결과 리포트 (계속)</h2>
+            
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">현장 사진 (2/2)</h3>
+                </div>
+                <div class="card-body">
+                    <div class="photo-grid" id="surveyPhotos2">
                         <p style="text-align: center; color: #6b7280;">사진이 없습니다.</p>
                     </div>
                 </div>
@@ -624,17 +640,37 @@
                 document.getElementById('surveyTable').innerHTML = html;
             }
             
-            // 현장 사진 로드
+            // 현장 사진 로드 - 그룹 1 (사진 1, 2)
             if (photos) {
-                let photoHTML = '';
-                for (let i = 1; i <= 4; i++) {
+                let photoHTML1 = '';
+                let photoHTML2 = '';
+                
+                // 첫 번째 그룹: 사진 1, 2
+                for (let i = 1; i <= 2; i++) {
                     const photoKey = `photo${i}Preview`;
                     if (photos[photoKey]) {
-                        photoHTML += `<img src="${photos[photoKey]}" alt="현장사진 ${i}">`;
+                        photoHTML1 += `<img src="${photos[photoKey]}" alt="현장사진 ${i}">`;
                     }
                 }
-                if (photoHTML) {
-                    document.getElementById('surveyPhotos').innerHTML = photoHTML;
+                
+                // 두 번째 그룹: 사진 3, 4
+                for (let i = 3; i <= 4; i++) {
+                    const photoKey = `photo${i}Preview`;
+                    if (photos[photoKey]) {
+                        photoHTML2 += `<img src="${photos[photoKey]}" alt="현장사진 ${i}">`;
+                    }
+                }
+                
+                if (photoHTML1) {
+                    document.getElementById('surveyPhotos1').innerHTML = photoHTML1;
+                } else {
+                    document.getElementById('surveyPhotos1').innerHTML = '<p style="text-align: center; color: #6b7280;">사진 1, 2가 없습니다.</p>';
+                }
+                
+                if (photoHTML2) {
+                    document.getElementById('surveyPhotos2').innerHTML = photoHTML2;
+                } else {
+                    document.getElementById('surveyPhotos2').innerHTML = '<p style="text-align: center; color: #6b7280;">사진 3, 4가 없습니다.</p>';
                 }
             }
         }
