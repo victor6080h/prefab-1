@@ -1132,20 +1132,18 @@
             const strainData = getFromStorage(STORAGE_KEYS.STRAIN_DATA);
             const errorData = getFromStorage(STORAGE_KEYS.FABRICATION_ERROR);
             
-            // 진행률 계산
+            // 진행률 계산 (dashboard.html과 동일)
             let completedCount = 0;
             if (surveyData) completedCount++;
             if (accelData && accelData.maxAcceleration !== undefined) completedCount++;
             if (tiltData && tiltData.maxTilt !== undefined) completedCount++;
             if (strainData && strainData.maxStrain !== undefined) completedCount++;
-            if (errorData && errorData.panelLength !== undefined) completedCount++;
+            if (errorData && errorData.measurements) completedCount++;
             
-            const totalPages = 5;
-            const progressPercent = (completedCount / totalPages * 100).toFixed(0);
-            
-            document.getElementById('overallProgressText').textContent = progressPercent + '%';
-            document.getElementById('overallProgress').style.width = progressPercent + '%';
-            document.getElementById('overallProgress').textContent = progressPercent + '%';
+            const progress = (completedCount / 5) * 100;
+            document.getElementById('overallProgress').style.width = progress + '%';
+            document.getElementById('overallProgress').textContent = Math.round(progress) + '%';
+            document.getElementById('overallProgressText').textContent = Math.round(progress) + '%';
             document.getElementById('completedCount').textContent = completedCount;
             
             let totalItems = 0;
