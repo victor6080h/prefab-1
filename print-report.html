@@ -288,6 +288,15 @@
                     <p style="text-align: center; color: #6b7280;">리포트 이미지가 없습니다.</p>
                 </div>
             </div>
+            
+            <div class="card" style="margin-top: 1rem;" id="accelGraphCard">
+                <div class="card-header">
+                    <h3 class="card-title">전체 가속도 그래프</h3>
+                </div>
+                <div class="card-body" id="accelGraphImage">
+                    <p style="text-align: center; color: #6b7280;">그래프 이미지가 없습니다.</p>
+                </div>
+            </div>
         </div>
 
         <!-- 4. 기울기 데이터 -->
@@ -351,6 +360,24 @@
                     <p style="text-align: center; color: #6b7280;">리포트 이미지가 없습니다.</p>
                 </div>
             </div>
+            
+            <div class="card" style="margin-top: 1rem;" id="tiltGraphCard">
+                <div class="card-header">
+                    <h3 class="card-title">전체 기울기 그래프</h3>
+                </div>
+                <div class="card-body" id="tiltGraphImage">
+                    <p style="text-align: center; color: #6b7280;">그래프 이미지가 없습니다.</p>
+                </div>
+            </div>
+            
+            <div class="card" style="margin-top: 1rem;" id="tiltAdjustmentCard">
+                <div class="card-header">
+                    <h3 class="card-title">기울기 조정 이력</h3>
+                </div>
+                <div class="card-body" id="tiltAdjustmentHistory">
+                    <p style="color: #6b7280;">조정 이력이 없습니다.</p>
+                </div>
+            </div>
         </div>
 
         <!-- 5. 변형률 데이터 -->
@@ -410,6 +437,15 @@
                 </div>
                 <div class="card-body" id="strainReportImage">
                     <p style="text-align: center; color: #6b7280;">리포트 이미지가 없습니다.</p>
+                </div>
+            </div>
+            
+            <div class="card" style="margin-top: 1rem;" id="strainGraphCard">
+                <div class="card-header">
+                    <h3 class="card-title">전체 변형률 그래프</h3>
+                </div>
+                <div class="card-body" id="strainGraphImage">
+                    <p style="text-align: center; color: #6b7280;">그래프 이미지가 없습니다.</p>
                 </div>
             </div>
         </div>
@@ -699,9 +735,17 @@
                 // 리포트 이미지
                 const reportImage = getFromStorage(STORAGE_KEYS.ACCEL_REPORT_IMAGE);
                 if (reportImage) {
-                    document.getElementById('accelReportImage').innerHTML = `<img src="${reportImage}" style="max-width: 100%; height: auto;">`;
+                    document.getElementById('accelReportImage').innerHTML = `<img src="${reportImage}" style="max-width: 100%; height: auto; border: 1px solid #e5e7eb; border-radius: 0.375rem;">`;
                 } else {
                     document.getElementById('accelReportCard').style.display = 'none';
+                }
+                
+                // 전체 가속도 그래프 이미지
+                const graphImage = getFromStorage(STORAGE_KEYS.ACCEL_GRAPH_IMAGE);
+                if (graphImage) {
+                    document.getElementById('accelGraphImage').innerHTML = `<img src="${graphImage}" style="max-width: 100%; height: auto; border: 1px solid #e5e7eb; border-radius: 0.375rem;">`;
+                } else {
+                    document.getElementById('accelGraphCard').style.display = 'none';
                 }
             }
         }
@@ -753,9 +797,24 @@
                 // 리포트 이미지
                 const reportImage = getFromStorage(STORAGE_KEYS.TILT_REPORT_IMAGE);
                 if (reportImage) {
-                    document.getElementById('tiltReportImage').innerHTML = `<img src="${reportImage}" style="max-width: 100%; height: auto;">`;
+                    document.getElementById('tiltReportImage').innerHTML = `<img src="${reportImage}" style="max-width: 100%; height: auto; border: 1px solid #e5e7eb; border-radius: 0.375rem;">`;
                 } else {
                     document.getElementById('tiltReportCard').style.display = 'none';
+                }
+                
+                // 전체 기울기 그래프 이미지
+                const graphImage = getFromStorage(STORAGE_KEYS.TILT_GRAPH_IMAGE);
+                if (graphImage) {
+                    document.getElementById('tiltGraphImage').innerHTML = `<img src="${graphImage}" style="max-width: 100%; height: auto; border: 1px solid #e5e7eb; border-radius: 0.375rem;">`;
+                } else {
+                    document.getElementById('tiltGraphCard').style.display = 'none';
+                }
+                
+                // 기울기 조정 이력
+                if (tiltData.adjustmentHistory) {
+                    document.getElementById('tiltAdjustmentHistory').innerHTML = `<pre style="white-space: pre-wrap; font-family: inherit; margin: 0;">${tiltData.adjustmentHistory}</pre>`;
+                } else {
+                    document.getElementById('tiltAdjustmentCard').style.display = 'none';
                 }
             }
         }
@@ -806,9 +865,17 @@
                 // 리포트 이미지
                 const reportImage = getFromStorage(STORAGE_KEYS.STRAIN_REPORT_IMAGE);
                 if (reportImage) {
-                    document.getElementById('strainReportImage').innerHTML = `<img src="${reportImage}" style="max-width: 100%; height: auto;">`;
+                    document.getElementById('strainReportImage').innerHTML = `<img src="${reportImage}" style="max-width: 100%; height: auto; border: 1px solid #e5e7eb; border-radius: 0.375rem;">`;
                 } else {
                     document.getElementById('strainReportCard').style.display = 'none';
+                }
+                
+                // 전체 변형률 그래프 이미지
+                const graphImage = getFromStorage(STORAGE_KEYS.STRAIN_GRAPH_IMAGE);
+                if (graphImage) {
+                    document.getElementById('strainGraphImage').innerHTML = `<img src="${graphImage}" style="max-width: 100%; height: auto; border: 1px solid #e5e7eb; border-radius: 0.375rem;">`;
+                } else {
+                    document.getElementById('strainGraphCard').style.display = 'none';
                 }
             }
         }
