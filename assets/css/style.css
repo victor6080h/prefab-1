@@ -351,6 +351,18 @@ table input[type="text"]:focus {
     display: none !important;
 }
 
+/* 모바일 터치 최적화 */
+@media (max-width: 768px) {
+    .photo-upload {
+        -webkit-tap-highlight-color: rgba(0, 102, 204, 0.2);
+        touch-action: manipulation;
+    }
+    
+    .photo-upload:active {
+        background-color: #e8f4ff;
+    }
+}
+
 .photo-upload .placeholder {
     font-size: var(--font-size-lg);
     color: var(--text-secondary);
