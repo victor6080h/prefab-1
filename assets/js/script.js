@@ -39,6 +39,183 @@ setInterval(function() {
 }, 30000); // Check every 30 seconds
 
 // ==========================================
+// IndexedDB Storage for Large Data (Images)
+// ==========================================
+
+let db = null;
+const DB_NAME = 'PrefabQMS_DB';
+const DB_VERSION = 1;
+const STORE_NAME = 'images';
+
+/**
+ * Initialize IndexedDB
+ * @returns {Promise<IDBDatabase>}
+ */
+function initIndexedDB() {
+    return new Promise((resolve, reject) => {
+        if (db) {
+            resolve(db);
+            return;
+        }
+
+        const request = indexedDB.open(DB_NAME, DB_VERSION);
+
+        request.onerror = () => {
+            console.error('IndexedDB 열기 실패:', request.error);
+            reject(request.error);
+        };
+
+        request.onsuccess = () => {
+            db = request.result;
+            console.log('✅ IndexedDB 초기화 성공');
+            resolve(db);
+        };
+
+        request.onupgradeneeded = (event) => {
+            const database = event.target.result;
+            
+            // Create object store if it doesn't exist
+            if (!database.objectStoreNames.contains(STORE_NAME)) {
+                database.createObjectStore(STORE_NAME, { keyPath: 'key' });
+                console.log('📦 IndexedDB 저장소 생성:', STORE_NAME);
+            }
+        };
+    });
+}
+
+/**
+ * Save image to IndexedDB
+ * @param {string} key - Storage key
+ * @param {string} imageData - Base64 image data
+ * @returns {Promise<boolean>}
+ */
+async function saveImageToIndexedDB(key, imageData) {
+    try {
+        const database = await initIndexedDB();
+        
+        return new Promise((resolve, reject) => {
+            const transaction = database.transaction([STORE_NAME], 'readwrite');
+            const store = transaction.objectStore(STORE_NAME);
+            
+            const request = store.put({
+                key: key,
+                data: imageData,
+                timestamp: Date.now()
+            });
+
+            request.onsuccess = () => {
+                console.log('✅ IndexedDB 저장 성공:', key, `(${(imageData.length / 1024).toFixed(0)}KB)`);
+                resolve(true);
+            };
+
+            request.onerror = () => {
+                console.error('❌ IndexedDB 저장 실패:', request.error);
+                reject(request.error);
+            };
+        });
+    } catch (error) {
+        console.error('❌ IndexedDB 저장 오류:', error);
+        return false;
+    }
+}
+
+/**
+ * Get image from IndexedDB
+ * @param {string} key - Storage key
+ * @returns {Promise<string|null>}
+ */
+async function getImageFromIndexedDB(key) {
+    try {
+        const database = await initIndexedDB();
+        
+        return new Promise((resolve, reject) => {
+            const transaction = database.transaction([STORE_NAME], 'readonly');
+            const store = transaction.objectStore(STORE_NAME);
+            const request = store.get(key);
+
+            request.onsuccess = () => {
+                if (request.result && request.result.data) {
+                    console.log('✅ IndexedDB 로드 성공:', key);
+                    resolve(request.result.data);
+                } else {
+                    console.log('IndexedDB에 데이터 없음:', key);
+                    resolve(null);
+                }
+            };
+
+            request.onerror = () => {
+                console.error('❌ IndexedDB 로드 실패:', request.error);
+                reject(request.error);
+            };
+        });
+    } catch (error) {
+        console.error('❌ IndexedDB 로드 오류:', error);
+        return null;
+    }
+}
+
+/**
+ * Delete image from IndexedDB
+ * @param {string} key - Storage key
+ * @returns {Promise<boolean>}
+ */
+async function deleteImageFromIndexedDB(key) {
+    try {
+        const database = await initIndexedDB();
+        
+        return new Promise((resolve, reject) => {
+            const transaction = database.transaction([STORE_NAME], 'readwrite');
+            const store = transaction.objectStore(STORE_NAME);
+            const request = store.delete(key);
+
+            request.onsuccess = () => {
+                console.log('✅ IndexedDB 삭제 성공:', key);
+                resolve(true);
+            };
+
+            request.onerror = () => {
+                console.error('❌ IndexedDB 삭제 실패:', request.error);
+                reject(request.error);
+            };
+        });
+    } catch (error) {
+        console.error('❌ IndexedDB 삭제 오류:', error);
+        return false;
+    }
+}
+
+/**
+ * Get all keys from IndexedDB for a report
+ * @param {string} reportId - Report ID
+ * @returns {Promise<string[]>}
+ */
+async function getAllImageKeysForReport(reportId) {
+    try {
+        const database = await initIndexedDB();
+        
+        return new Promise((resolve, reject) => {
+            const transaction = database.transaction([STORE_NAME], 'readonly');
+            const store = transaction.objectStore(STORE_NAME);
+            const request = store.getAllKeys();
+
+            request.onsuccess = () => {
+                const allKeys = request.result;
+                const reportKeys = allKeys.filter(key => key.startsWith(`REPORT_${reportId}_`));
+                resolve(reportKeys);
+            };
+
+            request.onerror = () => {
+                console.error('❌ IndexedDB 키 목록 가져오기 실패:', request.error);
+                reject(request.error);
+            };
+        });
+    } catch (error) {
+        console.error('❌ IndexedDB 키 목록 오류:', error);
+        return [];
+    }
+}
+
+// ==========================================
 // Report ID Management
 // ==========================================
 
@@ -330,8 +507,8 @@ function previewImage(input, previewId) {
     freshlySelectedImages[previewId] = Date.now();
     console.log('🔖 새 이미지 선택 마킹:', previewId);
     
-    // 이미지 자동 리사이징 및 압축 (110KB 이하로 자동 압축)
-    resizeAndCompressImage(file, 110, null, function(compressedDataUrl) {
+    // 이미지 자동 리사이징 및 압축 (50KB 이하로 자동 압축 - IndexedDB 사용으로 더 많은 이미지 저장 가능)
+    resizeAndCompressImage(file, 50, null, async function(compressedDataUrl) {
         try {
             const compressedSizeKB = (compressedDataUrl.length / 1024).toFixed(0);
             
@@ -344,9 +521,9 @@ function previewImage(input, previewId) {
             
             container.classList.add('has-image');
             
-            // 압축된 이미지를 LocalStorage에 저장
-            console.log('LocalStorage에 저장 시도:', previewId);
-            saveImageToStorage(previewId, compressedDataUrl);
+            // 압축된 이미지를 IndexedDB에 저장 (대용량 지원)
+            console.log('IndexedDB에 저장 시도:', previewId);
+            await saveImageToStorage(previewId, compressedDataUrl);
             
             console.log('✅ 이미지 업로드 성공:', previewId, `(${compressedSizeKB}KB)`);
         } catch (error) {
@@ -364,44 +541,36 @@ function previewImage(input, previewId) {
  * @param {string} key - 저장 키
  * @param {string} imageData - Base64 인코딩된 이미지 데이터
  */
-function saveImageToStorage(key, imageData) {
+async function saveImageToStorage(key, imageData) {
     try {
         console.log('=== saveImageToStorage 호출 ===');
         console.log('저장할 사진 ID:', key);
         console.log('이미지 데이터 크기:', (imageData.length / 1024).toFixed(2), 'KB');
         
-        // 기존 저장된 사진 데이터 가져오기
-        const photos = getFromStorage(STORAGE_KEYS.PHOTOS) || {};
-        console.log('저장 전 사진 개수:', Object.keys(photos).length);
-        console.log('저장 전 사진 ID 목록:', Object.keys(photos));
+        // Get report-specific key
+        const reportId = ensureActiveReport();
+        const fullKey = `REPORT_${reportId}_${key}`;
         
-        // 새 사진 추가
-        photos[key] = imageData;
-        console.log('저장 후 사진 개수:', Object.keys(photos).length);
-        console.log('저장 후 사진 ID 목록:', Object.keys(photos));
+        // Try to save to IndexedDB (supports larger storage)
+        const success = await saveImageToIndexedDB(fullKey, imageData);
         
-        // LocalStorage에 저장
-        const saveResult = saveToStorage(STORAGE_KEYS.PHOTOS, photos);
-        
-        if (saveResult !== false) {
-            console.log('✅ 이미지 저장 성공:', key);
+        if (success) {
+            console.log('✅ IndexedDB 이미지 저장 성공:', fullKey);
             
-            // 저장 확인
-            const savedPhotos = getFromStorage(STORAGE_KEYS.PHOTOS);
-            console.log('저장 확인 - 사진 개수:', Object.keys(savedPhotos).length);
-            console.log('저장 확인 - 사진 ID 목록:', Object.keys(savedPhotos));
+            // Update metadata in LocalStorage (just keep track of photo IDs, not the actual data)
+            const photos = getFromStorage(STORAGE_KEYS.PHOTOS) || {};
+            photos[key] = 'IndexedDB'; // Just a marker that photo exists in IndexedDB
+            saveToStorage(STORAGE_KEYS.PHOTOS, photos);
+            
+            return true;
         } else {
-            console.error('❌ 이미지 저장 실패:', key);
+            console.error('❌ IndexedDB 저장 실패:', fullKey);
+            return false;
         }
     } catch (e) {
         console.error('이미지 저장 실패:', e);
-        
-        // LocalStorage 용량 초과 시
-        if (e.name === 'QuotaExceededError' || e.code === 22) {
-            alert('저장공간이 부족합니다. 이미지 크기를 줄이거나 기존 데이터를 삭제해주세요.');
-        } else {
-            alert('이미지 저장 중 오류가 발생했습니다.');
-        }
+        alert('이미지 저장 중 오류가 발생했습니다.');
+        return false;
     }
 }
 
@@ -409,7 +578,7 @@ function saveImageToStorage(key, imageData) {
  * 저장된 이미지 로드
  * @param {string} previewId - 미리보기 이미지 요소의 ID
  */
-function loadSavedImage(previewId) {
+async function loadSavedImage(previewId) {
     try {
         console.log('이미지 로드 시도:', previewId);
         
@@ -436,15 +605,19 @@ function loadSavedImage(previewId) {
         }
         
         const photos = getFromStorage(STORAGE_KEYS.PHOTOS);
-        console.log('저장된 사진 데이터:', photos ? Object.keys(photos) : 'null');
+        console.log('저장된 사진 메타데이터:', photos ? Object.keys(photos) : 'null');
         
-        if (!photos) {
-            console.log('저장된 사진 데이터가 없습니다.');
+        if (!photos || !photos[previewId]) {
+            console.log('저장된 사진 데이터가 없습니다:', previewId);
             return;
         }
         
-        if (!photos[previewId]) {
-            console.log('해당 ID의 사진이 없습니다:', previewId);
+        // Load image from IndexedDB
+        const fullKey = `REPORT_${reportId}_${previewId}`;
+        const imageData = await getImageFromIndexedDB(fullKey);
+        
+        if (!imageData) {
+            console.log('IndexedDB에 이미지가 없습니다:', fullKey);
             return;
         }
 
@@ -458,15 +631,14 @@ function loadSavedImage(previewId) {
         
         const placeholder = container.querySelector('.placeholder');
         
-        // LocalStorage의 이미지와 현재 표시된 이미지가 다른 경우에만 로드
-        const savedImageData = photos[previewId];
-        if (preview.src === savedImageData) {
+        // Check if same image is already displayed
+        if (preview.src === imageData) {
             console.log('이미 동일한 이미지가 표시되어 있습니다:', previewId);
             return;
         }
         
-        // 이미지 데이터 설정
-        preview.src = savedImageData;
+        // Set image data
+        preview.src = imageData;
         preview.style.display = 'block';
         
         if (placeholder) {

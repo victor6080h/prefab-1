@@ -615,7 +615,7 @@
         }
         
         // Delete report
-        function deleteReport(event, reportId) {
+        async function deleteReport(event, reportId) {
             event.stopPropagation();
             
             const reports = getReportsList();
@@ -641,6 +641,18 @@
                 }
             }
             keysToRemove.forEach(key => localStorage.removeItem(key));
+            
+            // Remove all images from IndexedDB
+            try {
+                const imageKeys = await getAllImageKeysForReport(reportId);
+                console.log('삭제할 이미지 수:', imageKeys.length);
+                for (const key of imageKeys) {
+                    await deleteImageFromIndexedDB(key);
+                }
+                console.log('✅ IndexedDB 이미지 삭제 완료');
+            } catch (error) {
+                console.error('IndexedDB 이미지 삭제 오류:', error);
+            }
             
             // If this was the active report, clear it
             if (localStorage.getItem(STORAGE_KEYS.ACTIVE_REPORT) === reportId) {
