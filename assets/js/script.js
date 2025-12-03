@@ -413,12 +413,8 @@ function loadSavedImage(previewId) {
     try {
         console.log('이미지 로드 시도:', previewId);
         
-        // 활성 리포트 ID 확인
-        const reportId = getActiveReportId();
-        if (!reportId) {
-            console.warn('⚠️ 활성 리포트 ID가 없습니다. 이미지를 로드할 수 없습니다.');
-            return;
-        }
+        // 활성 리포트 확인 및 생성 (필요시)
+        const reportId = ensureActiveReport();
         
         const preview = document.getElementById(previewId);
         if (!preview) {
