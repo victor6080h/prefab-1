@@ -386,6 +386,15 @@ function saveImageToStorage(key, imageData) {
  */
 function loadSavedImage(previewId) {
     try {
+        console.log('이미지 로드 시도:', previewId);
+        
+        // 활성 리포트 ID 확인
+        const reportId = getActiveReportId();
+        if (!reportId) {
+            console.warn('⚠️ 활성 리포트 ID가 없습니다. 이미지를 로드할 수 없습니다.');
+            return;
+        }
+        
         const preview = document.getElementById(previewId);
         if (!preview) {
             console.error('미리보기 요소를 찾을 수 없습니다:', previewId);
@@ -406,8 +415,6 @@ function loadSavedImage(previewId) {
         }
         
         const photos = getFromStorage(STORAGE_KEYS.PHOTOS);
-        
-        console.log('이미지 로드 시도:', previewId);
         console.log('저장된 사진 데이터:', photos ? Object.keys(photos) : 'null');
         
         if (!photos) {
@@ -419,6 +426,8 @@ function loadSavedImage(previewId) {
             console.log('해당 ID의 사진이 없습니다:', previewId);
             return;
         }
+
+        console.log('이미지 로드 성공:', previewId, '(리포트:', reportId + ')', '크기:', (imageData.length / 1024).toFixed(2), 'KB');
         
         const container = preview.closest('.photo-upload');
         if (!container) {
