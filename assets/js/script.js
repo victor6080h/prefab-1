@@ -51,16 +51,41 @@ function getActiveReportId() {
 }
 
 /**
+ * Ensure there is an active report, create default if needed
+ * @returns {string} Active report ID
+ */
+function ensureActiveReport() {
+    let reportId = getActiveReportId();
+    
+    if (!reportId) {
+        // Create a default report
+        reportId = 'REPORT_' + Date.now();
+        localStorage.setItem(REPORT_KEYS.ACTIVE_REPORT, reportId);
+        
+        // Add to reports list
+        const reportsList = JSON.parse(localStorage.getItem(REPORT_KEYS.REPORTS_LIST) || '[]');
+        reportsList.push({
+            id: reportId,
+            projectName: '기본 보고서',
+            createdAt: new Date().toISOString(),
+            lastModified: new Date().toISOString()
+        });
+        localStorage.setItem(REPORT_KEYS.REPORTS_LIST, JSON.stringify(reportsList));
+        
+        console.log('✅ 기본 보고서 생성:', reportId);
+    }
+    
+    return reportId;
+}
+
+/**
  * Get report-specific storage key with prefix
  * @param {string} baseKey - Base storage key
  * @returns {string} Report-specific storage key
  */
 function getReportStorageKey(baseKey) {
-    const reportId = getActiveReportId();
-    if (!reportId) {
-        // Fallback to old key for backward compatibility
-        return baseKey;
-    }
+    // Ensure active report exists
+    const reportId = ensureActiveReport();
     return `REPORT_${reportId}_${baseKey}`;
 }
 
