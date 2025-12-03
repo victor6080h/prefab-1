@@ -816,12 +816,12 @@
             loadAllData();
         });
 
-        function loadAllData() {
+        async function loadAllData() {
             // 1. 프로젝트 정보
             loadProjectInfo();
             
-            // 2. 운송결과 리포트
-            loadSurveyData();
+            // 2. 운송결과 리포트 (사진 로드 포함 - async)
+            await loadSurveyData();
             
             // 3. 가속도 데이터
             loadAccelData();
@@ -832,8 +832,8 @@
             // 5. 변형률 데이터
             loadStrainData();
             
-            // 6. 부재 제작 오차
-            loadErrorData();
+            // 6. 부재 제작 오차 (사진 로드 포함 - async)
+            await loadErrorData();
             
             // 7. 종합 대시보드 (모든 데이터 로드 후)
             setTimeout(() => {
@@ -852,7 +852,7 @@
             }
         }
 
-        function loadSurveyData() {
+        async function loadSurveyData() {
             const surveyData = getFromStorage(STORAGE_KEYS.SURVEY_DATA);
             const photos = getFromStorage(STORAGE_KEYS.PHOTOS);
             
@@ -914,24 +914,41 @@
                 document.getElementById('surveyTable').innerHTML = html;
             }
             
-            // 현장 사진 로드 - 그룹 1 (사진 1, 2)
+            // 현장 사진 로드 - IndexedDB에서 로드
             if (photos) {
-                let photoHTML1 = '';
-                let photoHTML2 = '';
+                const reportId = getActiveReportId();
                 
                 // 첫 번째 그룹: 사진 1, 2
+                let photoHTML1 = '';
                 for (let i = 1; i <= 2; i++) {
                     const photoKey = `photo${i}Preview`;
                     if (photos[photoKey]) {
-                        photoHTML1 += `<img src="${photos[photoKey]}" alt="현장사진 ${i}">`;
+                        const fullKey = `REPORT_${reportId}_${photoKey}`;
+                        try {
+                            const imageData = await getImageFromIndexedDB(fullKey);
+                            if (imageData) {
+                                photoHTML1 += `<img src="${imageData}" alt="현장사진 ${i}">`;
+                            }
+                        } catch (error) {
+                            console.error(`사진 ${i} 로드 실패:`, error);
+                        }
                     }
                 }
                 
                 // 두 번째 그룹: 사진 3, 4
+                let photoHTML2 = '';
                 for (let i = 3; i <= 4; i++) {
                     const photoKey = `photo${i}Preview`;
                     if (photos[photoKey]) {
-                        photoHTML2 += `<img src="${photos[photoKey]}" alt="현장사진 ${i}">`;
+                        const fullKey = `REPORT_${reportId}_${photoKey}`;
+                        try {
+                            const imageData = await getImageFromIndexedDB(fullKey);
+                            if (imageData) {
+                                photoHTML2 += `<img src="${imageData}" alt="현장사진 ${i}">`;
+                            }
+                        } catch (error) {
+                            console.error(`사진 ${i} 로드 실패:`, error);
+                        }
                     }
                 }
                 
@@ -1037,7 +1054,7 @@
             }
         }
 
-        function loadErrorData() {
+        async function loadErrorData() {
             const errorData = getFromStorage(STORAGE_KEYS.FABRICATION_ERROR);
             const photos = getFromStorage(STORAGE_KEYS.PHOTOS);
             
@@ -1090,26 +1107,50 @@
                 document.getElementById('errorChartCard').style.display = 'none';
             }
             
-            // 부재 사진
+            // 부재 사진 - IndexedDB에서 로드
             if (photos && (photos.errorPhoto1 || photos.errorPhoto2)) {
+                const reportId = getActiveReportId();
                 let photoHTML = '';
+                
                 if (photos.errorPhoto1) {
-                    photoHTML += `
-                        <div class="photo-item">
-                            <div class="photo-label">부재 측면</div>
-                            <img src="${photos.errorPhoto1}" alt="부재 측면">
-                        </div>
-                    `;
+                    const fullKey = `REPORT_${reportId}_errorPhoto1`;
+                    try {
+                        const imageData = await getImageFromIndexedDB(fullKey);
+                        if (imageData) {
+                            photoHTML += `
+                                <div class="photo-item">
+                                    <div class="photo-label">부재 측면</div>
+                                    <img src="${imageData}" alt="부재 측면">
+                                </div>
+                            `;
+                        }
+                    } catch (error) {
+                        console.error('부재 측면 사진 로드 실패:', error);
+                    }
                 }
+                
                 if (photos.errorPhoto2) {
-                    photoHTML += `
-                        <div class="photo-item">
-                            <div class="photo-label">부재 평면</div>
-                            <img src="${photos.errorPhoto2}" alt="부재 평면">
-                        </div>
-                    `;
+                    const fullKey = `REPORT_${reportId}_errorPhoto2`;
+                    try {
+                        const imageData = await getImageFromIndexedDB(fullKey);
+                        if (imageData) {
+                            photoHTML += `
+                                <div class="photo-item">
+                                    <div class="photo-label">부재 평면</div>
+                                    <img src="${imageData}" alt="부재 평면">
+                                </div>
+                            `;
+                        }
+                    } catch (error) {
+                        console.error('부재 평면 사진 로드 실패:', error);
+                    }
                 }
-                document.getElementById('errorPhotos').innerHTML = photoHTML;
+                
+                if (photoHTML) {
+                    document.getElementById('errorPhotos').innerHTML = photoHTML;
+                } else {
+                    document.getElementById('errorPhotosCard').style.display = 'none';
+                }
             } else {
                 document.getElementById('errorPhotosCard').style.display = 'none';
             }
